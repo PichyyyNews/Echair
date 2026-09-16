@@ -549,8 +549,11 @@
     "joinBtn": "เข้าร่วม"
   },
   "classActionModal": {
+    "title": "ห้องเรียน",
     "createClassBtn": "สร้างชั้นเรียน",
-    "joinClassBtn": "เข้าร่วมชั้นเรียน"
+    "createClassDesc": "เปิดห้องเรียนใหม่ของคุณ",
+    "joinClassBtn": "เข้าร่วมชั้นเรียน",
+    "joinClassDesc": "เข้าร่วมด้วยรหัสชั้นเรียน"
   },
   "groupingModal": {
     "defaultGroupName": "กลุ่ม {{number}}",

@@ -51,21 +51,21 @@ const SummaryPrintLayout = ({
                             <tbody>
                                 <tr>
                                     <th>{t('summary.totalScore') || 'Total Score'}</th>
-                                    <td>{selectedStudent.combinedScore.toFixed(1)}</td>
+                                    <td>{(selectedStudent.combinedScore ?? 0).toFixed(1)}</td>
                                     <th>{t('summaryPrint.classRank') || 'Class Rank'}</th>
-                                    <td>{t('summaryPrint.rankOf', { rank: studentRank, total: summaryData.totalStudents }) || `#${studentRank} of ${summaryData.totalStudents}`}</td>
+                                    <td>{t('summaryPrint.rankOf', { rank: studentRank || 1, total: summaryData?.totalStudents ?? 0 }) || `#${studentRank || 1} of ${summaryData?.totalStudents ?? 0}`}</td>
                                 </tr>
                                 <tr>
                                     <th>{t('summaryPrint.finalGrade') || 'Final Grade'}</th>
-                                    <td><strong>{selectedStudent.grade}</strong></td>
+                                    <td><strong>{selectedStudent.grade || '-'}</strong></td>
                                     <th>{t('summary.percentile') || 'Percentile'}</th>
-                                    <td>{selectedStudent.percentile.toFixed(1)}%</td>
+                                    <td>{(selectedStudent.percentile ?? 0).toFixed(1)}%</td>
                                 </tr>
                                 <tr>
                                     <th>{t('summaryPrint.attendanceRate') || 'Attendance Rate'}</th>
-                                    <td>{(selectedStudent.attendanceRate * 100).toFixed(0)}% {t('summaryPrint.eventsAttended', { attended: selectedStudent.attendedEvents, total: selectedStudent.totalEvents }) || `(${selectedStudent.attendedEvents}/${selectedStudent.totalEvents} events)`}</td>
+                                    <td>{((selectedStudent.attendanceRate ?? 0) * 100).toFixed(0)}% {t('summaryPrint.eventsAttended', { attended: selectedStudent.attendedEvents ?? 0, total: selectedStudent.totalEvents ?? 0 }) || `(${selectedStudent.attendedEvents ?? 0}/${selectedStudent.totalEvents ?? 0} events)`}</td>
                                     <th>{t('summary.zScore') || 'Z-Score'}</th>
-                                    <td>{selectedStudent.zScore > 0 ? '+' : ''}{selectedStudent.zScore.toFixed(2)}</td>
+                                    <td>{(selectedStudent.zScore ?? 0) > 0 ? '+' : ''}{(selectedStudent.zScore ?? 0).toFixed(2)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -74,12 +74,12 @@ const SummaryPrintLayout = ({
                     <div className="print-section">
                         <h4>{t('summaryPrint.performanceAnalysis') || 'Performance Analysis'}</h4>
                         <p className="print-analysis-text">
-                            {t('summaryPrint.analysisP1', { name: selectedStudent.name, score: selectedStudent.combinedScore.toFixed(1), percent: Math.max(1, 100 - Math.round(selectedStudent.percentile)) }) || `${selectedStudent.name} has achieved a total score of ${selectedStudent.combinedScore.toFixed(1)}, placing them in the top ${Math.max(1, 100 - Math.round(selectedStudent.percentile))}% of the class.`}
+                            {t('summaryPrint.analysisP1', { name: selectedStudent.name, score: (selectedStudent.combinedScore ?? 0).toFixed(1), percent: Math.max(1, 100 - Math.round(selectedStudent.percentile ?? 0)) }) || `${selectedStudent.name} has achieved a total score of ${(selectedStudent.combinedScore ?? 0).toFixed(1)}, placing them in the top ${Math.max(1, 100 - Math.round(selectedStudent.percentile ?? 0))}% of the class.`}
                             <br/>
                             {t('summaryPrint.analysisP2') || 'Their performance is categorized as '}
-                            <strong>{t(`summaryPrint.levels.${selectedStudent.performanceLevel}`) || selectedStudent.performanceLevel}</strong>.
+                            <strong>{t(`summaryPrint.levels.${selectedStudent.performanceLevel}`) || selectedStudent.performanceLevel || '-'}</strong>.
                             <br/>
-                            {t('summaryPrint.analysisP3', { sd: Math.abs(selectedStudent.zScore).toFixed(2), direction: selectedStudent.zScore >= 0 ? t('summary.above') : t('summary.below'), mean: summaryData.statistics.mean.toFixed(1) }) || `The student is ${Math.abs(selectedStudent.zScore).toFixed(2)} standard deviations ${selectedStudent.zScore >= 0 ? 'above' : 'below'} the class average of ${summaryData.statistics.mean.toFixed(1)}.`}
+                            {t('summaryPrint.analysisP3', { sd: Math.abs(selectedStudent.zScore ?? 0).toFixed(2), direction: (selectedStudent.zScore ?? 0) >= 0 ? t('summary.above') : t('summary.below'), mean: (summaryData?.statistics?.mean ?? 0).toFixed(1) }) || `The student is ${Math.abs(selectedStudent.zScore ?? 0).toFixed(2)} standard deviations ${(selectedStudent.zScore ?? 0) >= 0 ? 'above' : 'below'} the class average of ${(summaryData?.statistics?.mean ?? 0).toFixed(1)}.`}
                         </p>
                     </div>
 
@@ -138,21 +138,21 @@ const SummaryPrintLayout = ({
                             <tbody>
                                 <tr>
                                     <th>{t('summary.totalStudents') || 'Total Students'}</th>
-                                    <td>{summaryData.totalStudents}</td>
+                                    <td>{summaryData?.totalStudents ?? 0}</td>
                                     <th>{t('summary.classAverage') || 'Class Average (μ)'}</th>
-                                    <td>{summaryData.statistics.mean.toFixed(2)}</td>
+                                    <td>{(summaryData?.statistics?.mean ?? 0).toFixed(2)}</td>
                                 </tr>
                                 <tr>
                                     <th>{t('summary.highestScore') || 'Highest Score'}</th>
-                                    <td>{summaryData.statistics.max.toFixed(2)}</td>
+                                    <td>{(summaryData?.statistics?.max ?? 0).toFixed(2)}</td>
                                     <th>{t('summary.lowestScore') || 'Lowest Score'}</th>
-                                    <td>{summaryData.statistics.min.toFixed(2)}</td>
+                                    <td>{(summaryData?.statistics?.min ?? 0).toFixed(2)}</td>
                                 </tr>
                                 <tr>
                                     <th>{t('summary.median') || 'Median'}</th>
-                                    <td>{summaryData.statistics.median.toFixed(2)}</td>
+                                    <td>{(summaryData?.statistics?.median ?? 0).toFixed(2)}</td>
                                     <th>{t('summary.stdDev') || 'Standard Deviation (σ)'}</th>
-                                    <td>{summaryData.statistics.stdDev.toFixed(2)}</td>
+                                    <td>{(summaryData?.statistics?.stdDev ?? 0).toFixed(2)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -172,14 +172,14 @@ const SummaryPrintLayout = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {summaryData.studentData.map((student, idx) => (
-                                    <tr key={student.id}>
+                                {(summaryData?.studentData || []).map((student, idx) => (
+                                    <tr key={student.id || idx}>
                                         <td>{idx + 1}</td>
                                         <td>{student.name}</td>
-                                        <td>{student.group}</td>
-                                        <td><strong>{student.combinedScore.toFixed(1)}</strong></td>
-                                        <td>{student.zScore > 0 ? '+' : ''}{student.zScore.toFixed(2)}</td>
-                                        <td>{student.grade}</td>
+                                        <td>{student.group || '-'}</td>
+                                        <td><strong>{(student.combinedScore ?? 0).toFixed(1)}</strong></td>
+                                        <td>{(student.zScore ?? 0) > 0 ? '+' : ''}{(student.zScore ?? 0).toFixed(2)}</td>
+                                        <td>{student.grade || '-'}</td>
                                     </tr>
                                 ))}
                             </tbody>

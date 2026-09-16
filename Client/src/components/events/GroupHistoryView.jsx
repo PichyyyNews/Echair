@@ -249,7 +249,9 @@ const GroupHistoryView = ({ classroom, user, onRefresh }) => {
             <div className="eh-container">
                  <div className="eh-header">
                     <div className="eh-header-left">
-                        <FaLayerGroup className="eh-header-icon" />
+                        <div className="eh-header-icon">
+                            <FaLayerGroup size={20} />
+                        </div>
                         <div>
                             <h2>Group History</h2>
                             <p>No grouping events recorded yet.</p>
@@ -266,7 +268,9 @@ const GroupHistoryView = ({ classroom, user, onRefresh }) => {
             {/* Header */}
             <div className="eh-header">
                 <div className="eh-header-left">
-                    <FaLayerGroup className="eh-header-icon" />
+                    <div className="eh-header-icon">
+                        <FaLayerGroup size={20} />
+                    </div>
                     <div>
                         <h2>Group History</h2>
                         <p>{groupingEvents.length} grouping sessions recorded</p>

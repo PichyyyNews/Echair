@@ -86,22 +86,14 @@ const SessionHistory = ({ classId, user }) => {
         );
     }
 
-    if (sessions.length === 0) {
-        return (
-            <div className="session-history-empty">
-                <FiInbox className="empty-icon" />
-                <h3>{t('sessionHistory.emptyTitle') || 'No Teaching Sessions Yet'}</h3>
-                <p>{t('sessionHistory.emptyDesc') || 'Start a teaching session from your classroom to see summaries here.'}</p>
-            </div>
-        );
-    }
-
     return (
         <div className="sh-container">
-            {/* Header matches eh-header */}
+            {/* Header matches monotone theme */}
             <div className="sh-header">
                 <div className="sh-header-left">
-                    <FiBookOpen className="sh-header-icon" />
+                    <div className="sh-header-icon">
+                        <FiBookOpen size={20} />
+                    </div>
                     <div>
                         <h2>{t('sessionHistory.title') || 'Class Sessions'}</h2>
                         <p>{t('sessionHistory.totalSessions', { count: total, s: total !== 1 ? 's' : '' }) || `${total} session${total !== 1 ? 's' : ''} total`}</p>
@@ -109,8 +101,15 @@ const SessionHistory = ({ classId, user }) => {
                 </div>
             </div>
 
-            {/* Event List similar to eh-section / eh-event-list */}
-            <div className="sh-section">
+            {sessions.length === 0 ? (
+                <div className="session-history-empty">
+                    <FiInbox className="empty-icon" />
+                    <h3>{t('sessionHistory.emptyTitle') || 'No Teaching Sessions Yet'}</h3>
+                    <p>{t('sessionHistory.emptyDesc') || 'Start a teaching session from your classroom to see summaries here.'}</p>
+                </div>
+            ) : (
+                /* Event List */
+                <div className="sh-section">
 
             {Object.entries(groupedSessions).map(([dateKey, dateSessions]) => (
                 <div key={dateKey} className="session-date-group">
@@ -194,7 +193,8 @@ const SessionHistory = ({ classId, user }) => {
                     </div>
                 </div>
             ))}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -165,7 +165,9 @@ const EventHistoryView = ({ classroom, user, onUpdateScores, onRefresh }) => {
             {/* Header */}
             <div className="eh-header">
                 <div className="eh-header-left">
-                    <FaHistory className="eh-header-icon" />
+                    <div className="eh-header-icon">
+                        <FaHistory size={20} />
+                    </div>
                     <div>
                         <h2>Event History</h2>
                         <p>{allEvents.length} events total • {eventCategories.length} scoring categories</p>

@@ -237,7 +237,7 @@ const CreateClassModal = ({ onClose, onClassCreated, user }) => {
     return (
         <>
             <div className="modal-backdrop">
-                <div className="modal-content">
+                <div className="modal-content create-class-modal">
                     <button className="modal-close-button" onClick={onClose}>&times;</button>
                     <h2>{t('createClassModal.title') || 'Create New Class'}</h2>
                     <form onSubmit={handleSubmit}>

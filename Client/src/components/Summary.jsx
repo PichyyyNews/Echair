@@ -180,6 +180,16 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
     }, [classroom]);
 
     const processClassroomData = (classroomData) => {
+        if (!classroomData) {
+            return {
+                totalStudents: 0,
+                totalEvents: 0,
+                studentData: [],
+                statistics: { mean: 0, stdDev: 0, median: 0, min: 0, max: 0, topQuartile: 0, bottomQuartile: 0 },
+                classMetrics: { avgAttendance: 0 }
+            };
+        }
+
         const creatorIds = (classroomData.creator || []).map(c => c._id || c.id || c);
         const allParticipants = classroomData.participants || [];
         const students = allParticipants.filter(p => !creatorIds.includes(p._id || p.id));
@@ -190,7 +200,7 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
         const studentData = students.map(student => {
             const studentId = student._id || student.id;
             const scores = studentScores[studentId] || {};
-            const scoreValues = Object.values(scores).filter(score => score !== null && score !== undefined && typeof score === 'number');
+            const scoreValues = Object.values(scores).filter(score => score !== null && score !== undefined && typeof score === 'number' && !isNaN(score));
             const totalScore = scoreValues.reduce((sum, score) => sum + score, 0);
             const avgScore = scoreValues.length > 0 ? totalScore / scoreValues.length : 0;
             const highestScore = scoreValues.length > 0 ? Math.max(...scoreValues) : 0;
@@ -236,7 +246,7 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
 
         studentData.forEach(student => {
             const zScore = stdDev > 0 ? (student.combinedScore - mean) / stdDev : 0;
-            student.zScore = zScore;
+            student.zScore = isNaN(zScore) ? 0 : zScore;
             if (zScore >= 1.5) student.grade = 'A+';
             else if (zScore >= 1) student.grade = 'A';
             else if (zScore >= 0.5) student.grade = 'B+';
@@ -245,7 +255,8 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
             else if (zScore >= -1) student.grade = 'C';
             else if (zScore >= -1.5) student.grade = 'D';
             else student.grade = 'F';
-            student.percentile = calculatePercentile(student.combinedScore, scores);
+            const pct = calculatePercentile(student.combinedScore, scores);
+            student.percentile = isNaN(pct) ? 0 : pct;
         });
 
         studentData.sort((a, b) => b.combinedScore - a.combinedScore);
@@ -255,7 +266,8 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
             totalEvents: attendanceDaysCount,
             studentData,
             statistics: {
-                mean, stdDev,
+                mean: isNaN(mean) ? 0 : mean,
+                stdDev: isNaN(stdDev) ? 0 : stdDev,
                 median: calculateMedian(scores),
                 min: scores.length > 0 ? Math.min(...scores) : 0,
                 max: scores.length > 0 ? Math.max(...scores) : 0,
@@ -587,43 +599,43 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
                                 <img referrerPolicy="no-referrer" src={getProfileImageSrc(selectedStudent.photoURL, isGoogleUser(selectedStudent.user))} alt={selectedStudent.name} onError={handleImageError} className="profile-avatar" />
                                 <div className="profile-info">
                                     <h4>{selectedStudent.name}</h4>
-                                    <span className="profile-group-badge">{t('summary.group', { group: selectedStudent.group }) || `Group ${selectedStudent.group}`}</span>
+                                    <span className="profile-group-badge">{t('summary.group', { group: selectedStudent.group || '-' }) || `Group ${selectedStudent.group || '-'}`}</span>
                                 </div>
                             </div>
                             <div className="profile-metrics">
                                 <div className="pm-item accent">
                                     <label>{t('summary.rank') || 'Rank'}</label>
-                                    <span className="pm-val">#{studentRank} <small>/ {summaryData.totalStudents}</small></span>
+                                    <span className="pm-val">#{studentRank || '-'} <small>/ {summaryData.totalStudents || 0}</small></span>
                                 </div>
                                 <div className="pm-item">
                                     <label>{t('summary.totalScore') || 'Total Score'}</label>
-                                    <span className="pm-val">{selectedStudent.combinedScore.toFixed(1)}</span>
+                                    <span className="pm-val">{(selectedStudent.combinedScore ?? 0).toFixed(1)}</span>
                                 </div>
                                 <div className="pm-item">
                                     <label>{t('summary.percentile') || 'Percentile'}</label>
-                                    <span className="pm-val">{selectedStudent.percentile.toFixed(1)}%</span>
+                                    <span className="pm-val">{(selectedStudent.percentile ?? 0).toFixed(1)}%</span>
                                 </div>
                                 <div className="pm-item">
                                     <label>{t('summary.grade') || 'Grade'}</label>
-                                    <span className={`pm-val pm-grade pm-grade-${selectedStudent.grade.substring(0, 1).toLowerCase()}`}>{selectedStudent.grade}</span>
+                                    <span className={`pm-val pm-grade pm-grade-${(selectedStudent.grade || 'F').substring(0, 1).toLowerCase()}`}>{selectedStudent.grade || '-'}</span>
                                 </div>
                                 <div className="pm-item">
                                     <label>{t('summary.zScore') || 'Z-Score'}</label>
-                                    <span className="pm-val">{selectedStudent.zScore > 0 ? '+' : ''}{selectedStudent.zScore.toFixed(2)}</span>
+                                    <span className="pm-val">{(selectedStudent.zScore ?? 0) > 0 ? '+' : ''}{(selectedStudent.zScore ?? 0).toFixed(2)}</span>
                                 </div>
                                 <div className="pm-item">
                                     <label>{t('summary.attendance') || 'Attendance'}</label>
-                                    <span className="pm-val">{(selectedStudent.attendanceRate * 100).toFixed(0)}%</span>
+                                    <span className="pm-val">{((selectedStudent.attendanceRate ?? 0) * 100).toFixed(0)}%</span>
                                 </div>
                             </div>
                             <div className="profile-analysis">
                                 <h5>{t('summary.performanceAnalysis') || '📝 Performance Analysis'}</h5>
                                 <p>
-                                    {t('summary.analysisP1', { name: selectedStudent.name, percent: Math.max(1, 100 - Math.round(selectedStudent.percentile)) }) || `${selectedStudent.name} is performing in the Top ${Math.max(1, 100 - Math.round(selectedStudent.percentile))}% of the class.`}
+                                    {t('summary.analysisP1', { name: selectedStudent.name, percent: Math.max(1, 100 - Math.round(selectedStudent.percentile ?? 0)) }) || `${selectedStudent.name} is performing in the Top ${Math.max(1, 100 - Math.round(selectedStudent.percentile ?? 0))}% of the class.`}
                                     {' '}
-                                    {t('summary.analysisP2', { score: selectedStudent.combinedScore.toFixed(1), sd: Math.abs(selectedStudent.zScore).toFixed(2), direction: selectedStudent.zScore >= 0 ? t('summary.above') : t('summary.below') }) || `With a total score of ${selectedStudent.combinedScore.toFixed(1)}, they are ${Math.abs(selectedStudent.zScore).toFixed(2)} standard deviations ${selectedStudent.zScore >= 0 ? 'above' : 'below'} the class average.`}
+                                    {t('summary.analysisP2', { score: (selectedStudent.combinedScore ?? 0).toFixed(1), sd: Math.abs(selectedStudent.zScore ?? 0).toFixed(2), direction: (selectedStudent.zScore ?? 0) >= 0 ? t('summary.above') : t('summary.below') }) || `With a total score of ${(selectedStudent.combinedScore ?? 0).toFixed(1)}, they are ${Math.abs(selectedStudent.zScore ?? 0).toFixed(2)} standard deviations ${(selectedStudent.zScore ?? 0) >= 0 ? 'above' : 'below'} the class average.`}
                                     {' '}
-                                    {t('summary.analysisP3', { rate: (selectedStudent.attendanceRate * 100).toFixed(0) }) || `Their attendance rate is ${(selectedStudent.attendanceRate * 100).toFixed(0)}%.`}
+                                    {t('summary.analysisP3', { rate: ((selectedStudent.attendanceRate ?? 0) * 100).toFixed(0) }) || `Their attendance rate is ${((selectedStudent.attendanceRate ?? 0) * 100).toFixed(0)}%.`}
                                 </p>
                             </div>
                         </div>
@@ -639,34 +651,34 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
                             <div className="stats-mini-grid">
                                 <div className="stat-mini students">
                                     <div className="stat-mini-icon"><SvgUsers /></div>
-                                    <div><h4>{t('summary.totalStudents') || 'Total Students'}</h4><p>{summaryData.totalStudents}</p></div>
+                                    <div><h4>{t('summary.totalStudents') || 'Total Students'}</h4><p>{summaryData?.totalStudents ?? 0}</p></div>
                                 </div>
                                 <div className="stat-mini average">
                                     <div className="stat-mini-icon"><SvgTrendUp /></div>
-                                    <div><h4>{t('summary.classAverage') || 'Class Average (μ)'}</h4><p>{summaryData.statistics.mean.toFixed(2)}</p></div>
+                                    <div><h4>{t('summary.classAverage') || 'Class Average (μ)'}</h4><p>{(summaryData?.statistics?.mean ?? 0).toFixed(2)}</p></div>
                                 </div>
                                 <div className="stat-mini highest">
                                     <div className="stat-mini-icon"><SvgStar /></div>
-                                    <div><h4>{t('summary.highestScore') || 'Highest Score'}</h4><p>{summaryData.statistics.max.toFixed(2)}</p></div>
+                                    <div><h4>{t('summary.highestScore') || 'Highest Score'}</h4><p>{(summaryData?.statistics?.max ?? 0).toFixed(2)}</p></div>
                                 </div>
                                 <div className="stat-mini lowest">
                                     <div className="stat-mini-icon"><SvgBarChart /></div>
-                                    <div><h4>{t('summary.lowestScore') || 'Lowest Score'}</h4><p>{summaryData.statistics.min.toFixed(2)}</p></div>
+                                    <div><h4>{t('summary.lowestScore') || 'Lowest Score'}</h4><p>{(summaryData?.statistics?.min ?? 0).toFixed(2)}</p></div>
                                 </div>
                                 <div className="stat-mini median">
                                     <div className="stat-mini-icon"><SvgTarget /></div>
-                                    <div><h4>{t('summary.median') || 'Median'}</h4><p>{summaryData.statistics.median.toFixed(2)}</p></div>
+                                    <div><h4>{t('summary.median') || 'Median'}</h4><p>{(summaryData?.statistics?.median ?? 0).toFixed(2)}</p></div>
                                 </div>
                                 <div className="stat-mini stddev">
                                     <div className="stat-mini-icon"><SvgBellCurve /></div>
-                                    <div><h4>{t('summary.stdDev') || 'Std Dev (σ)'}</h4><p>{summaryData.statistics.stdDev.toFixed(2)}</p></div>
+                                    <div><h4>{t('summary.stdDev') || 'Std Dev (σ)'}</h4><p>{(summaryData?.statistics?.stdDev ?? 0).toFixed(2)}</p></div>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* ═══ Tile 3: Bell Curve ═══ */}
-                    <div className={`bento-tile bento-chart ${(!scoreStats || Object.keys(scoreStats.categoryAverages).length === 0) ? 'full-width' : ''}`} style={{ '--delay': '2' }}>
+                    <div className={`bento-tile bento-chart ${(!scoreStats || Object.keys(scoreStats.categoryAverages || {}).length === 0) ? 'full-width' : ''}`} style={{ '--delay': '2' }}>
                         <div className="bento-tile-header">
                             <SvgBellCurve />
                             <h3>{t('summary.bellCurve') || 'Normal Distribution (Bell Curve)'}</h3>
@@ -680,7 +692,7 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
                         </div>
                         <div className="bento-chart-note">
                             <p>
-                                {t('summary.distributionPeak', { mean: summaryData.statistics.mean.toFixed(1) }) || `Distribution peaks at the class average (${summaryData.statistics.mean.toFixed(1)}).`}
+                                {t('summary.distributionPeak', { mean: (summaryData?.statistics?.mean ?? 0).toFixed(1) }) || `Distribution peaks at the class average (${(summaryData?.statistics?.mean ?? 0).toFixed(1)}).`}
                                 {selectedStudent && <span className="bento-highlight-dot"> {t('summary.redDotIndicates', { name: selectedStudent.name }) || `The red dot indicates ${selectedStudent.name}'s position.`}</span>}
                             </p>
                         </div>
@@ -773,39 +785,45 @@ const Summary = ({ classId, user, classroom, onUpdateScores }) => {
                                 <SvgAward />
                                 <h3>{t('summary.classRankings') || 'Class Rankings'}</h3>
                             </div>
-                            <div className="bento-table-scroll">
-                                <table className="bento-table bento-ranking-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{t('summary.rankHeader') || 'Rank'}</th>
-                                            <th>{t('summary.studentHeader') || 'Student'}</th>
-                                            <th>{t('summary.groupHeader') || 'Group'}</th>
-                                            <th>{t('summary.totalScore') || 'Total Score'}</th>
-                                            <th>{t('summary.zScoreHeader') || 'Z-Score'}</th>
-                                            <th>{t('summary.percentileHeader') || 'Percentile'}</th>
-                                            <th>{t('summary.gradeHeader') || 'Grade'}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {summaryData.studentData.map((student, idx) => (
-                                            <tr key={student.id}>
-                                                <td><span className={`bento-rank-badge ${idx < 3 ? `rank-${idx + 1}` : ''}`}>{idx + 1}</span></td>
-                                                <td>
-                                                    <div className="bento-student-cell">
-                                                        <img referrerPolicy="no-referrer" src={getProfileImageSrc(student.photoURL, isGoogleUser(student.user))} alt={student.name} onError={handleImageError} />
-                                                        <span>{student.name}</span>
-                                                    </div>
-                                                </td>
-                                                <td>{student.group}</td>
-                                                <td><strong>{student.combinedScore.toFixed(1)}</strong></td>
-                                                <td>{student.zScore > 0 ? '+' : ''}{student.zScore.toFixed(2)}</td>
-                                                <td>{student.percentile.toFixed(1)}%</td>
-                                                <td><span className={`bento-grade bento-grade-${student.grade.substring(0, 1).toLowerCase()}`}>{student.grade}</span></td>
+                            {(!summaryData?.studentData || summaryData.studentData.length === 0) ? (
+                                <div className="bento-no-data" style={{ padding: '40px 20px' }}>
+                                    {t('summary.noStudentsYet') || 'No students enrolled in this classroom yet.'}
+                                </div>
+                            ) : (
+                                <div className="bento-table-scroll">
+                                    <table className="bento-table bento-ranking-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{t('summary.rankHeader') || 'Rank'}</th>
+                                                <th>{t('summary.studentHeader') || 'Student'}</th>
+                                                <th>{t('summary.groupHeader') || 'Group'}</th>
+                                                <th>{t('summary.totalScore') || 'Total Score'}</th>
+                                                <th>{t('summary.zScoreHeader') || 'Z-Score'}</th>
+                                                <th>{t('summary.percentileHeader') || 'Percentile'}</th>
+                                                <th>{t('summary.gradeHeader') || 'Grade'}</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {summaryData.studentData.map((student, idx) => (
+                                                <tr key={student.id || idx}>
+                                                    <td><span className={`bento-rank-badge ${idx < 3 ? `rank-${idx + 1}` : ''}`}>{idx + 1}</span></td>
+                                                    <td>
+                                                        <div className="bento-student-cell">
+                                                            <img referrerPolicy="no-referrer" src={getProfileImageSrc(student.photoURL, isGoogleUser(student.user))} alt={student.name} onError={handleImageError} />
+                                                            <span>{student.name}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>{student.group || '-'}</td>
+                                                    <td><strong>{(student.combinedScore ?? 0).toFixed(1)}</strong></td>
+                                                    <td>{(student.zScore ?? 0) > 0 ? '+' : ''}{(student.zScore ?? 0).toFixed(2)}</td>
+                                                    <td>{(student.percentile ?? 0).toFixed(1)}%</td>
+                                                    <td><span className={`bento-grade bento-grade-${(student.grade || 'F').substring(0, 1).toLowerCase()}`}>{student.grade || '-'}</span></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

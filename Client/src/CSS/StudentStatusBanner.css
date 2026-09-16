@@ -1,17 +1,15 @@
-/* ═══ Student Status Banner ═══ */
-/* ═══ Student Status Banner ═══ */
+/* ═══ Student Status Banner (Compact Pill-Chip Style) ═══ */
 .student-status-banner {
   margin: 0;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  overflow: hidden;
-  animation: bannerSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  animation: bannerSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes bannerSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -22,126 +20,137 @@
 .status-banner-inner {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0px;
-  flex-wrap: wrap;
-}
-
-.status-item {
-  display: flex;
-  align-items: center;
   gap: 6px;
-  font-size: 0.85rem;
-  white-space: nowrap;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  flex-wrap: nowrap;
 }
 
-.status-icon {
-  font-size: 1rem;
+/* Individual status chip */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.status-chip:hover {
+  transform: translateY(-1px);
+}
+
+.chip-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
   line-height: 1;
 }
 
-.status-label {
-  color: #6b7280;
+.chip-label {
+  color: #64748b;
   font-weight: 500;
+  font-size: 0.74rem;
 }
 
-.status-value {
+.chip-value {
   font-weight: 700;
-  color: #1f2937;
-  font-size: 0.9rem;
+  color: #1e293b;
+  font-size: 0.82rem;
 }
 
-.status-performance {
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-  padding-left: 16px;
+/* Specific Chip Themes */
+.chip-attendance {
+  background: rgba(139, 92, 246, 0.07);
+  border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
-.status-perf-text {
-  font-weight: 600;
-  font-size: 0.85rem;
+.chip-score {
+  background: rgba(245, 158, 11, 0.07);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+}
+.chip-score .chip-value {
+  color: #b45309;
 }
 
-/* ─── Separator dots between items ─── */
-.status-item + .status-item::before {
-  content: "·";
-  color: #d1d5db;
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-right: 6px;
+.chip-rank {
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+}
+.chip-rank .chip-value {
+  color: #854d0e;
 }
 
-.status-performance::before {
-  content: "" !important;
-  margin-right: 0 !important;
+.chip-average {
+  background: rgba(2, 132, 199, 0.07);
+  border: 1px solid rgba(2, 132, 199, 0.16);
+}
+.chip-average .chip-value {
+  color: #0369a1;
 }
 
-/* ─── Responsive ─── */
+.chip-top {
+  background: rgba(236, 72, 153, 0.07);
+  border: 1px solid rgba(236, 72, 153, 0.18);
+  color: #be185d;
+  font-weight: 700;
+}
+.chip-top .chip-value {
+  color: #be185d;
+}
+
+/* Difference Badge inside Average Chip */
+.chip-diff {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  margin-left: 2px;
+}
+
+.diff-positive {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.diff-negative {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+}
+
+/* ─── Responsive (Tablet & Mobile) ─── */
 @media (max-width: 768px) {
-  .student-status-banner {
-    margin: 0;
-  }
-
   .status-banner-inner {
-    gap: 8px;
-    padding: 6px 10px;
-  }
-
-  .status-item {
-    font-size: 0.8rem;
     gap: 4px;
+    padding: 3px 5px;
+    border-radius: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
-  .status-label {
-    display: none; /* Hide labels entirely on mobile, only show icon + value */
-  }
-
-  .status-item + .status-item::before {
-    content: "|";
-    font-size: 0.8rem;
-    color: #e5e7eb;
-    margin-right: 4px;
-  }
-
-  .status-performance {
-    border-left: none;
-    padding-left: 0;
-  }
-
-  .status-perf-text {
-    font-size: 0.75rem; /* slightly smaller text for performance label */
-  }
-}
-
-@media (max-width: 480px) {
-  .student-status-banner {
-    border-radius: 8px; /* Slightly less rounded for clean look or maybe 20px for pill */
-  }
-
-  .status-banner-inner {
-    gap: 6px;
-    padding: 4px 8px;
-  }
-
-  .status-item {
-    font-size: 0.75rem;
+  .status-chip {
+    padding: 2px 6px;
+    font-size: 0.72rem;
     gap: 3px;
   }
 
-  .status-label {
-    display: none;
+  .chip-label {
+    display: none; /* Hide labels on mobile to save space */
   }
 
-  .status-item + .status-item::before {
-    content: ""; /* remove dot on very small screens, just gap */
-    margin-right: 0;
-  }
-
-  .status-icon {
-    font-size: 0.85rem;
-  }
-
-  .status-perf-text {
-    font-size: 0.7rem;
+  .chip-value {
+    font-size: 0.76rem;
   }
 }

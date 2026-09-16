@@ -1,7 +1,7 @@
 .attendance-tracker-container {
   width: 100%;
   max-width: 100%;
-  padding: 24px;
+  padding: 24px 32px;
   box-sizing: border-box;
   font-family:
     "Inter",
@@ -21,14 +21,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px; /* tabs are right below */
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #1e3a5f, #2563eb);
-  border-radius: 16px;
-  color: white;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  margin-bottom: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
   position: relative;
 }
 
@@ -39,22 +39,62 @@
 }
 
 .attendance-header-icon {
-  font-size: 2rem;
-  color: #93c5fd;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .attendance-header h2 {
-  margin: 0;
-  font-size: 1.4rem;
+  margin: 0 0 2px 0;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: white;
+  color: #1e293b;
+  letter-spacing: -0.5px;
 }
 
 .attendance-header p {
-  margin: 3px 0 0;
-  font-size: 0.82rem;
-  color: #93c5fd;
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+/* Header Tabs */
+.attendance-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.attendance-tabs .tab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.attendance-tabs .tab-btn:hover {
+  color: #1e293b;
+}
+
+.attendance-tabs .tab-btn.active {
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .attendance-controls {

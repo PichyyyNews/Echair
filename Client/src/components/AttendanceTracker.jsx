@@ -191,7 +191,9 @@ const AttendanceTracker = ({ classroom, user }) => {
         <div className="attendance-tracker-container">
             <div className="attendance-header">
                 <div className="attendance-header-left">
-                    <FaCalendarCheck className="attendance-header-icon" />
+                    <div className="attendance-header-icon">
+                        <FaCalendarCheck size={20} />
+                    </div>
                     <div>
                         <h2>{t('attendanceTracker.title') || 'Attendance'}</h2>
                         <p>{t('attendanceTracker.studentsEnrolled', { count: participants.length, s: participants.length !== 1 ? 's' : '' }) || `${participants.length} student${participants.length !== 1 ? 's' : ''} enrolled`}</p>

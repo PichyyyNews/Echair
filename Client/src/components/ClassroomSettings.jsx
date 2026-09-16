@@ -439,10 +439,12 @@ const ClassroomSettings = ({ classId, user, classroom, onRefresh }) => {
     ];
 
     return (
-        <div className="edit-classroom-container" style={{ padding: '0' }}>
+        <div className="edit-classroom-container">
             <div className="edit-header" style={{ marginBottom: '24px', position: 'relative' }}>
                 <div className="edit-header-left">
-                    <FaCog className="edit-header-icon" />
+                    <div className="edit-header-icon">
+                        <FaCog size={20} />
+                    </div>
                     <div>
                         <h1>{t('title')}</h1>
                         <p>{t('subtitle')}</p>

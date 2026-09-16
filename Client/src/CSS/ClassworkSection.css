@@ -28,7 +28,10 @@
   --cw-soft: #ecf7f0;
   display: grid;
   gap: 1rem;
-  padding: 0;
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 10px 16px 40px;
+  box-sizing: border-box;
   color: var(--cw-text);
   animation: cwFadeInUp 0.35s ease-out;
   container-type: inline-size;
@@ -47,7 +50,7 @@
   box-shadow: none;
   overflow: visible;
   align-items: stretch;
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 .cw-hero::after {
@@ -1546,6 +1549,19 @@
 
   .cw-empty.is-filtered .cw-empty-actions {
     justify-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .cw-section {
+    padding: 10px 8px 22px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .cw-section {
+    width: min(1480px, 100%);
+    padding: 16px 28px 40px;
   }
 }
 

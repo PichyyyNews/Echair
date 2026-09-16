@@ -1,8 +1,9 @@
 /* ===================== CALENDAR SECTION ===================== */
 .cal-container {
-  padding: 20px 0 40px;
-  width: 100%;
+  width: min(1320px, 100%);
   margin: 0 auto;
+  padding: 10px 16px 40px;
+  box-sizing: border-box;
   animation: calFadeIn 0.5s ease-out both;
 }
 
@@ -722,11 +723,20 @@
     border-radius: 12px;
   }
 
-  .cal-agenda-day {
-    font-size: 0.95rem;
-  }
-
   .cal-bottom-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .cal-container {
+    padding: 10px 8px 22px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .cal-container {
+    width: min(1480px, 100%);
+    padding: 16px 28px 40px;
   }
 }

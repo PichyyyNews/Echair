@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   format, 
   addMonths, 
@@ -31,7 +32,9 @@ const CalendarIcon = () => (
 const BeautifulDateTimePicker = ({ value, onChange, placeholder = "Select date & time" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
+  const [popoverCoords, setPopoverCoords] = useState({ top: 0, left: 0, placement: 'bottom' });
   const containerRef = useRef(null);
+  const popoverRef = useRef(null);
 
   // Parse current value or use safe default
   const selectedDate = useMemo(() => {
@@ -43,11 +46,58 @@ const BeautifulDateTimePicker = ({ value, onChange, placeholder = "Select date &
     }
   }, [value]);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
+  const updatePosition = () => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const popoverHeight = 380; // approximate max popover height
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let top = rect.bottom + 6;
+    let placement = 'bottom';
+
+    // If space below is not enough and space above is larger, flip to top
+    if (spaceBelow < popoverHeight && spaceAbove > spaceBelow) {
+      top = Math.max(10, rect.top - popoverHeight - 6);
+      placement = 'top';
+    }
+
+    // Keep horizontally inside viewport
+    let left = rect.left;
+    const popoverWidth = 420; // 280 cal + 140 time
+    if (left + popoverWidth > window.innerWidth) {
+      left = Math.max(10, window.innerWidth - popoverWidth - 16);
+    }
+
+    setPopoverCoords({ top, left, placement });
+  };
+
+  const toggleOpen = () => {
+    if (!isOpen) {
+      updatePosition();
+    }
+    setIsOpen(!isOpen);
+  };
+
+  useLayoutEffect(() => {
+    if (isOpen) {
+      updatePosition();
+      const handleScrollOrResize = () => updatePosition();
+      window.addEventListener('resize', handleScrollOrResize);
+      window.addEventListener('scroll', handleScrollOrResize, true);
+      return () => {
+        window.removeEventListener('resize', handleScrollOrResize);
+        window.removeEventListener('scroll', handleScrollOrResize, true);
+      };
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        containerRef.current && !containerRef.current.contains(event.target) &&
+        popoverRef.current && !popoverRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -115,78 +165,88 @@ const BeautifulDateTimePicker = ({ value, onChange, placeholder = "Select date &
         </button>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            className="bdp-popover"
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            {/* Calendar Part */}
-            <div className="bdp-calendar">
-              <div className="bdp-cal-header">
-                <span className="bdp-month-year">{format(viewDate, 'MMMM yyyy')}</span>
-                <div className="bdp-nav-btns">
-                  <button type="button" className="bdp-nav-btn" onClick={() => setViewDate(subMonths(viewDate, 1))}><ChevronLeft /></button>
-                  <button type="button" className="bdp-nav-btn" onClick={() => setViewDate(addMonths(viewDate, 1))}><ChevronRight /></button>
-                </div>
-              </div>
-
-              <div className="bdp-weekdays">
-                {weekdays.map(d => <div key={d} className="bdp-weekday">{d}</div>)}
-              </div>
-
-              <div className="bdp-days-grid">
-                {days.map((day, i) => (
-                  <div 
-                    key={i} 
-                    className={`bdp-day ${!isSameMonth(day, monthStart) ? 'bdp-day-other' : ''} ${isSameDay(day, new Date()) ? 'bdp-day-today' : ''} ${selectedDate && isSameDay(day, selectedDate) ? 'bdp-day-selected' : ''}`}
-                    onClick={() => handleDateClick(day)}
-                  >
-                    {format(day, 'd')}
+      {createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              ref={popoverRef}
+              className="bdp-popover"
+              style={{
+                position: 'fixed',
+                top: `${popoverCoords.top}px`,
+                left: `${popoverCoords.left}px`,
+                zIndex: 99999
+              }}
+              initial={{ opacity: 0, scale: 0.95, y: popoverCoords.placement === 'top' ? 10 : -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: popoverCoords.placement === 'top' ? 10 : -10 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {/* Calendar Part */}
+              <div className="bdp-calendar">
+                <div className="bdp-cal-header">
+                  <span className="bdp-month-year">{format(viewDate, 'MMMM yyyy')}</span>
+                  <div className="bdp-nav-btns">
+                    <button type="button" className="bdp-nav-btn" onClick={() => setViewDate(subMonths(viewDate, 1))}><ChevronLeft /></button>
+                    <button type="button" className="bdp-nav-btn" onClick={() => setViewDate(addMonths(viewDate, 1))}><ChevronRight /></button>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div className="bdp-footer">
-                <button type="button" className="bdp-clear-btn" onClick={clearDate}>Clear</button>
-                <button type="button" className="bdp-today-btn" onClick={setDateToToday}>Today</button>
-              </div>
-            </div>
+                <div className="bdp-weekdays">
+                  {weekdays.map(d => <div key={d} className="bdp-weekday">{d}</div>)}
+                </div>
 
-            {/* Time Part */}
-            <div className="bdp-time">
-              <div className="bdp-time-header">Set Time</div>
-              <div className="bdp-time-sections">
-                <div className="bdp-time-col">
-                  {hourOptions.map(h => (
+                <div className="bdp-days-grid">
+                  {days.map((day, i) => (
                     <div 
-                      key={h} 
-                      className={`bdp-time-item ${selectedDate && selectedDate.getHours() === h ? 'bdp-time-item-selected' : ''}`}
-                      onClick={() => handleTimeClick('hour', h)}
+                      key={i} 
+                      className={`bdp-day ${!isSameMonth(day, monthStart) ? 'bdp-day-other' : ''} ${isSameDay(day, new Date()) ? 'bdp-day-today' : ''} ${selectedDate && isSameDay(day, selectedDate) ? 'bdp-day-selected' : ''}`}
+                      onClick={() => handleDateClick(day)}
                     >
-                      {h.toString().padStart(2, '0')}
+                      {format(day, 'd')}
                     </div>
                   ))}
                 </div>
-                <div className="bdp-time-col">
-                  {minuteOptions.map(m => (
-                    <div 
-                      key={m} 
-                      className={`bdp-time-item ${selectedDate && selectedDate.getMinutes() === m ? 'bdp-time-item-selected' : ''}`}
-                      onClick={() => handleTimeClick('minute', m)}
-                    >
-                      {m.toString().padStart(2, '0')}
-                    </div>
-                  ))}
+
+                <div className="bdp-footer">
+                  <button type="button" className="bdp-clear-btn" onClick={clearDate}>Clear</button>
+                  <button type="button" className="bdp-today-btn" onClick={setDateToToday}>Today</button>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              {/* Time Part */}
+              <div className="bdp-time">
+                <div className="bdp-time-header">Set Time</div>
+                <div className="bdp-time-sections">
+                  <div className="bdp-time-col">
+                    {hourOptions.map(h => (
+                      <div 
+                        key={h} 
+                        className={`bdp-time-item ${selectedDate && selectedDate.getHours() === h ? 'bdp-time-item-selected' : ''}`}
+                        onClick={() => handleTimeClick('hour', h)}
+                      >
+                        {h.toString().padStart(2, '0')}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bdp-time-col">
+                    {minuteOptions.map(m => (
+                      <div 
+                        key={m} 
+                        className={`bdp-time-item ${selectedDate && selectedDate.getMinutes() === m ? 'bdp-time-item-selected' : ''}`}
+                        onClick={() => handleTimeClick('minute', m)}
+                      >
+                        {m.toString().padStart(2, '0')}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

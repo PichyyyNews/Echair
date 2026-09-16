@@ -549,8 +549,11 @@
     "joinBtn": "Join"
   },
   "classActionModal": {
-    "createClassBtn": "Create class",
-    "joinClassBtn": "Join class"
+    "title": "Classroom",
+    "createClassBtn": "Create Class",
+    "createClassDesc": "Start a new classroom",
+    "joinClassBtn": "Join Class",
+    "joinClassDesc": "Join using a class code"
   },
   "groupingModal": {
     "defaultGroupName": "Group {{number}}",

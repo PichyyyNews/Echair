@@ -1,8 +1,12 @@
 import React, { useMemo } from 'react';
-import { FaClipboardCheck, FaTrophy, FaStar, FaChartLine, FaChartBar, FaBullseye } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { FaClipboardCheck, FaTrophy, FaStar, FaChartBar, FaBullseye, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import '../CSS/StudentStatusBanner.css';
 
 const StudentStatusBanner = ({ classroom, user }) => {
+    const { i18n } = useTranslation();
+    const isThai = (i18n?.language || '').startsWith('th');
+
     const performanceData = useMemo(() => {
         if (!classroom || !user) return null;
 
@@ -14,7 +18,7 @@ const StudentStatusBanner = ({ classroom, user }) => {
 
         const currentUserId = user.id || user._id;
 
-        // ─── Attendance Calculation ───
+        // ─── 1. Attendance Calculation ───
         const attendance = classroom.attendance || {};
         const attendanceDays = classroom.attendanceDays || 20;
         const userRecord = attendance[currentUserId] || {};
@@ -31,9 +35,9 @@ const StudentStatusBanner = ({ classroom, user }) => {
         const attendedDays = present + late;
         const attendancePercent = totalTracked > 0
             ? Math.round((attendedDays / totalTracked) * 100)
-            : 0;
+            : null;
 
-        // ─── Score & Rank Calculation ───
+        // ─── 2. Score & Rank Calculation ───
         const studentScores = classroom.studentScores || {};
 
         const allScores = participants.map(p => {
@@ -45,34 +49,34 @@ const StudentStatusBanner = ({ classroom, user }) => {
             };
         }).sort((a, b) => b.total - a.total);
 
-        const myScore = allScores.find(s => s.id === currentUserId);
-        const myTotal = myScore ? myScore.total : 0;
-        const myRank = myScore ? allScores.indexOf(myScore) + 1 : null;
+        const myScoreObj = allScores.find(s => s.id === currentUserId);
+        const myTotal = myScoreObj ? myScoreObj.total : 0;
+        const myRank = myScoreObj ? allScores.indexOf(myScoreObj) + 1 : null;
         const totalStudents = allScores.length;
 
-        // ─── Class Average ───
+        // ─── 3. Class Average Calculation ───
         const avgScore = totalStudents > 0
             ? allScores.reduce((sum, s) => sum + s.total, 0) / totalStudents
             : 0;
-        const diffFromAvg = avgScore > 0
-            ? Math.round(((myTotal - avgScore) / avgScore) * 100)
-            : 0;
+        const roundedAvg = Math.round(avgScore * 10) / 10;
+        const diffFromAvg = Math.round((myTotal - avgScore) * 10) / 10;
 
-        // ─── Percentile ───
-        const percentile = totalStudents > 0
-            ? Math.round(((totalStudents - myRank) / totalStudents) * 100)
-            : 0;
+        // ─── 4. Top Percentile (only shown when meaningful, totalStudents >= 3) ───
+        const topPercent = (totalStudents >= 3 && myRank)
+            ? Math.max(1, Math.round((myRank / totalStudents) * 100))
+            : null;
+
+        const hasScoreData = allScores.some(s => s.total > 0);
 
         return {
             attendancePercent,
-            totalTracked,
             myRank,
             totalStudents,
             myTotal,
-            avgScore: Math.round(avgScore * 10) / 10,
+            avgScore: roundedAvg,
             diffFromAvg,
-            percentile,
-            hasScoreData: allScores.some(s => s.total > 0),
+            topPercent,
+            hasScoreData,
             hasAttendanceData: totalTracked > 0
         };
     }, [classroom, user]);
@@ -80,38 +84,34 @@ const StudentStatusBanner = ({ classroom, user }) => {
     if (!performanceData) return null;
 
     const {
-        attendancePercent, myRank, totalStudents,
-        myTotal, diffFromAvg, percentile,
-        hasScoreData, hasAttendanceData
+        attendancePercent,
+        myRank,
+        totalStudents,
+        myTotal,
+        avgScore,
+        diffFromAvg,
+        topPercent,
+        hasScoreData,
+        hasAttendanceData
     } = performanceData;
 
-    // Attendance color
+    // Attendance badge color
     const getAttendanceColor = (pct) => {
-        if (pct >= 80) return '#16a34a'; // green
-        if (pct >= 60) return '#ca8a04'; // yellow
-        return '#dc2626'; // red
+        if (pct >= 80) return '#16a34a';
+        if (pct >= 60) return '#d97706';
+        return '#dc2626';
     };
-
-    // Performance label
-    const getPerformanceLabel = () => {
-        if (!hasScoreData) return null;
-        if (diffFromAvg > 10) return { text: `Above Avg ${diffFromAvg}%`, color: '#16a34a', icon: <FaChartLine /> };
-        if (diffFromAvg >= -10) return { text: 'Class Average', color: '#ca8a04', icon: <FaChartBar /> };
-        return { text: `Below Avg ${Math.abs(diffFromAvg)}%`, color: '#dc2626', icon: <FaChartLine style={{ transform: 'scaleY(-1)' }} /> };
-    };
-
-    const perfLabel = getPerformanceLabel();
 
     return (
         <div className="student-status-banner">
             <div className="status-banner-inner">
-                {/* Attendance */}
-                {hasAttendanceData && (
-                    <div className="status-item">
-                        <span className="status-icon"><FaClipboardCheck color="#8b5cf6" /></span>
-                        <span className="status-label">Attendance</span>
+                {/* 1. Attendance Chip */}
+                {hasAttendanceData && attendancePercent !== null && (
+                    <div className="status-chip chip-attendance">
+                        <span className="chip-icon"><FaClipboardCheck color="#8b5cf6" /></span>
+                        <span className="chip-label">{isThai ? 'เข้าเรียน' : 'Attendance'}</span>
                         <span
-                            className="status-value"
+                            className="chip-value"
                             style={{ color: getAttendanceColor(attendancePercent) }}
                         >
                             {attendancePercent}%
@@ -119,42 +119,50 @@ const StudentStatusBanner = ({ classroom, user }) => {
                     </div>
                 )}
 
-                {/* Rank */}
-                {hasScoreData && myRank && (
-                    <div className="status-item">
-                        <span className="status-icon"><FaTrophy color="#eab308" /></span>
-                        <span className="status-label">Rank</span>
-                        <span className="status-value">
-                            {myRank}/{totalStudents}
-                        </span>
-                    </div>
-                )}
-
-                {/* Score */}
+                {/* 2. Total Score Chip */}
                 {hasScoreData && (
-                    <div className="status-item">
-                        <span className="status-icon"><FaStar color="#f59e0b" /></span>
-                        <span className="status-label">Total Score</span>
-                        <span className="status-value">{myTotal}</span>
+                    <div className="status-chip chip-score">
+                        <span className="chip-icon"><FaStar color="#f59e0b" /></span>
+                        <span className="chip-label">{isThai ? 'คะแนน' : 'Score'}</span>
+                        <span className="chip-value">{myTotal}</span>
                     </div>
                 )}
 
-                {/* Performance vs Average */}
-                {perfLabel && (
-                    <div className="status-item status-performance">
-                        <span className="status-icon" style={{ color: perfLabel.color }}>{perfLabel.icon}</span>
-                        <span className="status-perf-text" style={{ color: perfLabel.color }}>
-                            {perfLabel.text}
+                {/* 3. Rank Chip */}
+                {hasScoreData && myRank && (
+                    <div className="status-chip chip-rank">
+                        <span className="chip-icon"><FaTrophy color="#eab308" /></span>
+                        <span className="chip-label">{isThai ? 'อันดับ' : 'Rank'}</span>
+                        <span className="chip-value">
+                            #{myRank}{totalStudents > 1 ? `/${totalStudents}` : ''}
                         </span>
                     </div>
                 )}
 
-                {/* Top percentile */}
-                {hasScoreData && percentile >= 0 && (
-                    <div className="status-item">
-                        <span className="status-icon"><FaBullseye color="#ec4899" /></span>
-                        <span className="status-label">Top</span>
-                        <span className="status-value">{Math.max(1, 100 - percentile)}%</span>
+                {/* 4. Class Average Chip (Only shown when there are multiple students) */}
+                {hasScoreData && totalStudents > 1 && (
+                    <div className="status-chip chip-average">
+                        <span className="chip-icon"><FaChartBar color="#0284c7" /></span>
+                        <span className="chip-label">{isThai ? 'เฉลี่ยห้อง' : 'Class Avg'}</span>
+                        <span className="chip-value">{avgScore}</span>
+                        {diffFromAvg > 0 && (
+                            <span className="chip-diff diff-positive" title={`+${diffFromAvg} ${isThai ? 'สูงกว่าค่าเฉลี่ย' : 'above average'}`}>
+                                <FaArrowUp size={9} />+{diffFromAvg}
+                            </span>
+                        )}
+                        {diffFromAvg < 0 && (
+                            <span className="chip-diff diff-negative" title={`${diffFromAvg} ${isThai ? 'ต่ำกว่าค่าเฉลี่ย' : 'below average'}`}>
+                                <FaArrowDown size={9} />{Math.abs(diffFromAvg)}
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                {/* 5. Top Percentile Chip (Only shown if top 50% in a class of 3+ students) */}
+                {hasScoreData && topPercent !== null && topPercent <= 50 && (
+                    <div className="status-chip chip-top">
+                        <span className="chip-icon"><FaBullseye color="#ec4899" /></span>
+                        <span className="chip-value">Top {topPercent}%</span>
                     </div>
                 )}
             </div>

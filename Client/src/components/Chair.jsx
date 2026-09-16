@@ -34,6 +34,7 @@ const Chair = ({ id, initialPosition, onChairMove, containerRef, isDraggable, us
 
     const handleMouseDown = useCallback((e) => {
         if (!isDraggable || !chairRef.current) return;
+        if (e.stopPropagation) e.stopPropagation();
         setIsDragging(true);
         const chairRect = chairRef.current.getBoundingClientRect();
         
@@ -78,14 +79,16 @@ const Chair = ({ id, initialPosition, onChairMove, containerRef, isDraggable, us
             newY = (parentRect.height / zoomScale) - newY - (chairRect.height / zoomScale);
         }
 
-        // Boundary checks (in logical pixels)
-        const logicalContainerWidth = parentRect.width / zoomScale;
-        const logicalContainerHeight = parentRect.height / zoomScale;
-        const logicalChairWidth = chairRect.width / zoomScale;
-        const logicalChairHeight = chairRect.height / zoomScale;
+        // Boundary checks: Allow free dragging in edit mode so container can expand dynamically in all 4 directions
+        if (!isDraggable) {
+            const logicalContainerWidth = parentRect.width / zoomScale;
+            const logicalContainerHeight = parentRect.height / zoomScale;
+            const logicalChairWidth = chairRect.width / zoomScale;
+            const logicalChairHeight = chairRect.height / zoomScale;
 
-        newX = Math.max(0, Math.min(newX, logicalContainerWidth - logicalChairWidth));
-        newY = Math.max(0, Math.min(newY, logicalContainerHeight - logicalChairHeight));
+            newX = Math.max(0, Math.min(newX, logicalContainerWidth - logicalChairWidth));
+            newY = Math.max(0, Math.min(newY, logicalContainerHeight - logicalChairHeight));
+        }
 
         setPosition({ x: newX, y: newY });
     }, [isDragging, rotation, zoomScale, containerRef]);

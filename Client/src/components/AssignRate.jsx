@@ -1,7 +1,7 @@
 // src/component/AssignRate.jsx
 
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiStar } from 'react-icons/fi';
 import RatePresetModal from './RatePresetModal';
 import Loader from './Loader';
 import axios from 'axios';
@@ -231,8 +231,15 @@ const AssignRate = ({ classId, user }) => {
     return (
         <div className="assign-rate-container">
             <div className="assign-rate-header">
-                <h2>Assign Rate</h2>
-                <p>Create and manage rating presets for your classroom</p>
+                <div className="assign-rate-header-left">
+                    <div className="assign-rate-header-icon">
+                        <FiStar size={22} />
+                    </div>
+                    <div>
+                        <h2>Assign Rate</h2>
+                        <p>Create and manage rating presets for your classroom</p>
+                    </div>
+                </div>
             </div>
 
             <div className="rate-presets-grid">

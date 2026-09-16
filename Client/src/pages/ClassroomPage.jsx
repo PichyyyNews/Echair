@@ -75,6 +75,11 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const [error, setError] = useState(null);
     const [seatingPositions, setSeatingPositions] = useState({});
     const [isEditing, setIsEditing] = useState(false);
+    const isEditingRef = useRef(isEditing);
+    useEffect(() => {
+        isEditingRef.current = isEditing;
+    }, [isEditing]);
+    const editModeBaseSizeRef = useRef(null);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false); // ✨ State for grouping modal
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(() => {
         // ✨ Read from localStorage, default to true (open) on desktop, false on mobile
@@ -149,6 +154,49 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const [eventZoomLevel, setEventZoomLevel] = useState(1);
     const eventMinZoom = 0.3;
     const eventMaxZoom = 2;
+
+    const getBoundsAndDimensions = useCallback((positions) => {
+        const chairList = Object.values(positions || {}).filter(pos => pos && typeof pos.x === 'number');
+        const chairCount = chairList.length;
+
+        if (chairCount === 0) {
+            const sidebarWidth = isSidebarOpen ? 250 : 0;
+            return {
+                width: Math.round((window.innerWidth - sidebarWidth - 40) * 0.8),
+                height: Math.round((window.innerHeight - 200) * 0.8),
+                minX: 0,
+                minY: 0,
+                padding: 100
+            };
+        }
+
+        const chairWidth = 80;
+        const chairHeight = 100;
+
+        const bounds = chairList.reduce((acc, pos) => ({
+            minX: Math.min(acc.minX, pos.x),
+            maxX: Math.max(acc.maxX, pos.x),
+            minY: Math.min(acc.minY, pos.y),
+            maxY: Math.max(acc.maxY, pos.y)
+        }), {
+            minX: Infinity,
+            maxX: -Infinity,
+            minY: Infinity,
+            maxY: -Infinity
+        });
+
+        const contentWidth = bounds.maxX + chairWidth - bounds.minX;
+        const contentHeight = bounds.maxY + chairHeight - bounds.minY;
+        const padding = 100;
+
+        return {
+            width: Math.round(contentWidth + (padding * 2)),
+            height: Math.round(contentHeight + (padding * 2)),
+            minX: bounds.minX === Infinity ? 0 : bounds.minX,
+            minY: bounds.minY === Infinity ? 0 : bounds.minY,
+            padding: padding
+        };
+    }, [isSidebarOpen]);
 
     // Auto-collapse banner on mobile
     useEffect(() => {
@@ -349,8 +397,11 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         console.log('Received chair movement update:', data);
 
         if (data.updatedBy !== user.id) {
-            setCurrentChairPositions(data.chairPositions);
-            setSeatingPositions(data.chairPositions);
+            // Do not overwrite local changes if creator is actively editing layout
+            if (!isEditingRef.current) {
+                setCurrentChairPositions(data.chairPositions);
+                setSeatingPositions(data.chairPositions);
+            }
 
             Swal.fire({
                 icon: 'info',
@@ -370,7 +421,9 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         console.log('Received chair group update:', data);
 
         if (data.updatedBy !== user.id) {
-            setChairGroups(data.chairGroups);
+            if (!isEditingRef.current) {
+                setChairGroups(data.chairGroups);
+            }
         }
     }, [user.id]);
 
@@ -900,8 +953,15 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const handleMouseDown = useCallback((e) => {
         // Find if we clicked inside the seating wrapper
         const isInsideWrapper = e.target.closest('.seating-container-wrapper');
-        // Do not pan if clicking on a chair or the front board
-        const isClickingInteractiveElement = e.target.closest('.chair') || e.target.closest('.front-classroom-board') || e.target.closest('button');
+        // Do not pan if clicking on a chair or the front board or interactive UI elements
+        const isClickingInteractiveElement = 
+            e.target.closest('.chair-item') || 
+            e.target.closest('.chair') || 
+            e.target.closest('.front-classroom-board') || 
+            e.target.closest('button') ||
+            e.target.closest('.action-bar-container') ||
+            e.target.closest('.group-overlay') ||
+            e.target.closest('.hp-bar-container');
 
         if (isInsideWrapper && !isClickingInteractiveElement) {
             setIsPanning(true);
@@ -1020,10 +1080,50 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     }, [isViewChanging]);
 
     const handleChairMove = useCallback((id, newX, newY) => {
-        const updatedPositions = {
+        let updatedPositions = {
             ...currentChairPositions,
             [id]: { x: newX, y: newY }
         };
+
+        const baseSize = editModeBaseSizeRef.current || getBoundsAndDimensions(currentChairPositions);
+        if (!editModeBaseSizeRef.current) {
+            editModeBaseSizeRef.current = { ...baseSize };
+        }
+
+        const baseMinX = baseSize.minX;
+        const baseMinY = baseSize.minY;
+
+        let deficitX = 0;
+        let deficitY = 0;
+
+        if (newX < baseMinX) {
+            deficitX = Math.ceil(baseMinX - newX);
+        }
+        if (newY < baseMinY) {
+            deficitY = Math.ceil(baseMinY - newY);
+        }
+
+        if (deficitX > 0 || deficitY > 0) {
+            const shifted = {};
+            Object.entries(updatedPositions).forEach(([chairId, pos]) => {
+                shifted[chairId] = {
+                    x: pos.x + deficitX,
+                    y: pos.y + deficitY
+                };
+            });
+            updatedPositions = shifted;
+
+            if (editModeBaseSizeRef.current) {
+                editModeBaseSizeRef.current.width += deficitX;
+                editModeBaseSizeRef.current.height += deficitY;
+            }
+
+            // Compensate scroll position so elements do not jump on screen
+            if (seatingWrapperRef.current) {
+                seatingWrapperRef.current.scrollLeft += Math.round(deficitX * zoomLevel);
+                seatingWrapperRef.current.scrollTop += Math.round(deficitY * zoomLevel);
+            }
+        }
 
         setCurrentChairPositions(updatedPositions);
 
@@ -1031,7 +1131,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         if (isEditing && isCreator) {
             emitChairMovement(updatedPositions, id);
         }
-    }, [currentChairPositions, isEditing, isCreator, emitChairMovement]);
+    }, [currentChairPositions, isEditing, isCreator, emitChairMovement, getBoundsAndDimensions, zoomLevel]);
 
     // ✨ Clear all groups
     const handleClearGroups = () => {
@@ -2048,11 +2148,17 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
             console.log('Fetched scores from server:', fetchedScores);
 
-            setSeatingPositions(fetchedPositions);
-            setCurrentChairPositions(fetchedPositions);
+            // ✨ Preserve working seating draft if currently in edit mode
+            if (!isEditingRef.current) {
+                setSeatingPositions(fetchedPositions);
+                setCurrentChairPositions(fetchedPositions);
+                setChairGroups(fetchedGroups);
+            } else {
+                // In edit mode, update baseline seating positions without wiping draft
+                setSeatingPositions(fetchedPositions);
+            }
             setAssignedUsers(fetchedAssignedUsers);
             setStudentScores(fetchedScores);
-            setChairGroups(fetchedGroups); // Set groups
             setAttendance(response.data.attendance || {}); // ✨ Load attendance
             setAttendanceDays(response.data.attendanceDays || 20); // ✨ Load attendance days (default to 20)
 
@@ -2228,6 +2334,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
             setSeatingPositions(currentChairPositions);
             setIsEditing(false);
+            editModeBaseSizeRef.current = null;
             setIsGroupingMode(false); // Exit grouping mode on save
             setSelectedChairsForGroup([]); // Clear selected chairs
 
@@ -2245,6 +2352,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
     const handleCancelEdit = () => {
         setIsEditing(false);
+        editModeBaseSizeRef.current = null;
         setCurrentChairPositions(seatingPositions);
         setIsGroupingMode(false); // Exit grouping mode on cancel
         setSelectedChairsForGroup([]); // Clear selected chairs
@@ -2252,7 +2360,15 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
     const handleToggleEditMode = () => {
         if (!isCreator) return;
-        setIsEditing(prev => !prev);
+        setIsEditing(prev => {
+            const next = !prev;
+            if (next) {
+                editModeBaseSizeRef.current = getBoundsAndDimensions(currentChairPositions && Object.keys(currentChairPositions).length > 0 ? currentChairPositions : seatingPositions);
+            } else {
+                editModeBaseSizeRef.current = null;
+            }
+            return next;
+        });
         setIsGroupingMode(false); // Exit grouping mode when toggling edit mode
         setSelectedChairsForGroup([]); // Clear selected chairs
     };
@@ -2458,68 +2574,39 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
             });
 
             setCurrentChairPositions(updatedPositions);
+            editModeBaseSizeRef.current = getBoundsAndDimensions(updatedPositions);
             Swal.fire(t('common.success') || 'Success', t('classroomPage.swal.layoutAppliedText', { presetType: presetLabel }) || `${presetLabel} layout applied!`, 'success');
         }
     };
 
     const calculateContainerSize = () => {
-        const positions = isEditing ? currentChairPositions : seatingPositions;
-        // ✨ Filter for valid chairs only to prevent outliers (like 0,0 defaults) from breaking bounds
-        const chairList = Object.values(positions).filter(pos => pos && typeof pos.x === 'number');
-        const chairCount = chairList.length;
-
-        // Base minimum size calculations
-        if (chairCount === 0) {
-            const sidebarWidth = isSidebarOpen ? 250 : 0;
-            return {
-                width: Math.round((window.innerWidth - sidebarWidth - 40) * 0.8) + 'px',
-                height: Math.round((window.innerHeight - 200) * 0.8) + 'px'
-            };
+        if (!isEditing) {
+            return getBoundsAndDimensions(seatingPositions);
         }
 
-        // Chair dimensions from CSS (approximately)
+        // When editing, lock minX and minY using editModeBaseSizeRef so translate origin NEVER jumps while dragging
+        const baseSize = editModeBaseSizeRef.current || getBoundsAndDimensions(seatingPositions);
+        const chairList = Object.values(currentChairPositions || {}).filter(pos => pos && typeof pos.x === 'number');
         const chairWidth = 80;
         const chairHeight = 100;
 
-        // Calculate bounds from chair positions (assuming pos.x/y is top-left corner)
-        const bounds = chairList.reduce((acc, pos) => {
-            return {
-                minX: Math.min(acc.minX, pos.x),
-                maxX: Math.max(acc.maxX, pos.x),
-                minY: Math.min(acc.minY, pos.y),
-                maxY: Math.max(acc.maxY, pos.y)
-            };
-        }, {
-            minX: Infinity,
-            maxX: -Infinity,
-            minY: Infinity,
-            maxY: -Infinity
+        let maxX = baseSize.minX + baseSize.width - baseSize.padding * 2 - chairWidth;
+        let maxY = baseSize.minY + baseSize.height - baseSize.padding * 2 - chairHeight;
+
+        chairList.forEach(pos => {
+            if (pos.x > maxX) maxX = pos.x;
+            if (pos.y > maxY) maxY = pos.y;
         });
 
-        // To center the chairs exactly: 
-        // We want the left margin (minX) to match the right margin.
-        // Right boundary of chairs is maxX + chairWidth.
-        // Container width should be (maxX + chairWidth) + minX.
-        // This ensures space on right equals space on left (minX).
-
-        // ✨ Calculate exact content dimensions
-        const contentWidth = bounds.maxX + chairWidth - bounds.minX;
-        const contentHeight = bounds.maxY + chairHeight - bounds.minY;
-
-        // ✨ Define uniform padding (visual breathing room inside the white box)
-        const padding = 100;
-
-        // ✨ Final Container Size = Content + Padding * 2
-        // This ensures the box is exactly centered around the cluster of chairs
-        const finalWidth = contentWidth + (padding * 2);
-        const finalHeight = contentHeight + (padding * 2);
+        const expandedWidth = Math.max(baseSize.width, Math.round(maxX + chairWidth - baseSize.minX + baseSize.padding * 2));
+        const expandedHeight = Math.max(baseSize.height, Math.round(maxY + chairHeight - baseSize.minY + baseSize.padding * 2));
 
         return {
-            width: Math.round(finalWidth),
-            height: Math.round(finalHeight),
-            minX: bounds.minX,
-            minY: bounds.minY,
-            padding: padding
+            width: expandedWidth,
+            height: expandedHeight,
+            minX: baseSize.minX,
+            minY: baseSize.minY,
+            padding: baseSize.padding
         };
     };
 

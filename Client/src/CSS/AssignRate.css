@@ -2,30 +2,56 @@
 
 .assign-rate-container {
     background: transparent;
-    /* Let parent handle background or keep it transparent */
     border-radius: 0;
-    padding: 10px;
+    padding: 24px 32px;
     box-shadow: none;
     border: none;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     min-height: auto;
 }
 
 .assign-rate-header {
-    margin-bottom: 2rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: transparent;
+}
+
+.assign-rate-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.assign-rate-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .assign-rate-header h2 {
-    color: #2c3e50;
-    margin: 0 0 0.5rem 0;
-    font-size: 2rem;
-    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 2px 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .assign-rate-header p {
-    color: #7f8c8d;
-    font-size: 1.1rem;
+    color: #64748b;
+    font-size: 0.88rem;
     margin: 0;
 }
 
