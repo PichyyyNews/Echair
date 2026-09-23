@@ -45,6 +45,12 @@ const AdminPage = ({
     const [statusFilter, setStatusFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Classroom Pagination & Filter States
+    const [classPage, setClassPage] = useState(1);
+    const [totalClassPages, setTotalClassPages] = useState(1);
+    const [totalClasses, setTotalClasses] = useState(0);
+    const [classTypeFilter, setClassTypeFilter] = useState('all');
+
     // Modal States
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
@@ -160,13 +166,22 @@ const AdminPage = ({
         }
     }, []);
 
-    // 3. Fetch All Classrooms
-    const fetchAllAdminClassrooms = useCallback(async (authToken, search = '') => {
+    // 3. Fetch All Classrooms with 50 per page & type filter
+    const fetchAllAdminClassrooms = useCallback(async (authToken, targetPage = 1, search = '', type = 'all') => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/api/admin/classrooms?limit=50&search=${encodeURIComponent(search)}`, {
+            let url = `${API_BASE_URL}/api/admin/classrooms?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}`;
+            if (type && type !== 'all') {
+                url += `&type=${encodeURIComponent(type)}`;
+            }
+            const res = await axios.get(url, {
                 headers: { 'x-auth-token': authToken }
             });
             setClassesList(res.data.classrooms || []);
+            if (res.data.pagination) {
+                setClassPage(res.data.pagination.current);
+                setTotalClassPages(res.data.pagination.total);
+                setTotalClasses(res.data.pagination.totalItems);
+            }
         } catch (err) {
             console.warn('Error fetching classrooms:', err.message);
         }
@@ -198,16 +213,17 @@ const AdminPage = ({
         } else if (activeTab === 'users') {
             await fetchUsers(token, page, searchQuery, roleFilter, statusFilter);
         } else if (activeTab === 'classes') {
-            await fetchAllAdminClassrooms(token, searchQuery);
+            await fetchAllAdminClassrooms(token, classPage, searchQuery, classTypeFilter);
         } else if (activeTab === 'settings') {
             await fetchSystemSettings(token);
         }
         setLoading(false);
         setRefreshing(false);
-    }, [token, activeTab, page, searchQuery, roleFilter, statusFilter, refreshProfile, fetchClassrooms, fetchAdminStats, fetchUsers, fetchAllAdminClassrooms, fetchSystemSettings]);
+    }, [token, activeTab, page, classPage, searchQuery, roleFilter, statusFilter, classTypeFilter, refreshProfile, fetchClassrooms, fetchAdminStats, fetchUsers, fetchAllAdminClassrooms, fetchSystemSettings]);
 
     useEffect(() => {
         setPage(1);
+        setClassPage(1);
         setSearchQuery('');
         loadCurrentTabData();
     }, [activeTab]);
@@ -352,7 +368,7 @@ const AdminPage = ({
                         {/* 1. ภาพรวมระบบ (Overview) - แสดงผลของตัวเองเฉพาะทาง */}
                         {/* ============================================================ */}
                         {activeTab === 'overview' && (
-                            <div>
+                            <div className="admin-tab-content">
                                 <div className="admin-header">
                                     <div className="admin-header-left">
                                         <div className="admin-title-row">
@@ -458,6 +474,22 @@ const AdminPage = ({
                                             <div className="admin-info-box-title">สถาปัตยกรรม UI</div>
                                             <div className="admin-info-box-value">React 19 + Vite 8 (Shared Navbar & Sidebar)</div>
                                         </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ฐานข้อมูล (Database)</div>
+                                            <div className="admin-info-box-value"><span className="admin-status-dot"></span>MongoDB Atlas Online</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ระบบแคช (Cache Layer)</div>
+                                            <div className="admin-info-box-value"><span className="admin-status-dot"></span>Redis / Memory Cache Fallback</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ระบบประมวลผลพื้นหลัง (Job Queue)</div>
+                                            <div className="admin-info-box-value"><span className="admin-status-dot"></span>BullMQ Workers Active</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">พื้นที่จัดเก็บไฟล์ (Storage)</div>
+                                            <div className="admin-info-box-value"><span className="admin-status-dot"></span>MinIO / S3 Resilient</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -467,7 +499,7 @@ const AdminPage = ({
                         {/* 2. จัดการผู้ใช้ (Users) - 50 ต่อหน้า, กรอง, แก้ไขข้อมูล, ระงับบัญชี */}
                         {/* ============================================================ */}
                         {activeTab === 'users' && (
-                            <div>
+                            <div className="admin-tab-content">
                                 <div className="admin-header">
                                     <div className="admin-header-left">
                                         <div className="admin-title-row">
@@ -677,13 +709,13 @@ const AdminPage = ({
                         {/* 3. จัดการห้องเรียน (Classrooms) - แสดงผลของตัวเองเฉพาะทาง */}
                         {/* ============================================================ */}
                         {activeTab === 'classes' && (
-                            <div>
+                            <div className="admin-tab-content">
                                 <div className="admin-header">
                                     <div className="admin-header-left">
                                         <div className="admin-title-row">
                                             <h1 className="admin-title">📚 จัดการห้องเรียน (Classroom Management)</h1>
                                             <span className="admin-badge">
-                                                ทั้งหมด {classesList.length} ห้อง
+                                                ทั้งหมด {totalClasses} ห้อง (แสดง 50 ห้อง/หน้า)
                                             </span>
                                         </div>
                                         <p className="admin-subtitle">
@@ -691,14 +723,18 @@ const AdminPage = ({
                                         </p>
                                     </div>
                                     <div className="admin-header-actions">
-                                        <button className="admin-btn admin-btn-primary" onClick={() => fetchAllAdminClassrooms(token, searchQuery)} disabled={refreshing}>
+                                        <button 
+                                            className="admin-btn admin-btn-primary" 
+                                            onClick={() => fetchAllAdminClassrooms(token, classPage, searchQuery, classTypeFilter)} 
+                                            disabled={refreshing}
+                                        >
                                             <FiRefreshCw className={refreshing ? 'animate-spin' : ''} /> รีเฟรชห้องเรียน
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="admin-content-section">
-                                    {/* Search Toolbar */}
+                                    {/* Search & Filter Toolbar */}
                                     <div className="admin-toolbar">
                                         <div className="admin-search-wrapper">
                                             <FiSearch className="admin-search-icon" />
@@ -708,10 +744,29 @@ const AdminPage = ({
                                                 placeholder="ค้นหาชื่อห้องเรียน หรือ รหัสห้อง (Class Code)..."
                                                 value={searchQuery}
                                                 onChange={(e) => {
-                                                    setSearchQuery(e.target.value);
-                                                    fetchAllAdminClassrooms(token, e.target.value);
+                                                    const val = e.target.value;
+                                                    setSearchQuery(val);
+                                                    setClassPage(1);
+                                                    fetchAllAdminClassrooms(token, 1, val, classTypeFilter);
                                                 }}
                                             />
+                                        </div>
+
+                                        <div className="admin-filter-group">
+                                            <select
+                                                className="admin-select-filter"
+                                                value={classTypeFilter}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setClassTypeFilter(val);
+                                                    setClassPage(1);
+                                                    fetchAllAdminClassrooms(token, 1, searchQuery, val);
+                                                }}
+                                            >
+                                                <option value="all">สถานะ: ทั้งหมด</option>
+                                                <option value="public">เฉพาะห้องสาธารณะ</option>
+                                                <option value="private">เฉพาะห้องส่วนตัว</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -777,6 +832,38 @@ const AdminPage = ({
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* Pagination Controls */}
+                                    <div className="admin-pagination">
+                                        <div className="admin-pagination-info">
+                                            แสดงหน้า {classPage} จาก {totalClassPages} หน้า (ทั้งหมด {totalClasses} ห้อง)
+                                        </div>
+                                        <div className="admin-pagination-actions">
+                                            <button
+                                                className="admin-page-btn"
+                                                disabled={classPage <= 1 || refreshing}
+                                                onClick={() => {
+                                                    const newPage = classPage - 1;
+                                                    setClassPage(newPage);
+                                                    fetchAllAdminClassrooms(token, newPage, searchQuery, classTypeFilter);
+                                                }}
+                                            >
+                                                <FiChevronLeft /> ก่อนหน้า
+                                            </button>
+                                            <button
+                                                className="admin-page-btn"
+                                                disabled={classPage >= totalClassPages || refreshing}
+                                                onClick={() => {
+                                                    const newPage = classPage + 1;
+                                                    setClassPage(newPage);
+                                                    fetchAllAdminClassrooms(token, newPage, searchQuery, classTypeFilter);
+                                                }}
+                                            >
+                                                ถัดไป <FiChevronRight />
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         )}
@@ -785,7 +872,7 @@ const AdminPage = ({
                         {/* 4. ตั้งค่าระบบ (System Settings) - แสดงผลของตัวเองเฉพาะทาง */}
                         {/* ============================================================ */}
                         {activeTab === 'settings' && (
-                            <div>
+                            <div className="admin-tab-content">
                                 <div className="admin-header">
                                     <div className="admin-header-left">
                                         <div className="admin-title-row">
@@ -806,8 +893,12 @@ const AdminPage = ({
                                 </div>
 
                                 <div className="admin-content-section">
-                                    <div className="admin-settings-group">
-                                        
+                                    <div className="admin-section-header">
+                                        <h3>การควบคุมและการเข้าถึงระบบ (Access & Security Control)</h3>
+                                        <p>กำหนดนโยบายความปลอดภัยและการเปิดรับผู้ใช้งาน</p>
+                                    </div>
+
+                                    <div className="admin-settings-group" style={{ marginBottom: '28px' }}>
                                         {/* Maintenance Mode */}
                                         <div className="admin-setting-item">
                                             <div className="admin-setting-label">
@@ -845,7 +936,14 @@ const AdminPage = ({
                                                 <span className="admin-slider"></span>
                                             </label>
                                         </div>
+                                    </div>
 
+                                    <div className="admin-section-header">
+                                        <h3>เซสชันและบริการเชื่อมต่อ (Session & Services)</h3>
+                                        <p>กำหนดอายุการใช้งานเซสชันและตรวจสอบสถานะบริการภายนอก</p>
+                                    </div>
+
+                                    <div className="admin-settings-group">
                                         {/* Session Timeout */}
                                         <div className="admin-setting-item">
                                             <div className="admin-setting-label">
@@ -874,8 +972,8 @@ const AdminPage = ({
                                                 <span className="role-badge admin">Active (Dynamic)</span>
                                             </div>
                                         </div>
-
                                     </div>
+
                                 </div>
                             </div>
                         )}

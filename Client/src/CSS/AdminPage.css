@@ -1,9 +1,18 @@
 /* Admin Page Styling */
 
 .admin-page-container {
+    width: 100%;
     max-width: 1400px;
     margin: 0 auto;
     padding: 24px 28px 48px;
+    box-sizing: border-box;
+}
+
+.admin-tab-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 /* Header */
@@ -16,6 +25,8 @@
     margin-bottom: 24px;
     padding-bottom: 20px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .admin-header-left {
@@ -197,6 +208,8 @@
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.06);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .admin-section-header {
@@ -357,19 +370,28 @@
 .admin-settings-group {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-width: 800px;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .admin-setting-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
+    padding: 18px 24px;
     border-radius: 10px;
     border: 1px solid #e5e7eb;
     background: #fafafa;
-    gap: 16px;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.admin-setting-item:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
 }
 
 .admin-setting-label h4 {

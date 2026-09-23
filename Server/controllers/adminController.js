@@ -311,20 +311,25 @@ exports.getAllClassrooms = async (req, res) => {
 
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
         const search = req.query.search || '';
+        const type = req.query.type || 'all';
 
         // Build query
         let query = {};
         if (search) {
-            query = {
-                $or: [
-                    { name: { $regex: search, $options: 'i' } },
-                    { classCode: { $regex: search, $options: 'i' } },
-                    { subname: { $regex: search, $options: 'i' } }
-                ]
-            };
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { classCode: { $regex: search, $options: 'i' } },
+                { subname: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (type === 'public') {
+            query.isPublic = true;
+        } else if (type === 'private') {
+            query.isPublic = false;
         }
 
         // Fetch classrooms with creator info
