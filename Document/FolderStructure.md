@@ -18,7 +18,6 @@
   - `socket/`: จัดการการสื่อสารแบบ Real-time ผ่าน Socket.io
   - `utils/`: ฟังก์ชันตัวช่วยฝั่ง Server (Logger, Email, Upload)
 - `Document/`: โฟลเดอร์สำหรับจัดเก็บเอกสารประกอบโครงการ (โฟลเดอร์ปัจจุบัน)
-- `admin/`: ส่วนจัดการสำหรับผู้ดูแลระบบ (Admin Panel)
 
 ## การออกแบบระบบ (System Design)
 

@@ -11,9 +11,7 @@
 
 | Service | URL | Notes |
 | --- | --- | --- |
-| Landing Page | `/` | หน้าแรกของโดเมน |
-| Client App | `/<project-name>/` | React client |
-| Admin Panel | `/admin/` | Static admin |
+| Client App | `/<project-name>/` หรือ `/` | React client |
 | API Server | `/<project-name>/api/` | Express backend |
 | Socket.IO | `/<project-name>/socket.io/` | Realtime |
 | Uploads | `/<project-name>/uploads/` | Uploaded files |

@@ -60,26 +60,6 @@ services:
     networks:
       - echair-network
 
-  # ─── Admin Panel (Static HTML) ───
-  admin:
-    build:
-      context: ..
-      dockerfile: production-build/Dockerfile.admin
-    container_name: echair-admin
-    restart: unless-stopped
-    networks:
-      - echair-network
-
-  # ─── Landing Page (Vite React) ───
-  landing:
-    build:
-      context: ..
-      dockerfile: production-build/Dockerfile.landing
-    container_name: echair-landing
-    restart: unless-stopped
-    networks:
-      - echair-network
-
   # ─── Nginx Reverse Proxy ───
   nginx:
     image: nginx:alpine
@@ -94,8 +74,6 @@ services:
     depends_on:
       - server
       - client
-      - admin
-      - landing
     networks:
       - echair-network
 

@@ -15,10 +15,8 @@ D:\chair project somkid
 |   `-- nogic.db
 |-- .vscode/                      : การตั้งค่า editor
 |   `-- settings.json
-|-- admin/                        : ส่วนแอดมินแบบแยกโปรเจกต์ย่อย
 |-- Client/                       : Frontend หลักของระบบห้องเรียน
 |-- Document/                     : เอกสารประกอบโครงการ
-|-- landing-page-app/             : โปรเจกต์หน้า Landing Page
 |-- production-build/             : ไฟล์ deploy/proxy/docker สำหรับ production
 |-- Server/                       : Backend หลักของระบบ
 |-- .dockerignore
@@ -32,20 +30,7 @@ D:\chair project somkid
 `-- start-servers.bat
 
 ==================================================
-2) admin/
-==================================================
-
-admin/
-|-- node_modules/                 : dependency ของโปรเจกต์แอดมิน
-|-- index.html                    : หน้า admin หลัก
-|-- package-lock.json
-|-- package.json
-|-- server-admin.js               : เซิร์ฟเวอร์สำหรับ admin panel
-|-- simple-settings.html          : หน้าตั้งค่าระบบแบบง่าย
-`-- test-db.html                  : หน้าใช้ทดสอบการเชื่อมต่อฐานข้อมูล
-
-==================================================
-3) Client/
+2) Client/
 ==================================================
 
 Client/
@@ -174,7 +159,7 @@ Client/
 `-- README.md
 
 ==================================================
-4) Server/
+3) Server/
 ==================================================
 
 Server/
@@ -255,50 +240,22 @@ Server/
 `-- verify-settings-db.js
 
 ==================================================
-5) landing-page-app/
-==================================================
-
-landing-page-app/
-|-- node_modules/                 : dependency ของ landing page
-|-- public/
-|   `-- vite.svg
-|-- src/
-|   |-- assets/
-|   |   |-- icon.ico
-|   |   `-- react.svg
-|   |-- App.css
-|   |-- App.jsx
-|   |-- index.css
-|   `-- main.jsx
-|-- .gitignore
-|-- eslint.config.js
-|-- index.html
-|-- package-lock.json
-|-- package.json
-|-- README.md
-`-- vite.config.js
-
-==================================================
-6) production-build/
+4) production-build/
 ==================================================
 
 production-build/
 |-- .env
 |-- .env.example
 |-- docker-compose.yml
-|-- Dockerfile.admin
 |-- Dockerfile.client
-|-- Dockerfile.landing
 |-- Dockerfile.server
 |-- firebase-service-account.json
-|-- nginx-admin.conf
 |-- nginx-client.conf
-|-- nginx-landing.conf
 |-- nginx.conf
 `-- README.md
 
 ==================================================
-7) Document/
+5) Document/
 ==================================================
 
 Document/
@@ -315,7 +272,7 @@ Document/
 `-- folderstructure.txt
 
 ==================================================
-8) สรุปหน้าที่ของโฟลเดอร์หลัก
+6) สรุปหน้าที่ของโฟลเดอร์หลัก
 ==================================================
 
 1. Client
@@ -324,23 +281,17 @@ Document/
 2. Server
    ใช้พัฒนาระบบฝั่ง backend สำหรับ API, authentication, database, notification, real-time socket และการจัดการข้อมูลทั้งหมดของระบบ
 
-3. admin
-   เป็นโปรเจกต์ย่อยสำหรับหน้าผู้ดูแลระบบ ใช้ตรวจสอบและตั้งค่าบางส่วนแยกจาก frontend หลัก
-
-4. landing-page-app
-   เป็นโปรเจกต์ย่อยสำหรับหน้า landing page ของระบบ แยกจาก client หลักและพัฒนาด้วย Vite
-
-5. production-build
+3. production-build
    รวมไฟล์สำหรับ deploy ระบบจริง เช่น Dockerfile, docker-compose และ nginx config
 
-6. Document
+4. Document
    ใช้เก็บเอกสารสรุปโครงสร้างระบบ เอกสารเชิงเทคนิค และเนื้อหาสำหรับงานวิจัย
 
-7. .nogic
+5. .nogic
    เป็นโฟลเดอร์ข้อมูลภายในที่มีไฟล์ฐานข้อมูลย่อย `nogic.db`
 
 ==================================================
-9) โฟลเดอร์ที่ควรระวังเวลาทำงาน
+7) โฟลเดอร์ที่ควรระวังเวลาทำงาน
 ==================================================
 
 1. node_modules
