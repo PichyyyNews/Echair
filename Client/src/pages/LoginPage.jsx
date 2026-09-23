@@ -10,6 +10,8 @@ import withReactContent from "sweetalert2-react-content";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useTranslation } from "react-i18next"; // ✨ Add useTranslation hook
+import classroomBgImage from "../image/Gemini_Generated_Image_fnyc63fnyc63fnyc.png";
+import echaiLogoIcon from "../image/icon.ico";
 
 import { API_AUTH_URL } from '../config/api';
 const backendUrl = API_AUTH_URL;
@@ -307,7 +309,7 @@ const LoginPage = ({ onLoginSuccess, isSidebarOpen = false }) => {
         {/* Left Panel - Image & Branding (Desktop Only) */}
         <div className="login-left-panel">
           <img referrerPolicy="no-referrer"
-            src={require('../image/Gemini_Generated_Image_fnyc63fnyc63fnyc.png')}
+            src={classroomBgImage}
             alt="EChair Classroom"
             className="panel-bg-image"
           />
@@ -328,7 +330,7 @@ const LoginPage = ({ onLoginSuccess, isSidebarOpen = false }) => {
           {/* Brand / Logo */}
           <div className="login-brand">
             <div className="brand-icon-wrapper">
-              <img referrerPolicy="no-referrer" src={require('../image/icon.ico')} alt="EChair Logo" />
+              <img referrerPolicy="no-referrer" src={echaiLogoIcon} alt="EChair Logo" />
             </div>
             <h1 className="brand-text">
               EChair
