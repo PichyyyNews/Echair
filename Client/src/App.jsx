@@ -25,6 +25,7 @@ const Layout = lazy(() => import('./components/Layout')); // ✨ Add Layout comp
 const EventPresentationPage = lazy(() => import('./pages/EventPresentationPage')); // ✨ Add Presentation Page
 const StreamPage = lazy(() => import('./pages/StreamPage')); // ✨ Add Stream Page
 const AssignmentDetailPage = lazy(() => import('./pages/AssignmentDetailPage')); // ✨ Add Assignment Detail Page
+const AdminPage = lazy(() => import('./pages/AdminPage')); // 🛡️ Hidden Admin Page
 
 const backendUrl = API_AUTH_URL;
 
@@ -236,6 +237,17 @@ function AppRoutes({ user, onLoginSuccess, handleSignOut, updateUserProfile, isS
                         onSignOut={handleSignOutAndNavigate}
                         isSidebarOpen={isSidebarOpen}
                         toggleSidebar={toggleSidebar}
+                    /> : <Navigate to="/login" />}
+                />
+                {/* 🛡️ Hidden Admin Page Route */}
+                <Route
+                    path="/admin"
+                    element={user ? <AdminPage
+                        user={user}
+                        updateUserProfile={updateUserProfile}
+                        isSidebarOpen={isSidebarOpen}
+                        toggleSidebar={toggleSidebar}
+                        onSignOut={handleSignOutAndNavigate}
                     /> : <Navigate to="/login" />}
                 />
                 {/* Add a new route for the classroom details page */}

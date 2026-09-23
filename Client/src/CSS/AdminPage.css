@@ -1,0 +1,329 @@
+/* Admin Page Styling */
+
+.admin-page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 28px 48px;
+}
+
+/* Header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.admin-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid #a7f3d0;
+}
+
+.admin-badge.non-admin {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+.admin-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.admin-btn-secondary {
+    background: #ffffff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.admin-btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.admin-btn-primary {
+    background: #369D07;
+    color: #ffffff;
+}
+
+.admin-btn-primary:hover {
+    background: #2e8206;
+    box-shadow: 0 4px 12px rgba(54, 157, 7, 0.25);
+}
+
+/* Stats Grid */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.admin-stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.admin-stat-info h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.admin-stat-desc {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.admin-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.admin-stat-icon.green {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.admin-stat-icon.blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.admin-stat-icon.amber {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.admin-stat-icon.purple {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+/* Tabs Navigation */
+.admin-tabs-bar {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.admin-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin-bottom: -2px;
+}
+
+.admin-tab-btn:hover {
+    color: #369D07;
+}
+
+.admin-tab-btn.active {
+    color: #369D07;
+    border-bottom-color: #369D07;
+}
+
+/* Content Area */
+.admin-content-section {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.admin-section-header {
+    margin-bottom: 20px;
+}
+
+.admin-section-header h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.admin-section-header p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Placeholder Box */
+.admin-placeholder-box {
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    background: #f9fafb;
+    margin-top: 16px;
+}
+
+.admin-placeholder-icon {
+    font-size: 40px;
+    color: #9ca3af;
+    margin-bottom: 12px;
+}
+
+.admin-placeholder-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.admin-placeholder-text {
+    font-size: 14px;
+    color: #6b7280;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Info Grid */
+.admin-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.admin-info-box {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.admin-info-box-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.admin-info-box-value {
+    font-size: 14px;
+    color: #1e293b;
+    word-break: break-all;
+}
+
+.admin-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+    .admin-page-container {
+        padding: 16px 14px;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
