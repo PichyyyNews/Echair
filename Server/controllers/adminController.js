@@ -563,6 +563,9 @@ exports.updateSystemSettings = async (req, res) => {
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
 
+        const { delCache } = require('../utils/cache');
+        await delCache('system_settings:general');
+
         logger.success('System settings updated atomically');
         res.json({ msg: 'Settings updated successfully', settings });
     } catch (error) {

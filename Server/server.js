@@ -14,6 +14,9 @@ const chalk = require('chalk'); // For status monitoring colors
 const figlet = require('figlet'); // ASCII art banner
 const { startHealthCheck } = require('./utils/healthCheck');
 const { startSessionCleaner } = require('./utils/sessionCleaner');
+const { initSentry, captureException } = require('./config/sentry');
+const setupSocketAdapter = require('./socket/adapter');
+const { initQueues } = require('./jobs/queue');
 
 // Display ASCII Art Banner
 console.log(chalk.green(figlet.textSync('Echair Server', {
@@ -26,6 +29,8 @@ console.log(chalk.green.bold('━━━━━━━━━━━━━━━━�
 const connectDB = require('./config/db');
 require('./config/firebase'); // Init Firebase Admin
 require('./config/email'); // Init Email
+require('./config/storage'); // Init Storage (S3/MinIO/Local)
+require('./config/redis'); // Init Redis Cache
 
 // Connect Database
 logger.info('>> Starting server initialization...');
@@ -33,6 +38,10 @@ connectDB();
 
 const app = express();
 app.set('trust proxy', 1);
+
+// Initialize Sentry error tracking
+initSentry(app);
+
 const server = http.createServer(app);
 const port = process.env.PORT || 5000;
 
@@ -43,6 +52,9 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+
+// Setup Redis adapter for Socket.IO scaling
+setupSocketAdapter(io);
 
 // Enable Real-time Logger Streaming
 createLogger.setSocketInstance(io);
@@ -68,13 +80,12 @@ app.use((req, res, next) => {
 });
 
 // Routes
-// ✨ DEBUG: Log all requests to check if /api/upload is hit
 app.use((req, res, next) => {
     logger.info(`[DEBUG ROOT] ${req.method} ${req.url}`);
     next();
 });
 
-app.get('/api/test-upload', (req, res) => res.send('Upload Route Works!')); // ✨ TEST ROUTE
+app.get('/api/test-upload', (req, res) => res.send('Upload Route Works!'));
 
 logger.info('Registering API routes...');
 app.use('/api', require('./routes/health')); // Health check endpoints
@@ -83,14 +94,16 @@ app.use('/api/classrooms', require('./routes/classrooms'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/presets', require('./routes/presets'));
 app.use('/api/admin', require('./routes/admin'));
-app.use('/api/notifications', require('./routes/notifications')); // ✨ Notifications Route
-app.use('/api/upload', require('./routes/upload')); // ✨ Generic Upload Route
-app.use('/api/stream', require('./routes/stream')); // ✨ Stream Route
-app.use('/api/classwork', require('./routes/classwork')); // ✨ Classwork Route
-app.use('/api/public', require('./routes/public')); // ✨ Public API Route
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/upload', require('./routes/upload'));
+app.use('/api/stream', require('./routes/stream'));
+app.use('/api/classwork', require('./routes/classwork'));
+app.use('/api/public', require('./routes/public'));
 logger.success('All API routes registered successfully');
 
-const clientBuildPath = path.resolve(__dirname, '../Client/build');
+// Support both Vite build output (dist/) and CRA (build/)
+const clientDistPath = path.resolve(__dirname, '../Client/dist');
+const clientBuildPath = fs.existsSync(clientDistPath) ? clientDistPath : path.resolve(__dirname, '../Client/build');
 const clientIndexPath = path.join(clientBuildPath, 'index.html');
 
 if (fs.existsSync(clientIndexPath)) {
@@ -110,6 +123,15 @@ if (fs.existsSync(clientIndexPath)) {
     });
 }
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    logger.error(`Unhandled error on ${req.method} ${req.url}: ${err.message}`);
+    captureException(err, { url: req.originalUrl, method: req.method });
+    res.status(err.status || 500).json({
+        error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
+    });
+});
+
 // Socket Handler
 logger.info('Setting up Socket.IO event handlers...');
 require('./socket/socketHandler')(io);
@@ -118,11 +140,13 @@ logger.success('Socket.IO event handlers registered');
 // Error handling for uncaught exceptions
 process.on('uncaughtException', (error) => {
     logger.fatal('Uncaught Exception:', error);
+    captureException(error);
     process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
     logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    captureException(reason);
 });
 
 // Graceful shutdown
@@ -134,7 +158,7 @@ process.on('SIGTERM', () => {
     });
 });
 
-// Server Status Monitoring (every 2 seconds)
+// Server Status Monitoring (every 5 seconds)
 let statusInterval;
 const startStatusMonitoring = () => {
     statusInterval = setInterval(() => {
@@ -157,7 +181,7 @@ const startStatusMonitoring = () => {
         const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
 
         logger.info(chalk.cyan(`[STATUS]`) + ` Uptime: ${chalk.yellow(uptimeStr)} | Users Online: ${chalk.green(onlineUsers)} | Memory: ${chalk.yellow(`${memUsedMB}/${memTotalMB}MB`)} | DB: ${dbStatus}`);
-    }, 5000); // Every 5 seconds
+    }, 5000);
 };
 
 // Start Server
@@ -167,6 +191,9 @@ server.listen(port, () => {
     logger.info(`Socket.IO ready for connections`);
     logger.info(`API available at http://localhost:${port}/api`);
     logger.info('========================================================');
+
+    // Initialize BullMQ queues
+    initQueues();
 
     // Start status monitoring
     logger.info(chalk.cyan('[STATUS]') + ' Starting server status monitoring (every 5 seconds)...');

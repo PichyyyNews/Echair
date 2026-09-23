@@ -1,4 +1,5 @@
 const Class = require('../models/Class');
+const { delCache } = require('../utils/cache');
 const createLogger = require('../utils/logger');
 const logger = createLogger('Socket.IO');
 
@@ -124,6 +125,7 @@ module.exports = (io) => {
                     },
                     { new: true }
                 );
+                await delCache(`classroom:${classId}`);
 
                 // Broadcast to all users in the classroom
                 io.to(classId).emit('chat-message-received', {
@@ -206,6 +208,7 @@ module.exports = (io) => {
                     },
                     { new: true }
                 );
+                await delCache(`classroom:${classId}`);
 
                 // Notify all participants about the new event ONLY if it's not a draft
                 if (event.status !== 'draft') {
@@ -252,6 +255,7 @@ module.exports = (io) => {
                     { $set: updateFields },
                     { new: true }
                 );
+                await delCache(`classroom:${classId}`);
 
                 // If event was just published (transitioned FROM draft TO active/idle), send notification
                 if (updates.status === 'idle' || updates.status === 'active') {
@@ -320,6 +324,8 @@ module.exports = (io) => {
                     });
                 }
 
+                await delCache(`classroom:${classId}`);
+
                 // Broadcast deletion to all users in the classroom
                 io.to(classId).emit('classroom-event-deleted', { eventId });
                 logger.success(`Event ${eventId} archived and deleted from class ${classId}`);
@@ -346,6 +352,7 @@ module.exports = (io) => {
                         evt.results = evt.results.filter(r => r.userId !== studentId);
                         cls.markModified(updatePath);
                         await cls.save();
+                        await delCache(`classroom:${classId}`);
 
                         io.to(classId).emit('group-member-removed', { eventId, studentId, source });
                         logger.success(`Student ${studentId} removed from group in event ${eventId}`);
@@ -394,6 +401,7 @@ module.exports = (io) => {
 
                     cls.markModified(updatePath);
                     await cls.save();
+                    await delCache(`classroom:${classId}`);
 
                     io.to(classId).emit('group-member-moved', { eventId, studentId, newGroupId, source });
                     logger.success(`Student ${studentId} moved to group ${newGroupId} in event ${eventId}`);
@@ -531,6 +539,8 @@ module.exports = (io) => {
                         logger.success(`Score updated for ${studentId}: ${scoreDelta} points`);
                     }
                 }
+
+                await delCache(`classroom:${classId}`);
 
                 io.to(classId).emit('classroom-event-updated', {
                     eventId,

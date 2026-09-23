@@ -33,4 +33,8 @@ const streamPostSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+// Compound indexes for stream posts per class ordered by date
+streamPostSchema.index({ classId: 1, createdAt: -1 });
+streamPostSchema.index({ author: 1 });
+
 module.exports = mongoose.model('StreamPost', streamPostSchema);

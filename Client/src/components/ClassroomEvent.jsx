@@ -202,7 +202,10 @@ const ClassroomEvent = ({ isCreator, events = [], onAddEvent, onTriggerEvent, on
         formData.append('image', file);
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/upload`, formData); // Let Axios set Content-Type
+            const token = localStorage.getItem('authToken') || currentUser?.token;
+            const res = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
+                headers: token ? { 'x-auth-token': token } : {}
+            });
             setSelectedImage(res.data.url);
         } catch (err) {
             console.error('Upload failed:', err);

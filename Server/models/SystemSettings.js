@@ -30,6 +30,12 @@ const systemSettingsSchema = new mongoose.Schema({
 
 // Create a default settings document if one doesn't exist
 systemSettingsSchema.statics.getSettings = async function () {
+    const { getCache, setCache } = require('../utils/cache');
+    const cached = await getCache('system_settings:general');
+    if (cached) {
+        return cached;
+    }
+
     let settings = await this.findOne({ key: 'general' });
     if (!settings) {
         settings = await this.create({
@@ -60,7 +66,11 @@ systemSettingsSchema.statics.getSettings = async function () {
             await settings.save();
         }
     }
-    return settings;
+
+    const plainSettings = settings.toObject ? settings.toObject() : settings;
+    // Cache settings for 10 minutes (600 seconds)
+    await setCache('system_settings:general', plainSettings, 600);
+    return plainSettings;
 };
 
 module.exports = mongoose.model('SystemSettings', systemSettingsSchema);

@@ -1,27 +1,15 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const createLogger = require('../utils/logger');
 const logger = createLogger('Upload');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadPath = path.join(__dirname, '../uploads', 'profile_photos');
-        fs.mkdirSync(uploadPath, { recursive: true });
-        logger.debug(`Upload destination: ${uploadPath}`);
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        const filename = req.user._id + '-' + Date.now() + path.extname(file.originalname);
-        logger.info(`Uploading file for user ${req.user.email}: ${filename}`);
-        cb(null, filename);
-    }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for avatar
     fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png|gif/;
+        const filetypes = /jpeg|jpg|png|gif|webp/;
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
@@ -30,7 +18,7 @@ const upload = multer({
             return cb(null, true);
         }
         logger.error(`File validation failed: ${file.originalname} (${file.mimetype})`);
-        cb("Error: File upload only supports the following filetypes - " + filetypes);
+        cb(new Error("File upload only supports images: jpeg, jpg, png, gif, webp"));
     }
 }).single('profileImage');
 

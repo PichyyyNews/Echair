@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { delCache } = require('../utils/cache');
 
 exports.pinClass = async (req, res) => {
     const { classId } = req.body;
@@ -16,6 +17,7 @@ exports.pinClass = async (req, res) => {
         }
 
         const updatedUser = await user.save();
+        await delCache(`user:${userId}`);
         res.json({
             msg: `Class ${classIndex > -1 ? 'unpinned' : 'pinned'} successfully!`,
             user: updatedUser
@@ -42,6 +44,7 @@ exports.togglePinClass = async (req, res) => {
         }
 
         await user.save();
+        await delCache(`user:${userId}`);
 
         const updatedUser = {
             id: user._id,

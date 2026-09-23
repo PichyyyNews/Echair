@@ -2,6 +2,7 @@ const Class = require('../models/Class');
 const User = require('../models/User');
 const TeachingSession = require('../models/TeachingSession');
 const createLogger = require('../utils/logger');
+const { getCache, setCache, delCache } = require('../utils/cache');
 const logger = createLogger('ClassController');
 
 exports.getClassrooms = async (req, res) => {
@@ -44,6 +45,7 @@ exports.createClassroom = async (req, res) => {
         await newClass.save();
 
         await User.findByIdAndUpdate(userId, { $push: { createdClasses: newClass._id, enrolledClasses: newClass._id } });
+        await invalidateUserCache(userId);
 
         res.status(201).json({
             msg: 'Class created successfully!',
@@ -74,6 +76,10 @@ exports.joinClassroom = async (req, res) => {
         await classToJoin.save();
         await User.findByIdAndUpdate(userId, { $push: { enrolledClasses: classToJoin._id } });
 
+        // Invalidate classroom and user caches
+        await invalidateClassroomCache(classToJoin._id);
+        await invalidateUserCache(userId);
+
         // Notify creator(s) that a new user joined
         const { createAndSendNotification } = require('../utils/notificationHelper');
         const userJoining = await User.findById(userId);
@@ -99,9 +105,33 @@ exports.joinClassroom = async (req, res) => {
     }
 };
 
+const invalidateClassroomCache = async (classId) => {
+    if (classId) {
+        await delCache(`classroom:${classId}`);
+    }
+};
+
+const invalidateUserCache = async (userId) => {
+    if (userId) {
+        await delCache(`user:${userId}`);
+    }
+};
+
 exports.getClassroom = async (req, res) => {
     try {
         const userId = req.user._id;
+        const cacheKey = `classroom:${req.params.id}`;
+
+        // Check Redis cache first
+        const cachedClassroom = await getCache(cacheKey);
+        if (cachedClassroom) {
+            const isCreator = cachedClassroom.creator?.some(creator => (creator._id || creator).toString() === userId.toString());
+            const isParticipant = cachedClassroom.participants?.some(participant => (participant._id || participant).toString() === userId.toString());
+            if (isCreator || isParticipant) {
+                return res.json(cachedClassroom);
+            }
+        }
+
         const classroom = await Class.findById(req.params.id)
             .populate('creator', 'displayName photoURL _id')
             .populate('participants', 'displayName photoURL');
@@ -126,6 +156,7 @@ exports.getClassroom = async (req, res) => {
                 .populate('creator', 'displayName photoURL _id')
                 .populate('participants', 'displayName photoURL');
 
+            await setCache(cacheKey, updatedClassroom, 30);
             return res.json(updatedClassroom);
         }
 
@@ -136,6 +167,8 @@ exports.getClassroom = async (req, res) => {
             });
         }
 
+        // Cache for 30 seconds
+        await setCache(cacheKey, classroom, 30);
         res.json(classroom);
     } catch (err) {
         if (err.kind === 'ObjectId') {
@@ -161,6 +194,9 @@ exports.updateSeating = async (req, res) => {
         if (!classroom) {
             return res.status(404).json({ msg: 'Classroom not found' });
         }
+
+        // Invalidate classroom cache on update
+        await invalidateClassroomCache(classId);
 
         // Send Notification for score changes
         if (studentScores) {
@@ -214,11 +250,15 @@ exports.leaveClassroom = async (req, res) => {
                 classroom.participants = classroom.participants.filter(id => id.toString() !== userId.toString());
                 await classroom.save();
                 await User.findByIdAndUpdate(userId, { $pull: { createdClasses: classId, enrolledClasses: classId, pinnedClasses: classId } });
+                await invalidateClassroomCache(classId);
+                await invalidateUserCache(userId);
                 return res.json({ msg: 'You have left your creator role.' });
             } else {
                 try {
                     await Class.findByIdAndDelete(classId);
                     await User.updateMany({}, { $pull: { createdClasses: classId, enrolledClasses: classId, pinnedClasses: classId } });
+                    await invalidateClassroomCache(classId);
+                    await invalidateUserCache(userId);
                     return res.json({ msg: 'Classroom deleted as you were the sole creator.' });
                 } catch (deleteErr) {
                     return res.status(500).send('Server error during classroom deletion.');
@@ -250,6 +290,9 @@ exports.leaveClassroom = async (req, res) => {
                 pinnedClasses: classId
             }
         });
+
+        await invalidateClassroomCache(classId);
+        await invalidateUserCache(userId);
 
         res.json({ msg: 'Successfully left the classroom.' });
     } catch (err) {
@@ -283,6 +326,9 @@ exports.kickUser = async (req, res) => {
 
         classroom.markModified('assignedUsers');
         await classroom.save();
+        await User.findByIdAndUpdate(userId, { $pull: { enrolledClasses: classId, pinnedClasses: classId } });
+        await invalidateClassroomCache(classId);
+        await invalidateUserCache(userId);
 
         const { createAndSendNotification } = require('../utils/notificationHelper');
         await createAndSendNotification(
@@ -317,7 +363,9 @@ exports.promoteUser = async (req, res) => {
 
         classroom.creator.push(userId);
         await classroom.save();
+        await invalidateClassroomCache(classId);
         await User.findByIdAndUpdate(userId, { $addToSet: { createdClasses: classId } });
+        await invalidateUserCache(userId);
 
         const { createAndSendNotification } = require('../utils/notificationHelper');
         await createAndSendNotification(
@@ -354,8 +402,10 @@ exports.demoteUser = async (req, res) => {
 
         classroom.creator = classroom.creator.filter(id => id.toString() !== userId.toString());
         await classroom.save();
+        await invalidateClassroomCache(classId);
 
         await User.findByIdAndUpdate(userId, { $pull: { createdClasses: classId } });
+        await invalidateUserCache(userId);
 
         const { createAndSendNotification } = require('../utils/notificationHelper');
         await createAndSendNotification(
@@ -392,6 +442,7 @@ exports.updateTheme = async (req, res) => {
         classroom.bannerUrl = bannerUrl;
 
         const updatedClassroom = await classroom.save();
+        await invalidateClassroomCache(classId);
         res.json(updatedClassroom);
     } catch (err) {
         res.status(500).send('Server error');
@@ -429,6 +480,7 @@ exports.updateSettings = async (req, res) => {
         }
 
         const updatedClassroom = await classroom.save();
+        await invalidateClassroomCache(classId);
         res.json({ msg: 'Settings updated successfully', classroom: updatedClassroom });
     } catch (err) {
         console.error('Error updating settings:', err);
@@ -502,6 +554,7 @@ exports.updateAttendance = async (req, res) => {
         }
 
         const updatedClassroom = await classroom.save();
+        await invalidateClassroomCache(classId);
 
         // Emit real-time update to all clients in the classroom room
         if (req.io) {

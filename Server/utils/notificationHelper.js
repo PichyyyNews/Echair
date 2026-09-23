@@ -1,4 +1,5 @@
 const Notification = require('../models/Notification');
+const { delCache } = require('./cache');
 const logger = require('./logger')('NotificationHelper');
 
 /**
@@ -27,6 +28,7 @@ const createAndSendNotification = async (io, userId, title, message, type = 'sys
         });
 
         await notification.save();
+        await delCache(`notifications:${userId}`);
 
         // Emit to specific user if online
         if (io) {

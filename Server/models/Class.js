@@ -73,4 +73,10 @@ const classSchema = new mongoose.Schema({
     }
 });
 
+// Compound and single indexes for fast lookups
+classSchema.index({ creator: 1 });
+classSchema.index({ participants: 1 });
+classSchema.index({ isPublic: 1 });
+classSchema.index({ creator: 1, isPublic: 1 });
+
 module.exports = mongoose.model('Class', classSchema);

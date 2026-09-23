@@ -11,4 +11,9 @@ const activeSessionSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }
 });
 
+// Indexes for active session lookup and cleanup
+activeSessionSchema.index({ userId: 1, isActive: 1 });
+activeSessionSchema.index({ sessionToken: 1 });
+activeSessionSchema.index({ lastActivity: 1 });
+
 module.exports = mongoose.model('ActiveSession', activeSessionSchema);

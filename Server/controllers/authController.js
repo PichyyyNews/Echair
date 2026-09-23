@@ -12,6 +12,9 @@ const path = require('path');
 const mongoose = require('mongoose');
 const createLogger = require('../utils/logger');
 const { formatLoginInfo } = require('../utils/loginTracking');
+const { saveUploadedFile, deleteStoredFile } = require('../utils/storage');
+const { getCache, setCache, delCache } = require('../utils/cache');
+const { enqueueEmail } = require('../jobs/queue');
 const logger = createLogger('AuthController');
 
 exports.googleLoginVerify = async (req, res) => {
@@ -292,7 +295,7 @@ exports.login = async (req, res) => {
                     `
                 };
 
-                await transporter.sendMail(mailOptions);
+                await enqueueEmail(mailOptions);
 
                 return res.json({
                     requiresOtp: true,
@@ -428,7 +431,7 @@ exports.forgotPassword = async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
+        await enqueueEmail(mailOptions);
         res.json({ msg: 'If an account with that email exists, we have sent a password reset link.' });
     } catch (err) {
         logger.error('Forgot password error:', err);
@@ -546,7 +549,7 @@ exports.toggle2FA = async (req, res) => {
                 subject: 'Two-Factor Authentication Setup',
                 html: `<h1>${code}</h1>`
             };
-            await transporter.sendMail(mailOptions);
+            await enqueueEmail(mailOptions);
             res.json({ msg: '2FA enabled. Check email for code.' });
         } else {
             user.twoFactorEnabled = false;
@@ -643,9 +646,16 @@ exports.terminateSession = async (req, res) => {
 
 exports.getMe = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id); // req.user is set by authMiddleware
+        const cacheKey = `user:${req.user.id}`;
+        const cachedUser = await getCache(cacheKey);
+        if (cachedUser) {
+            return res.json(cachedUser);
+        }
+
+        const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ msg: 'User not found' });
-        res.json({
+        
+        const userData = {
             id: user._id,
             email: user.email,
             displayName: user.displayName,
@@ -654,7 +664,12 @@ exports.getMe = async (req, res) => {
             createdClasses: user.createdClasses,
             enrolledClasses: user.enrolledClasses,
             pinnedClasses: user.pinnedClasses
-        });
+        };
+
+        // Cache user profile for 5 minutes (300 seconds)
+        await setCache(cacheKey, userData, 300);
+
+        res.json(userData);
     } catch (err) {
         res.status(500).send('Server error');
     }
@@ -675,6 +690,9 @@ exports.updateProfile = async (req, res) => {
             { new: true, runValidators: true }
         ).select('-password');
 
+        // Invalidate cache
+        await delCache(`user:${userId}`);
+
         res.json({ msg: 'Profile updated', user: updatedUser });
     } catch (error) {
         res.status(500).json({ msg: 'Server error' });
@@ -682,21 +700,29 @@ exports.updateProfile = async (req, res) => {
 };
 
 exports.updatePhoto = async (req, res) => {
-    // Note: 'upload' middleware should be used in the route definition, placing the file in req.file
     if (!req.file) return res.status(400).json({ msg: 'No file uploaded.' });
 
     try {
         const user = req.user;
         if (user.photoURL && !user.photoURL.startsWith('http')) {
-            const oldPhotoPath = path.join(__dirname, '../', user.photoURL);
-            if (fs.existsSync(oldPhotoPath)) {
-                fs.unlinkSync(oldPhotoPath);
-            }
+            await deleteStoredFile(user.photoURL);
         }
 
-        const newPhotoURL = `/uploads/profile_photos/${req.file.filename}`;
+        const savedResult = await saveUploadedFile({
+            buffer: req.file.buffer,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            folder: 'profile_photos',
+            optimize: true,
+            type: 'avatar'
+        });
+
+        const newPhotoURL = savedResult.url;
         user.photoURL = newPhotoURL;
         await user.save();
+
+        // Invalidate user cache
+        await delCache(`user:${user._id}`);
 
         res.json({
             msg: 'Profile photo updated',
@@ -709,6 +735,7 @@ exports.updatePhoto = async (req, res) => {
             }
         });
     } catch (error) {
+        logger.error(`Update photo error: ${error.message}`);
         res.status(500).send('Server error');
     }
 };
@@ -717,12 +744,14 @@ exports.deletePhoto = async (req, res) => {
     try {
         const user = req.user;
         if (user.photoURL && !user.photoURL.startsWith('http')) {
-            const photoPath = path.join(__dirname, '../', user.photoURL);
-            if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
+            await deleteStoredFile(user.photoURL);
         }
 
         user.photoURL = `https://api.dicebear.com/9.x/toon-head/svg?seed=${encodeURIComponent(user.email)}`;
         await user.save();
+
+        // Invalidate user cache
+        await delCache(`user:${user._id}`);
 
         res.json({
             msg: 'Profile photo deleted',
@@ -735,6 +764,7 @@ exports.deletePhoto = async (req, res) => {
             }
         });
     } catch (error) {
+        logger.error(`Delete photo error: ${error.message}`);
         res.status(500).send('Server error');
     }
 };

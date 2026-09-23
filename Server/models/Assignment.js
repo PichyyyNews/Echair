@@ -48,4 +48,8 @@ const assignmentSchema = new mongoose.Schema({
     }
 });
 
+// Compound indexes for classwork lookups
+assignmentSchema.index({ classId: 1, createdAt: -1 });
+assignmentSchema.index({ creator: 1 });
+
 module.exports = mongoose.model('Assignment', assignmentSchema);

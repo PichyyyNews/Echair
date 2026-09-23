@@ -3,12 +3,14 @@ const router = express.Router();
 const classController = require('../controllers/classController');
 const userController = require('../controllers/userController'); // For toggle-pin
 const authMiddleware = require('../middleware/authMiddleware');
+const validate = require('../middleware/validate');
+const { createClassSchema, joinClassSchema, updateSeatingSchema } = require('../validators/classroomValidators');
 
 router.get('/', authMiddleware, classController.getClassrooms);
-router.post('/create', authMiddleware, classController.createClassroom);
-router.post('/join', authMiddleware, classController.joinClassroom);
+router.post('/create', authMiddleware, validate(createClassSchema), classController.createClassroom);
+router.post('/join', authMiddleware, validate(joinClassSchema), classController.joinClassroom);
 router.get('/:id', authMiddleware, classController.getClassroom);
-router.put('/:classId/seating', authMiddleware, classController.updateSeating);
+router.put('/:classId/seating', authMiddleware, validate(updateSeatingSchema), classController.updateSeating);
 router.post('/:classId/leave', authMiddleware, classController.leaveClassroom);
 router.put('/:classId/kick', authMiddleware, classController.kickUser);
 router.put('/:classId/promote', authMiddleware, classController.promoteUser);

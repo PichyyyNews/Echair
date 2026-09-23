@@ -68,11 +68,20 @@ const autoEndStaleSessions = async () => {
 const startSessionCleaner = (intervalMs = 15 * 60 * 1000) => {
     logger.info(`Starting session cleaner (Interval: ${intervalMs / 60000} mins)`);
     
+    const runCleanup = () => {
+        try {
+            const { enqueueCleanup } = require('../jobs/queue');
+            enqueueCleanup();
+        } catch (e) {
+            autoEndStaleSessions();
+        }
+    };
+
     // Run once on startup
-    autoEndStaleSessions();
+    runCleanup();
     
     // Set interval
-    setInterval(autoEndStaleSessions, intervalMs);
+    setInterval(runCleanup, intervalMs);
 };
 
-module.exports = { startSessionCleaner };
+module.exports = { startSessionCleaner, autoEndStaleSessions };
