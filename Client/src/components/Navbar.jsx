@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../CSS/Navbar.css";
 import icon from "../image/icon.ico";
-import { FiPlus, FiLogOut, FiArrowLeft, FiShare2, FiEdit2, FiSave, FiX, FiChevronDown, FiChevronRight, FiBell, FiMenu, FiBook } from "react-icons/fi"; // ✨ เพิ่ม icon ใหม่
+import { FiPlus, FiLogOut, FiArrowLeft, FiShare2, FiEdit2, FiSave, FiX, FiChevronDown, FiChevronRight, FiBell, FiMenu, FiBook, FiUsers, FiActivity, FiSettings } from "react-icons/fi"; // ✨ เพิ่ม icon ใหม่
 import { FaCog, FaCrown, FaLayerGroup, FaStar, FaTrophy, FaHistory, FaInfoCircle, FaCalendarCheck, FaPlay, FaClock, FaStop } from 'react-icons/fa'; // ✨ เพิ่ม icons สำหรับ sidebar
 import { useNavigate, Link } from 'react-router-dom';
 import { getProfileImageSrc, getCurrentUserProfileImageSrc, isGoogleUser, handleImageError } from '../utils/profileImageHelper';
@@ -26,6 +26,7 @@ const Navbar = ({
     onClassroomBackClick, // เพิ่ม props สำหรับ ClassroomPage back navigation
     isLoginPage = false, // เพิ่ม props สำหรับ Login page
     isAppSettingPage, appActiveSection, onAppSectionChange, // เพิ่ม props สำหรับ AppSettings page
+    isAdminPage, adminActiveSection, onAdminSectionChange, // 🛡️ เพิ่ม props สำหรับ Admin page
     isClassDetailPage, classDetailActiveSection, onClassDetailSectionChange, // เพิ่ม props สำหรับ ClassDetail page
     isStreamPage, streamActiveSection, onStreamSectionChange, // ✨ เพิ่ม props สำหรับ Stream page
     isAssignmentDetailPage, classId, // ✨ สำหรับหน้า Assignment Detail Page
@@ -487,6 +488,57 @@ const Navbar = ({
                                 onClick={() => onAppSectionChange && onAppSectionChange('about')}
                             >
                                 <span>{t('navbar.appSettings.helpSupport')}</span>
+                            </li>
+                        </>
+                    ) : isAdminPage ? (
+                        <>
+                            <li className="sidebar-list-item sidebar-back-button" onClick={onBackClick || handleBackClick}>
+                                <FiArrowLeft size={18} />
+                                <span>{t('navbar.sidebar.back') || 'กลับหน้าหลัก'}</span>
+                            </li>
+                            <hr className="divider" style={{
+                                margin: "8px 0",
+                                border: "none",
+                                height: "1px",
+                                backgroundColor: "#e2e8f0",
+                                width: "100%",
+                                display: "block"
+                            }} />
+                            <li
+                                className={`sidebar-list-item ${adminActiveSection === 'overview' ? 'active' : ''}`}
+                                onClick={() => onAdminSectionChange && onAdminSectionChange('overview')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FiActivity size={16} />
+                                    <span>ภาพรวมระบบ (Overview)</span>
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${adminActiveSection === 'users' ? 'active' : ''}`}
+                                onClick={() => onAdminSectionChange && onAdminSectionChange('users')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FiUsers size={16} />
+                                    <span>จัดการผู้ใช้ (Users)</span>
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${adminActiveSection === 'classes' ? 'active' : ''}`}
+                                onClick={() => onAdminSectionChange && onAdminSectionChange('classes')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FiBook size={16} />
+                                    <span>จัดการห้องเรียน (Classrooms)</span>
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${adminActiveSection === 'settings' ? 'active' : ''}`}
+                                onClick={() => onAdminSectionChange && onAdminSectionChange('settings')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FiSettings size={16} />
+                                    <span>ตั้งค่าระบบ (System Settings)</span>
+                                </div>
                             </li>
                         </>
                     ) : isClassDetailPage ? (

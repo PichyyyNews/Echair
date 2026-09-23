@@ -122,13 +122,17 @@ const AdminPage = ({
 
     return (
         <>
-            {/* Same Navbar and Sidebar as the rest of the application */}
+            {/* Same Navbar with dedicated Admin navigation sidebar */}
             <Navbar
                 isSidebarOpen={isSidebarOpen}
                 toggleSidebar={toggleSidebar}
                 user={user}
                 handleSignOut={handleSignOut}
                 classrooms={classrooms}
+                isAdminPage={true}
+                adminActiveSection={activeTab}
+                onAdminSectionChange={setActiveTab}
+                onBackClick={() => navigate('/')}
             />
 
             {/* Standard main frame with smooth shift when sidebar opens/closes */}
@@ -286,38 +290,149 @@ const AdminPage = ({
                                 </div>
                             )}
 
-                            {/* Scaffold Placeholder Box */}
-                            <div className="admin-placeholder-box">
-                                <div className="admin-placeholder-icon">
-                                    <FiShield />
-                                </div>
-                                <h4 className="admin-placeholder-title">
-                                    โครงสร้างหน้า Admin พร้อมสำหรับการลงรายละเอียด
-                                </h4>
-                                <p className="admin-placeholder-text">
-                                    ส่วนเนื้อหาภายในหน้านี้ถูกจัดวาง Layout ตามโครงสร้างหลักของ EChair ไว้อย่างสมบูรณ์ พร้อมเชื่อมต่อระบบและฟังก์ชันเชิงลึกตามรายละเอียดที่คุณต้องการในขั้นตอนถัดไป
-                                </p>
-                            </div>
+                            {/* Tab Content: Overview */}
+                            {activeTab === 'overview' && (
+                                <>
+                                    <div className="admin-placeholder-box">
+                                        <div className="admin-placeholder-icon">
+                                            <FiActivity />
+                                        </div>
+                                        <h4 className="admin-placeholder-title">
+                                            📊 ภาพรวมระบบ (Overview Dashboard)
+                                        </h4>
+                                        <p className="admin-placeholder-text">
+                                            แสดงสถิติผู้ใช้งาน ห้องเรียน กิจกรรม และความพร้อมของระบบ EChair เชื่อมต่อ Sidebar เมนูสำหรับการเปลี่ยนหน้าทำงานเรียบร้อยแล้ว
+                                        </p>
+                                    </div>
 
-                            {/* System Diagnostic Information */}
-                            <div className="admin-info-grid">
-                                <div className="admin-info-box">
-                                    <div className="admin-info-box-title">เส้นทาง URL ปัจจุบัน</div>
-                                    <div className="admin-info-box-value"><code>/admin</code> (ซ่อน ไม่แสดงในเมนูทั่วไป)</div>
-                                </div>
-                                <div className="admin-info-box">
-                                    <div className="admin-info-box-title">ผู้เข้าใช้งานปัจจุบัน</div>
-                                    <div className="admin-info-box-value">{user?.displayName || user?.email || 'N/A'}</div>
-                                </div>
-                                <div className="admin-info-box">
-                                    <div className="admin-info-box-title">สิทธิ์การใช้งาน (Role)</div>
-                                    <div className="admin-info-box-value">{user?.role || 'user'}</div>
-                                </div>
-                                <div className="admin-info-box">
-                                    <div className="admin-info-box-title">สถาปัตยกรรม UI</div>
-                                    <div className="admin-info-box-value">React 19 + Vite 8 (Shared Navbar & Sidebar)</div>
-                                </div>
-                            </div>
+                                    <div className="admin-info-grid">
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">เส้นทาง URL ปัจจุบัน</div>
+                                            <div className="admin-info-box-value"><code>/admin</code> (ซ่อน ไม่แสดงในเมนูทั่วไป)</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ผู้เข้าใช้งานปัจจุบัน</div>
+                                            <div className="admin-info-box-value">{user?.displayName || user?.email || 'N/A'}</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สิทธิ์การใช้งาน (Role)</div>
+                                            <div className="admin-info-box-value">{user?.role || 'user'}</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สถาปัตยกรรม UI</div>
+                                            <div className="admin-info-box-value">React 19 + Vite 8 (Shared Navbar & Sidebar)</div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Tab Content: Users */}
+                            {activeTab === 'users' && (
+                                <>
+                                    <div className="admin-placeholder-box">
+                                        <div className="admin-placeholder-icon" style={{ color: '#2563eb' }}>
+                                            <FiUsers />
+                                        </div>
+                                        <h4 className="admin-placeholder-title">
+                                            👥 จัดการผู้ใช้ (User Management)
+                                        </h4>
+                                        <p className="admin-placeholder-text">
+                                            โครงสร้างส่วนจัดการบัญชีผู้ใช้งาน พร้อมสำหรับลงรายละเอียดตารางรายชื่อผู้ใช้ ค้นหา ปรับเปลี่ยนสิทธิ์ (User/Admin) และตรวจสอบประวัติการเข้าใช้งาน
+                                        </p>
+                                    </div>
+
+                                    <div className="admin-info-grid">
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สถิติผู้ใช้ปัจจุบัน</div>
+                                            <div className="admin-info-box-value">{stats?.totalUsers || 0} บัญชีทั้งหมดในระบบ</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ผู้ใช้ใหม่สัปดาห์นี้</div>
+                                            <div className="admin-info-box-value">+{stats?.newUsersThisWeek || 0} คน</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">API Endpoint ที่รองรับ</div>
+                                            <div className="admin-info-box-value"><code>GET/PUT/DELETE /api/admin/users</code></div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สถานะความพร้อม</div>
+                                            <div className="admin-info-box-value" style={{ color: '#10b981' }}>● พร้อมรองรับการออกแบบ UI เชิงลึก</div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Tab Content: Classrooms */}
+                            {activeTab === 'classes' && (
+                                <>
+                                    <div className="admin-placeholder-box">
+                                        <div className="admin-placeholder-icon" style={{ color: '#059669' }}>
+                                            <FiBook />
+                                        </div>
+                                        <h4 className="admin-placeholder-title">
+                                            📚 จัดการห้องเรียน (Classroom Management)
+                                        </h4>
+                                        <p className="admin-placeholder-text">
+                                            โครงสร้างส่วนจัดการห้องเรียนทั้งหมดในระบบ พร้อมสำหรับลงรายละเอียดตารางค้นหาห้องเรียน ตรวจสอบรหัสห้อง (Class Code) และดูแลผู้เข้าร่วม
+                                        </p>
+                                    </div>
+
+                                    <div className="admin-info-grid">
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">จำนวนห้องเรียนทั้งหมด</div>
+                                            <div className="admin-info-box-value">{stats?.totalClasses || 0} ห้องในระบบ</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ห้องเรียนใหม่สัปดาห์นี้</div>
+                                            <div className="admin-info-box-value">+{stats?.newClassesThisWeek || 0} ห้อง</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">API Endpoint ที่รองรับ</div>
+                                            <div className="admin-info-box-value"><code>GET/PUT/DELETE /api/admin/classrooms</code></div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สถานะความพร้อม</div>
+                                            <div className="admin-info-box-value" style={{ color: '#10b981' }}>● พร้อมรองรับการออกแบบ UI เชิงลึก</div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Tab Content: Settings */}
+                            {activeTab === 'settings' && (
+                                <>
+                                    <div className="admin-placeholder-box">
+                                        <div className="admin-placeholder-icon" style={{ color: '#7c3aed' }}>
+                                            <FiSettings />
+                                        </div>
+                                        <h4 className="admin-placeholder-title">
+                                            ⚙️ ตั้งค่าระบบ (System Settings)
+                                        </h4>
+                                        <p className="admin-placeholder-text">
+                                            โครงสร้างส่วนการตั้งค่านโยบายส่วนกลางของระบบ EChair เช่น โหมดปิดปรับปรุง (Maintenance Mode), การเปิดรับสมัครสมาชิก, การตั้งค่าเซิร์ฟเวอร์อีเมล และความปลอดภัย
+                                        </p>
+                                    </div>
+
+                                    <div className="admin-info-grid">
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">โหมดระบบ</div>
+                                            <div className="admin-info-box-value" style={{ color: '#10b981' }}>● เปิดให้บริการปกติ (Active)</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">ระบบส่งอีเมล (SMTP)</div>
+                                            <div className="admin-info-box-value">Gmail / Dynamic Nodemailer Transporter</div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">API Endpoint ที่รองรับ</div>
+                                            <div className="admin-info-box-value"><code>GET/PUT /api/admin/system-settings</code></div>
+                                        </div>
+                                        <div className="admin-info-box">
+                                            <div className="admin-info-box-title">สถานะความพร้อม</div>
+                                            <div className="admin-info-box-value" style={{ color: '#10b981' }}>● พร้อมรองรับการออกแบบ UI เชิงลึก</div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                     </div>
