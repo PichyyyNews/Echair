@@ -5,7 +5,8 @@ import Swal from 'sweetalert2';
 import { 
     FiUsers, FiBook, FiActivity, FiSettings, FiArrowLeft, FiShield, 
     FiDatabase, FiRefreshCw, FiSearch, FiCheck, FiX, FiEdit2, FiTrash2,
-    FiLock, FiMail, FiServer
+    FiLock, FiMail, FiServer, FiKey, FiChevronLeft, FiChevronRight,
+    FiAlertCircle, FiUserCheck, FiUserX
 } from 'react-icons/fi';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config/api';
@@ -24,7 +25,7 @@ const AdminPage = ({
     const [classrooms, setClassrooms] = useState([]);
     const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'users' | 'classes' | 'settings'
 
-    // Data states for each dedicated view
+    // Data states for views
     const [stats, setStats] = useState(null);
     const [usersList, setUsersList] = useState([]);
     const [classesList, setClassesList] = useState([]);
@@ -35,9 +36,34 @@ const AdminPage = ({
         email: { user: '', service: 'gmail', enabled: false }
     });
 
+    // Pagination & Filter States for Users
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const limit = 50;
+    const [roleFilter, setRoleFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Modal States
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        id: '',
+        displayName: '',
+        email: '',
+        password: '',
+        role: 'user',
+        isSuspended: false
+    });
+    const [isSavingUser, setIsSavingUser] = useState(false);
+
+    // Classroom details modal
+    const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+    const [viewingUser, setViewingUser] = useState(null);
+    const [modalClassType, setModalClassType] = useState('created'); // 'created' | 'enrolled'
+
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState('');
 
     const token = user?.token || localStorage.getItem('authToken');
@@ -110,13 +136,25 @@ const AdminPage = ({
         }
     }, []);
 
-    // 2. Fetch Users List
-    const fetchUsers = useCallback(async (authToken, search = '') => {
+    // 2. Fetch Users List with 50 per page & multi-filter
+    const fetchUsers = useCallback(async (authToken, targetPage = 1, search = '', role = 'all', status = 'all') => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/api/admin/users?limit=50&search=${encodeURIComponent(search)}`, {
+            const queryParams = new URLSearchParams({
+                page: targetPage,
+                limit: 50,
+                search: search.trim(),
+                role,
+                status
+            });
+            const res = await axios.get(`${API_BASE_URL}/api/admin/users?${queryParams.toString()}`, {
                 headers: { 'x-auth-token': authToken }
             });
             setUsersList(res.data.users || []);
+            if (res.data.pagination) {
+                setPage(res.data.pagination.current);
+                setTotalPages(res.data.pagination.total);
+                setTotalUsers(res.data.pagination.totalItems);
+            }
         } catch (err) {
             console.warn('Error fetching users:', err.message);
         }
@@ -158,7 +196,7 @@ const AdminPage = ({
         if (activeTab === 'overview') {
             await fetchAdminStats(token);
         } else if (activeTab === 'users') {
-            await fetchUsers(token, searchQuery);
+            await fetchUsers(token, page, searchQuery, roleFilter, statusFilter);
         } else if (activeTab === 'classes') {
             await fetchAllAdminClassrooms(token, searchQuery);
         } else if (activeTab === 'settings') {
@@ -166,46 +204,83 @@ const AdminPage = ({
         }
         setLoading(false);
         setRefreshing(false);
-    }, [token, activeTab, searchQuery, refreshProfile, fetchClassrooms, fetchAdminStats, fetchUsers, fetchAllAdminClassrooms, fetchSystemSettings]);
+    }, [token, activeTab, page, searchQuery, roleFilter, statusFilter, refreshProfile, fetchClassrooms, fetchAdminStats, fetchUsers, fetchAllAdminClassrooms, fetchSystemSettings]);
 
     useEffect(() => {
+        setPage(1);
         setSearchQuery('');
         loadCurrentTabData();
     }, [activeTab]);
 
-    // Handle User Role Change
-    const handleToggleRole = async (targetUser) => {
-        const newRole = targetUser.role === 'admin' ? 'user' : 'admin';
-        const result = await Swal.fire({
-            title: `เปลี่ยนสิทธิ์ผู้ใช้งาน?`,
-            text: `ต้องการเปลี่ยนสิทธิ์ของ ${targetUser.displayName || targetUser.email} เป็น "${newRole}" หรือไม่?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#369D07',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'ยืนยัน',
-            cancelButtonText: 'ยกเลิก'
+    // Open User Edit Modal
+    const handleOpenEditModal = (targetUser) => {
+        setEditFormData({
+            id: targetUser._id,
+            displayName: targetUser.displayName || '',
+            email: targetUser.email || '',
+            password: '', // Blank initially
+            role: targetUser.role || 'user',
+            isSuspended: Boolean(targetUser.isSuspended)
         });
+        setIsEditModalOpen(true);
+    };
 
-        if (result.isConfirmed) {
-            try {
-                await axios.put(`${API_BASE_URL}/api/admin/users/${targetUser._id}`, {
-                    role: newRole
-                }, {
-                    headers: { 'x-auth-token': token }
-                });
-                Swal.fire({
-                    title: 'สำเร็จ',
-                    text: `เปลี่ยนสิทธิ์เป็น ${newRole} เรียบร้อยแล้ว`,
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                fetchUsers(token, searchQuery);
-            } catch (err) {
-                Swal.fire('เกิดข้อผิดพลาด', err.response?.data?.msg || 'ไม่สามารถเปลี่ยนสิทธิ์ได้', 'error');
-            }
+    // Generate Random Password
+    const handleGeneratePassword = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+        let pass = '';
+        for (let i = 0; i < 10; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
         }
+        setEditFormData(prev => ({ ...prev, password: pass }));
+    };
+
+    // Save User Edits
+    const handleSaveUserEdit = async (e) => {
+        e.preventDefault();
+        if (!editFormData.email) {
+            Swal.fire('ข้อผิดพลาด', 'กรุณาระบุอีเมล', 'warning');
+            return;
+        }
+
+        setIsSavingUser(true);
+        try {
+            const payload = {
+                displayName: editFormData.displayName,
+                email: editFormData.email,
+                role: editFormData.role,
+                isSuspended: editFormData.isSuspended
+            };
+            if (editFormData.password.trim() !== '') {
+                payload.password = editFormData.password.trim();
+            }
+
+            await axios.put(`${API_BASE_URL}/api/admin/users/${editFormData.id}`, payload, {
+                headers: { 'x-auth-token': token }
+            });
+
+            Swal.fire({
+                title: 'สำเร็จ',
+                text: 'อัปเดตข้อมูลผู้ใช้งานเรียบร้อยแล้ว',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            setIsEditModalOpen(false);
+            fetchUsers(token, page, searchQuery, roleFilter, statusFilter);
+        } catch (err) {
+            Swal.fire('เกิดข้อผิดพลาด', err.response?.data?.msg || 'ไม่สามารถอัปเดตข้อมูลได้', 'error');
+        } finally {
+            setIsSavingUser(false);
+        }
+    };
+
+    // Open Classrooms Detail Modal
+    const handleOpenClassModal = (targetUser, type) => {
+        setViewingUser(targetUser);
+        setModalClassType(type);
+        setIsClassModalOpen(true);
     };
 
     // Handle System Settings Save
@@ -389,7 +464,7 @@ const AdminPage = ({
                         )}
 
                         {/* ============================================================ */}
-                        {/* 2. จัดการผู้ใช้ (Users) - แสดงผลของตัวเองเฉพาะทาง */}
+                        {/* 2. จัดการผู้ใช้ (Users) - 50 ต่อหน้า, กรอง, แก้ไขข้อมูล, ระงับบัญชี */}
                         {/* ============================================================ */}
                         {activeTab === 'users' && (
                             <div>
@@ -398,22 +473,26 @@ const AdminPage = ({
                                         <div className="admin-title-row">
                                             <h1 className="admin-title">👥 จัดการผู้ใช้ (User Management)</h1>
                                             <span className="admin-badge">
-                                                ทั้งหมด {usersList.length} รายการ
+                                                ทั้งหมด {totalUsers} บัญชี (แสดง 50 คน/หน้า)
                                             </span>
                                         </div>
                                         <p className="admin-subtitle">
-                                            ค้นหา ตรวจสอบบทบาท และปรับเปลี่ยนสิทธิ์ผู้ใช้งานในระบบ
+                                            ค้นหา ปรับปรุงชื่อ อีเมล รหัสผ่าน ระงับบัญชี และตรวจสอบห้องเรียนที่เกี่ยวข้อง
                                         </p>
                                     </div>
                                     <div className="admin-header-actions">
-                                        <button className="admin-btn admin-btn-primary" onClick={() => fetchUsers(token, searchQuery)} disabled={refreshing}>
+                                        <button 
+                                            className="admin-btn admin-btn-primary" 
+                                            onClick={() => fetchUsers(token, page, searchQuery, roleFilter, statusFilter)} 
+                                            disabled={refreshing}
+                                        >
                                             <FiRefreshCw className={refreshing ? 'animate-spin' : ''} /> รีเฟรชรายชื่อ
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="admin-content-section">
-                                    {/* Search Toolbar */}
+                                    {/* Search & Filter Toolbar */}
                                     <div className="admin-toolbar">
                                         <div className="admin-search-wrapper">
                                             <FiSearch className="admin-search-icon" />
@@ -423,10 +502,46 @@ const AdminPage = ({
                                                 placeholder="ค้นหาตามชื่อ หรือ อีเมล..."
                                                 value={searchQuery}
                                                 onChange={(e) => {
-                                                    setSearchQuery(e.target.value);
-                                                    fetchUsers(token, e.target.value);
+                                                    const val = e.target.value;
+                                                    setSearchQuery(val);
+                                                    setPage(1);
+                                                    fetchUsers(token, 1, val, roleFilter, statusFilter);
                                                 }}
                                             />
+                                        </div>
+
+                                        <div className="admin-filter-group">
+                                            {/* Role Filter */}
+                                            <select
+                                                className="admin-select-filter"
+                                                value={roleFilter}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setRoleFilter(val);
+                                                    setPage(1);
+                                                    fetchUsers(token, 1, searchQuery, val, statusFilter);
+                                                }}
+                                            >
+                                                <option value="all">บทบาท: ทั้งหมด</option>
+                                                <option value="admin">เฉพาะ Admin</option>
+                                                <option value="user">เฉพาะ User</option>
+                                            </select>
+
+                                            {/* Status Filter */}
+                                            <select
+                                                className="admin-select-filter"
+                                                value={statusFilter}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setStatusFilter(val);
+                                                    setPage(1);
+                                                    fetchUsers(token, 1, searchQuery, roleFilter, val);
+                                                }}
+                                            >
+                                                <option value="all">สถานะ: ทั้งหมด</option>
+                                                <option value="active">ปกติ (Active)</option>
+                                                <option value="suspended">ระงับการใช้งาน (Suspended)</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -438,59 +553,122 @@ const AdminPage = ({
                                                     <th>ผู้ใช้งาน</th>
                                                     <th>อีเมล</th>
                                                     <th>บทบาท (Role)</th>
-                                                    <th>เข้าใช้งานล่าสุด</th>
-                                                    <th>การจัดการสิทธิ์</th>
+                                                    <th>สถานะบัญชี</th>
+                                                    <th>ห้องเรียน</th>
+                                                    <th>เข้าสู่ระบบล่าสุด</th>
+                                                    <th>การจัดการ</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {usersList.length > 0 ? (
-                                                    usersList.map((u) => (
-                                                        <tr key={u._id}>
-                                                            <td>
-                                                                <div className="admin-table-user-cell">
-                                                                    {u.photoURL ? (
-                                                                        <img referrerPolicy="no-referrer" src={u.photoURL} alt="" className="admin-avatar" />
-                                                                    ) : (
-                                                                        <div className="admin-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                                                            {(u.displayName || u.email || '?')[0].toUpperCase()}
+                                                    usersList.map((u) => {
+                                                        const createdCount = Array.isArray(u.createdClasses) ? u.createdClasses.length : 0;
+                                                        const enrolledCount = Array.isArray(u.enrolledClasses) ? u.enrolledClasses.length : 0;
+                                                        const isUserSuspended = Boolean(u.isSuspended);
+
+                                                        return (
+                                                            <tr key={u._id} style={{ backgroundColor: isUserSuspended ? '#fff5f5' : 'transparent' }}>
+                                                                <td>
+                                                                    <div className="admin-table-user-cell">
+                                                                        {u.photoURL ? (
+                                                                            <img referrerPolicy="no-referrer" src={u.photoURL} alt="" className="admin-avatar" />
+                                                                        ) : (
+                                                                            <div className="admin-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                                                                {(u.displayName || u.email || '?')[0].toUpperCase()}
+                                                                            </div>
+                                                                        )}
+                                                                        <div>
+                                                                            <strong>{u.displayName || 'No Name'}</strong>
+                                                                            {u._id === user?.id && <span style={{ fontSize: '11px', color: '#10b981', marginLeft: '6px' }}>(คุณ)</span>}
                                                                         </div>
-                                                                    )}
-                                                                    <div>
-                                                                        <strong>{u.displayName || 'No Name'}</strong>
-                                                                        {u._id === user?.id && <span style={{ fontSize: '11px', color: '#10b981', marginLeft: '6px' }}>(คุณ)</span>}
                                                                     </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>{u.email}</td>
-                                                            <td>
-                                                                <span className={`role-badge ${u.role === 'admin' ? 'admin' : 'user'}`}>
-                                                                    {u.role || 'user'}
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                {u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH') : 'ยังไม่มีประวัติ'}
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    className="admin-action-btn-sm"
-                                                                    onClick={() => handleToggleRole(u)}
-                                                                    title="สลับสิทธิ์ระหว่าง admin และ user"
-                                                                >
-                                                                    <FiEdit2 size={12} /> {u.role === 'admin' ? 'ลดเป็น User' : 'ตั้งเป็น Admin'}
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))
+                                                                </td>
+                                                                <td>{u.email}</td>
+                                                                <td>
+                                                                    <span className={`role-badge ${u.role === 'admin' ? 'admin' : 'user'}`}>
+                                                                        {u.role || 'user'}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span className={`status-badge ${isUserSuspended ? 'suspended' : 'active'}`}>
+                                                                        {isUserSuspended ? <><FiUserX /> ถูกระงับ</> : <><FiUserCheck /> ปกติ</>}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="class-chip-group">
+                                                                        <button
+                                                                            className="class-chip created"
+                                                                            onClick={() => handleOpenClassModal(u, 'created')}
+                                                                            title="คลิกเพื่อดูห้องเรียนที่สร้าง"
+                                                                        >
+                                                                            <FiBook size={12} /> สร้าง {createdCount} ห้อง
+                                                                        </button>
+                                                                        <button
+                                                                            className="class-chip enrolled"
+                                                                            onClick={() => handleOpenClassModal(u, 'enrolled')}
+                                                                            title="คลิกเพื่อดูห้องเรียนที่เข้าร่วม"
+                                                                        >
+                                                                            เข้าร่วม {enrolledCount} ห้อง
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    {u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH') : 'ยังไม่มีประวัติ'}
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        className="admin-action-btn-sm"
+                                                                        onClick={() => handleOpenEditModal(u)}
+                                                                        title="แก้ไขชื่อ อีเมล รหัสผ่าน หรือระงับบัญชี"
+                                                                    >
+                                                                        <FiEdit2 size={12} /> แก้ไข / จัดการ
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="5" className="admin-empty-state">
-                                                            ไม่พบข้อมูลผู้ใช้งาน
+                                                        <td colSpan="7" className="admin-empty-state">
+                                                            {refreshing ? 'กำลังโหลดข้อมูล...' : 'ไม่พบข้อมูลผู้ใช้งานที่ตรงตามเงื่อนไข'}
                                                         </td>
                                                     </tr>
                                                 )}
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* Pagination Controls */}
+                                    <div className="admin-pagination">
+                                        <div className="admin-pagination-info">
+                                            แสดงหน้า {page} จาก {totalPages} หน้า (ทั้งหมด {totalUsers} บัญชี)
+                                        </div>
+                                        <div className="admin-pagination-actions">
+                                            <button
+                                                className="admin-page-btn"
+                                                disabled={page <= 1 || refreshing}
+                                                onClick={() => {
+                                                    const newPage = page - 1;
+                                                    setPage(newPage);
+                                                    fetchUsers(token, newPage, searchQuery, roleFilter, statusFilter);
+                                                }}
+                                            >
+                                                <FiChevronLeft /> ก่อนหน้า
+                                            </button>
+                                            <button
+                                                className="admin-page-btn"
+                                                disabled={page >= totalPages || refreshing}
+                                                onClick={() => {
+                                                    const newPage = page + 1;
+                                                    setPage(newPage);
+                                                    fetchUsers(token, newPage, searchQuery, roleFilter, statusFilter);
+                                                }}
+                                            >
+                                                ถัดไป <FiChevronRight />
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         )}
@@ -705,6 +883,202 @@ const AdminPage = ({
                     </div>
                 </div>
             </main>
+
+            {/* ============================================================ */}
+            {/* Modal: แก้ไขข้อมูลผู้ใช้ และระงับบัญชี (User Edit Modal) */}
+            {/* ============================================================ */}
+            {isEditModalOpen && (
+                <div className="admin-modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="admin-modal-header">
+                            <h3>แก้ไขข้อมูลและสิทธิ์ผู้ใช้งาน</h3>
+                            <button className="admin-modal-close" onClick={() => setIsEditModalOpen(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <form onSubmit={handleSaveUserEdit}>
+                            <div className="admin-modal-body">
+                                
+                                <div className="admin-form-group">
+                                    <label className="admin-form-label">ชื่อที่แสดง (Display Name)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-form-input"
+                                        value={editFormData.displayName}
+                                        onChange={(e) => setEditFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                                        placeholder="ระบุชื่อผู้ใช้..."
+                                    />
+                                </div>
+
+                                <div className="admin-form-group">
+                                    <label className="admin-form-label">อีเมล (Email)</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        className="admin-form-input"
+                                        value={editFormData.email}
+                                        onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))}
+                                        placeholder="ระบุอีเมล..."
+                                    />
+                                </div>
+
+                                <div className="admin-form-group">
+                                    <label className="admin-form-label">กำหนดรหัสผ่านใหม่ (ปล่อยว่างถ้าไม่ต้องการเปลี่ยน)</label>
+                                    <div className="admin-password-row">
+                                        <input
+                                            type="text"
+                                            className="admin-form-input"
+                                            value={editFormData.password}
+                                            onChange={(e) => setEditFormData(prev => ({ ...prev, password: e.target.value }))}
+                                            placeholder="กรอกรหัสผ่านใหม่อย่างน้อย 6 ตัวอักษร..."
+                                        />
+                                        <button
+                                            type="button"
+                                            className="admin-btn-random"
+                                            onClick={handleGeneratePassword}
+                                            title="สุ่มรหัสผ่านอัตโนมัติ"
+                                        >
+                                            <FiKey /> สุ่มรหัส
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="admin-form-group">
+                                    <label className="admin-form-label">บทบาทผู้ใช้งาน (Role)</label>
+                                    <select
+                                        className="admin-form-select"
+                                        value={editFormData.role}
+                                        onChange={(e) => setEditFormData(prev => ({ ...prev, role: e.target.value }))}
+                                    >
+                                        <option value="user">ผู้ใช้งานทั่วไป (User)</option>
+                                        <option value="admin">ผู้ดูแลระบบ (Admin)</option>
+                                    </select>
+                                </div>
+
+                                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '8px 0' }} />
+
+                                {/* Suspension Toggle */}
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '12px 14px',
+                                    backgroundColor: editFormData.isSuspended ? '#fef2f2' : '#f9fafb',
+                                    borderRadius: '8px',
+                                    border: `1px solid ${editFormData.isSuspended ? '#fecaca' : '#e5e7eb'}`
+                                }}>
+                                    <div>
+                                        <strong style={{ color: editFormData.isSuspended ? '#dc2626' : '#1f2937', fontSize: '14px' }}>
+                                            {editFormData.isSuspended ? '⚠️ ระงับการใช้งานบัญชีนี้' : 'สถานะบัญชีปกติ'}
+                                        </strong>
+                                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>
+                                            {editFormData.isSuspended ? 'ผู้ใช้จะถูกตัดเซสชันและไม่สามารถเข้าสู่ระบบได้' : 'ผู้ใช้สามารถเข้าสู่ระบบและใช้งานได้ตามปกติ'}
+                                        </p>
+                                    </div>
+                                    <label className="admin-toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={editFormData.isSuspended}
+                                            onChange={(e) => setEditFormData(prev => ({ ...prev, isSuspended: e.target.checked }))}
+                                        />
+                                        <span className="admin-slider" style={{ backgroundColor: editFormData.isSuspended ? '#dc2626' : undefined }}></span>
+                                    </label>
+                                </div>
+
+                            </div>
+                            <div className="admin-modal-footer">
+                                <button
+                                    type="button"
+                                    className="admin-btn admin-btn-secondary"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    disabled={isSavingUser}
+                                >
+                                    ยกเลิก
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="admin-btn admin-btn-primary"
+                                    disabled={isSavingUser}
+                                >
+                                    {isSavingUser ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ============================================================ */}
+            {/* Modal: รายละเอียดห้องเรียนของผู้ใช้ (Created / Enrolled) */}
+            {/* ============================================================ */}
+            {isClassModalOpen && viewingUser && (
+                <div className="admin-modal-overlay" onClick={() => setIsClassModalOpen(false)}>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="admin-modal-header">
+                            <h3>
+                                {modalClassType === 'created' ? '📚 ห้องเรียนที่สร้างโดย' : '🎒 ห้องเรียนที่เข้าร่วมโดย'}{' '}
+                                {viewingUser.displayName || viewingUser.email}
+                            </h3>
+                            <button className="admin-modal-close" onClick={() => setIsClassModalOpen(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="admin-modal-body">
+                            {(() => {
+                                const list = modalClassType === 'created' 
+                                    ? (viewingUser.createdClasses || []) 
+                                    : (viewingUser.enrolledClasses || []);
+
+                                if (!list || list.length === 0) {
+                                    return (
+                                        <div className="admin-empty-state">
+                                            {modalClassType === 'created' 
+                                                ? 'ผู้ใช้นี้ยังไม่ได้สร้างห้องเรียนใดๆ' 
+                                                : 'ผู้ใช้นี้ยังไม่ได้เข้าร่วมห้องเรียนใดๆ'}
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="class-detail-list">
+                                        {list.map((cls, idx) => (
+                                            <div key={cls._id || idx} className="class-detail-item">
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <div style={{
+                                                        width: '14px',
+                                                        height: '14px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: cls.color || '#369D07'
+                                                    }}></div>
+                                                    <div>
+                                                        <div className="class-detail-name">{cls.name || 'ไม่มีชื่อห้อง'}</div>
+                                                        <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                                            {cls.isPublic ? 'ห้องสาธารณะ' : 'ห้องส่วนตัว'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span className="class-detail-code">
+                                                        รหัส: {cls.classCode || '-'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                        <div className="admin-modal-footer">
+                            <button
+                                className="admin-btn admin-btn-secondary"
+                                onClick={() => setIsClassModalOpen(false)}
+                            >
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };

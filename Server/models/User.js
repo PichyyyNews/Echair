@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     displayName: { type: String },
     photoURL: { type: String },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    isSuspended: { type: Boolean, default: false, index: true },
     uid: { type: String, unique: true, sparse: true, default: null },
     createdClasses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
     enrolledClasses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],

@@ -17,6 +17,10 @@ const authMiddleware = async (req, res, next) => {
             logger.warn(`Authentication failed: User not found (${decoded.user.id})`);
             return res.status(404).json({ msg: 'User not found' });
         }
+        if (user.isSuspended) {
+            logger.warn(`Authentication blocked: User account is suspended (${user.email})`);
+            return res.status(403).json({ msg: 'บัญชีของคุณถูกระงับการใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ' });
+        }
         req.user = user;
         logger.auth('Authenticated', user.email, 'success');
         next();

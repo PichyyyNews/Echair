@@ -40,6 +40,11 @@ exports.googleLoginVerify = async (req, res) => {
             return res.status(503).json({ msg: settings.site.maintenanceMessage });
         }
 
+        // Suspension Check
+        if (user && user.isSuspended) {
+            return res.status(403).json({ msg: 'บัญชีของคุณถูกระงับการใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ' });
+        }
+
         let isNewUser = false;
 
         if (!user) {
@@ -255,9 +260,14 @@ exports.login = async (req, res) => {
     const { email, password, otpCode } = req.body;
 
     try {
-        let user = await User.findOne({ email }).select('+password +twoFactorEnabled +loginOtpCode +loginOtpExpires +role');
+        let user = await User.findOne({ email }).select('+password +twoFactorEnabled +loginOtpCode +loginOtpExpires +role +isSuspended');
         if (!user) {
             return res.status(400).json({ msg: 'Invalid Credentials.' });
+        }
+
+        // Suspension Check
+        if (user.isSuspended) {
+            return res.status(403).json({ msg: 'บัญชีของคุณถูกระงับการใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ' });
         }
 
         // Maintenance Mode Check

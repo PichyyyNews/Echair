@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
@@ -5,6 +6,7 @@ const LoginHistory = require('../models/LoginHistory');
 const ActiveSession = require('../models/ActiveSession');
 const Class = require('../models/Class');
 const SystemSettings = require('../models/SystemSettings');
+const { delCache } = require('../utils/cache');
 const createLogger = require('../utils/logger');
 const logger = createLogger('AdminController');
 
@@ -79,24 +81,38 @@ exports.getAllUsers = async (req, res) => {
 
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const search = req.query.search || '';
+        const search = req.query.search ? req.query.search.trim() : '';
+        const role = req.query.role || 'all';
+        const status = req.query.status || 'all';
 
         // Build query
         let query = {};
         if (search) {
-            query = {
-                $or: [
-                    { email: { $regex: search, $options: 'i' } },
-                    { displayName: { $regex: search, $options: 'i' } }
-                ]
-            };
+            query.$or = [
+                { email: { $regex: search, $options: 'i' } },
+                { displayName: { $regex: search, $options: 'i' } }
+            ];
         }
 
-        // Fetch users
+        if (role && role !== 'all') {
+            query.role = role;
+        }
+
+        if (status === 'suspended') {
+            query.isSuspended = true;
+        } else if (status === 'active') {
+            query.$and = (query.$and || []).concat([
+                { $or: [{ isSuspended: false }, { isSuspended: { $exists: false } }] }
+            ]);
+        }
+
+        // Fetch users with populated classrooms
         const users = await User.find(query)
-            .select('email displayName photoURL role createdClasses enrolledClasses')
+            .select('email displayName photoURL role isSuspended createdClasses enrolledClasses createdAt')
+            .populate('createdClasses', 'name classCode color isPublic')
+            .populate('enrolledClasses', 'name classCode color isPublic')
             .sort({ _id: -1 })
             .skip(skip)
             .limit(limit)
@@ -113,7 +129,7 @@ exports.getAllUsers = async (req, res) => {
             return {
                 ...user,
                 lastLogin: lastLogin ? lastLogin.timestamp : null,
-                status: lastLogin && (Date.now() - new Date(lastLogin.timestamp).getTime()) < 7 * 24 * 60 * 60 * 1000
+                activityStatus: lastLogin && (Date.now() - new Date(lastLogin.timestamp).getTime()) < 7 * 24 * 60 * 60 * 1000
                     ? 'active'
                     : 'inactive'
             };
@@ -121,12 +137,13 @@ exports.getAllUsers = async (req, res) => {
 
         const total = await User.countDocuments(query);
 
-        logger.success(`Fetched ${users.length} users (page ${page})`);
+        logger.success(`Fetched ${users.length} users (page ${page}, limit ${limit})`);
         res.json({
             users: usersWithLastLogin,
             pagination: {
                 current: page,
-                total: Math.ceil(total / limit),
+                limit,
+                total: Math.ceil(total / limit) || 1,
                 totalItems: total,
                 hasNext: skip + limit < total,
                 hasPrev: page > 1
@@ -148,11 +165,31 @@ exports.updateUser = async (req, res) => {
     logger.info(`Updating user: ${id}`);
 
     try {
-        const { displayName, role } = req.body;
+        const { displayName, role, email, password, isSuspended } = req.body;
 
         const updateData = {};
-        if (displayName !== undefined) updateData.displayName = displayName;
+        if (displayName !== undefined) updateData.displayName = displayName.trim();
         if (role !== undefined && ['user', 'admin'].includes(role)) updateData.role = role;
+        if (isSuspended !== undefined) updateData.isSuspended = Boolean(isSuspended);
+
+        // Email update with duplicate check
+        if (email !== undefined) {
+            const cleanEmail = email.trim().toLowerCase();
+            const existingUser = await User.findOne({ email: cleanEmail, _id: { $ne: id } });
+            if (existingUser) {
+                return res.status(400).json({ msg: 'อีเมลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้อีเมลอื่น' });
+            }
+            updateData.email = cleanEmail;
+        }
+
+        // Password update with bcrypt hashing
+        if (password !== undefined && password.trim() !== '') {
+            if (password.length < 6) {
+                return res.status(400).json({ msg: 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร' });
+            }
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
 
         const user = await User.findByIdAndUpdate(
             id,
@@ -164,6 +201,15 @@ exports.updateUser = async (req, res) => {
             logger.warn(`User not found: ${id}`);
             return res.status(404).json({ msg: 'User not found' });
         }
+
+        // If suspended, revoke active sessions immediately
+        if (updateData.isSuspended === true) {
+            logger.warn(`User suspended: ${user.email} - Revoking all active sessions`);
+            await ActiveSession.deleteMany({ userId: id });
+        }
+
+        // Invalidate Redis user cache
+        await delCache(`user:${id}`);
 
         logger.success(`User updated: ${user.email}`);
         res.json({ msg: 'User updated successfully', user });
