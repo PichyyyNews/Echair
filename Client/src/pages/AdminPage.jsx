@@ -45,6 +45,23 @@ const AdminPage = ({
         }
     }, [propUser, navigate]);
 
+    // Refresh user profile to get latest role
+    const refreshProfile = useCallback(async (token) => {
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+                headers: { 'x-auth-token': token }
+            });
+            if (res.data) {
+                setUser(prev => ({ ...prev, ...res.data, token }));
+                if (updateUserProfile) {
+                    updateUserProfile(res.data);
+                }
+            }
+        } catch (err) {
+            console.warn('Could not refresh profile:', err.message);
+        }
+    }, [updateUserProfile]);
+
     // Fetch user's classrooms for Sidebar consistency
     const fetchClassrooms = useCallback(async (token) => {
         try {
@@ -81,9 +98,10 @@ const AdminPage = ({
         const token = user?.token || localStorage.getItem('authToken');
         if (!token) return;
         setRefreshing(true);
+        refreshProfile(token);
         fetchClassrooms(token);
         fetchAdminStats(token);
-    }, [user, fetchClassrooms, fetchAdminStats]);
+    }, [user, refreshProfile, fetchClassrooms, fetchAdminStats]);
 
     useEffect(() => {
         loadAll();
