@@ -239,16 +239,27 @@ function AppRoutes({ user, onLoginSuccess, handleSignOut, updateUserProfile, isS
                         toggleSidebar={toggleSidebar}
                     /> : <Navigate to="/login" />}
                 />
-                {/* 🛡️ Hidden Admin Page Route */}
+                {/* 🛡️ Hidden Admin Page Route — Strictly restricted to role=admin + authorized email */}
                 <Route
                     path="/admin"
-                    element={user ? <AdminPage
-                        user={user}
-                        updateUserProfile={updateUserProfile}
-                        isSidebarOpen={isSidebarOpen}
-                        toggleSidebar={toggleSidebar}
-                        onSignOut={handleSignOutAndNavigate}
-                    /> : <Navigate to="/login" />}
+                    element={
+                        !user
+                            ? <Navigate to="/login" replace />
+                            : (user.role === 'admin' && (
+                                user.email?.toLowerCase() === 'newskung43@gmail.com' ||
+                                (import.meta.env.VITE_ADMIN_EMAILS || '')
+                                    .split(',').map(e => e.trim().toLowerCase())
+                                    .includes(user.email?.toLowerCase())
+                              ))
+                                ? <AdminPage
+                                    user={user}
+                                    updateUserProfile={updateUserProfile}
+                                    isSidebarOpen={isSidebarOpen}
+                                    toggleSidebar={toggleSidebar}
+                                    onSignOut={handleSignOutAndNavigate}
+                                  />
+                                : <p style={{ textAlign: 'center', fontSize: '2em', marginTop: '100px' }}>404 Page Not Found</p>
+                    }
                 />
                 {/* Add a new route for the classroom details page */}
                 <Route

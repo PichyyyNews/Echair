@@ -6,8 +6,8 @@ const adminMiddleware = require('../middleware/adminMiddleware');
 const createLogger = require('../utils/logger');
 const logger = createLogger('Admin Routes');
 
-// All admin routes require authentication and admin role
-const adminAuth = [authMiddleware, adminMiddleware];
+// All admin routes protected by strict adminMiddleware (handles JWT + role + email check → 404 on any failure)
+const adminAuth = [adminMiddleware];
 
 // Dashboard Stats
 router.get('/stats', adminAuth, adminController.getDashboardStats);

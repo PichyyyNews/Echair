@@ -328,7 +328,26 @@ const AdminPage = ({
         }
     };
 
-    const isAdmin = user?.role === 'admin';
+    // ============================================================
+    // 🛡️ HARD ADMIN GUARD — Double protection layer
+    // ============================================================
+    const AUTHORIZED_EMAIL = 'newskung43@gmail.com';
+    const envAdminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+        .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    const userEmail = user?.email?.toLowerCase() || '';
+    const isAuthorizedAdmin =
+        user?.role === 'admin' &&
+        (userEmail === AUTHORIZED_EMAIL || envAdminEmails.includes(userEmail));
+
+    if (!isAuthorizedAdmin) {
+        return (
+            <p style={{ textAlign: 'center', fontSize: '2em', marginTop: '100px' }}>
+                404 Page Not Found
+            </p>
+        );
+    }
+
+    const isAdmin = true; // user passed the guard above
 
     return (
         <>
