@@ -379,6 +379,10 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
         setPosts((prev) => prev.filter((post) => post._id !== deletedPostId));
     };
 
+    const handlePostUpdated = (updatedPost) => {
+        setPosts((prev) => prev.map((post) => (post._id === updatedPost._id ? updatedPost : post)));
+    };
+
     const handleAddComment = async (postId, text) => {
         try {
             const res = await axios.post(
@@ -475,6 +479,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                 creatorIds={creatorIds}
                 classId={classId}
                 onDelete={handlePostDeleted}
+                onUpdate={handlePostUpdated}
                 onAddComment={handleAddComment}
                 onDeleteComment={handleDeleteComment}
             />

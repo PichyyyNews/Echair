@@ -75,6 +75,45 @@ router.get('/:classId', auth, async (req, res) => {
     }
 });
 
+// @route   PUT /api/stream/:classId/:postId
+// @desc    Update a stream post
+// @access  Private
+router.put('/:classId/:postId', auth, async (req, res) => {
+    try {
+        const { classId, postId } = req.params;
+        const { title, content, attachments } = req.body;
+
+        const classroom = await Class.findById(classId);
+        if (!classroom) {
+            return res.status(404).json({ message: 'Classroom not found' });
+        }
+
+        const isCreator = classroom.creator.includes(req.user.id);
+        const post = await StreamPost.findOne({ _id: postId, classId });
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (!isCreator && post.author.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Not authorized to edit this post' });
+        }
+
+        if (title !== undefined) post.title = title;
+        if (content !== undefined) post.content = content;
+        if (attachments !== undefined) post.attachments = attachments;
+        post.updatedAt = new Date();
+
+        await post.save();
+        await post.populate('author', 'username displayName photoURL email');
+        await post.populate('comments.author', 'username displayName photoURL email');
+
+        res.json(post);
+    } catch (err) {
+        console.error('Error updating stream post:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // @route   DELETE /api/stream/:classId/:postId
 // @desc    Delete a stream post
 // @access  Private
