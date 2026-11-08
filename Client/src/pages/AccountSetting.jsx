@@ -928,7 +928,8 @@ const AccountSetting = ({ user, updateUserProfile, onSignOut, isSidebarOpen, tog
                 onAccountSectionChange={setActiveSection}
             />
             <main className={`main__content ${isSidebarOpen ? 'shift' : ''}`}>
-                <div className="account-settings-container">
+                <div className="main-content-scrollable-area">
+                    <div className="account-settings-container">
                     {/* Hero Profile Overview Card */}
                     <div className="profile-hero-card">
                         <div className="profile-avatar-wrapper">
@@ -1023,7 +1024,8 @@ const AccountSetting = ({ user, updateUserProfile, onSignOut, isSidebarOpen, tog
                     {activeSection === 'account' && renderAccountSection()}
                     {activeSection === 'security' && renderSecuritySection()}
                 </div>
-            </main>
+            </div>
+        </main>
 
             {/* Cropper Modal Dialog */}
             {showCropper && createPortal(

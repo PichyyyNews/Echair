@@ -658,7 +658,8 @@ const AppSettingsPage = ({ user: propUser, onSignOut, isSidebarOpen, toggleSideb
                 onBackClick={handleBackClick}
             />
             <main className={`main__content ${isSidebarOpen ? 'shift' : ''}`}>
-                <div className="app-settings-container">
+                <div className="main-content-scrollable-area">
+                    <div className="app-settings-container">
                     {/* In-page Tab Navigation for instant accessibility */}
                     <div className="settings-top-tabs">
                         <button
@@ -704,7 +705,8 @@ const AppSettingsPage = ({ user: propUser, onSignOut, isSidebarOpen, toggleSideb
 
                     {renderContent()}
                 </div>
-            </main>
+            </div>
+        </main>
         </>
     );
 };
