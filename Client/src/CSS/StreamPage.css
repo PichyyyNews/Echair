@@ -1336,6 +1336,8 @@
     rgba(255, 255, 255, 1) 100%
   );
   border-top: 1px solid rgba(15, 23, 42, 0.06);
+  border-bottom-left-radius: inherit !important;
+  border-bottom-right-radius: inherit !important;
 }
 
 .sp-comment-summary {
@@ -8119,6 +8121,15 @@
    ══════════════════════════════════════════════════════ */
 .sp-card {
   overflow: visible !important;
+  border-bottom-left-radius: var(--stream-radius-lg, 24px) !important;
+  border-bottom-right-radius: var(--stream-radius-lg, 24px) !important;
+}
+
+.sp-card > *:last-child,
+.sp-comments {
+  border-bottom-left-radius: inherit !important;
+  border-bottom-right-radius: inherit !important;
+  overflow: hidden;
 }
 
 .sp-author-name-row {
