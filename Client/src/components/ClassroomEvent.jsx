@@ -1605,12 +1605,12 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                         <div className="ev-student-answer-header">
                                             <div className="ev-student-answer-badge">
                                                 <FaCheckCircle style={{ marginRight: '6px', color: '#10b981' }} />
-                                                <span>{t('classroomEvent.yourAnswer') || 'คำตอบของคุณ'}</span>
+                                                <span>{tr('classroomEvent.yourAnswer', 'คำตอบของคุณ')}</span>
                                             </div>
                                             <span className="ev-student-answer-status">
                                                 {isEventEnded 
                                                     ? (tr('classroomEvent.eventEnded', 'กิจกรรมสิ้นสุดแล้ว')) 
-                                                    : (t('classroomEvent.submittedBadge') || 'ส่งแล้ว')}
+                                                    : (tr('classroomEvent.submittedBadge', 'ส่งแล้ว'))}
                                             </span>
                                         </div>
                                         <div className="ev-student-answer-body">
@@ -1809,12 +1809,12 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                         <div className="ev-student-answer-header">
                                             <div className="ev-student-answer-badge" style={{ color: '#b45309' }}>
                                                 <FaCheckCircle style={{ marginRight: '6px', color: '#10b981' }} />
-                                                <span>{t('classroomEvent.yourVote') || 'ตัวเลือกที่คุณโหวต'}</span>
+                                                <span>{tr('classroomEvent.yourVote', 'ตัวเลือกที่คุณโหวต')}</span>
                                             </div>
                                             <span className="ev-student-answer-status" style={{ background: '#fef3c7', color: '#b45309' }}>
                                                 {isEventEnded 
                                                     ? (tr('classroomEvent.eventEnded', 'กิจกรรมสิ้นสุดแล้ว')) 
-                                                    : (t('classroomEvent.votedBadge') || 'โหวตแล้ว')}
+                                                    : (tr('classroomEvent.votedBadge', 'โหวตแล้ว'))}
                                             </span>
                                         </div>
                                         <div className="ev-student-answer-body" style={{ borderLeftColor: '#f59e0b' }}>
