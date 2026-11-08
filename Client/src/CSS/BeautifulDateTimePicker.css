@@ -30,7 +30,7 @@
 .bdp-preset-btn:hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .bdp-preset-btn.is-active {
@@ -71,7 +71,7 @@
 .bdp-value {
   flex: 1;
   font-size: 0.875rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-weight: 500;
 }
 
@@ -142,7 +142,7 @@
 .bdp-month-title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .bdp-nav {
@@ -166,7 +166,7 @@
 
 .bdp-nav-btn:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .bdp-weekdays {
@@ -197,7 +197,7 @@
   font-size: 0.8125rem;
   border-radius: 8px;
   cursor: pointer;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   transition: all 0.15s ease;
 }
 
@@ -281,7 +281,7 @@
 .bdp-time-header {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   margin-bottom: 8px;
   text-align: center;
 }
@@ -322,7 +322,7 @@
 
 .bdp-time-item:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .bdp-time-item-selected {

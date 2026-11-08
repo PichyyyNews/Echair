@@ -103,7 +103,7 @@
   margin: 0 0 16px;
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -188,7 +188,7 @@
 .session-rank-name {
   font-weight: 600;
   font-size: 14px;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

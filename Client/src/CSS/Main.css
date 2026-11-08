@@ -55,7 +55,7 @@ body {
 .section-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin: 1.25rem 1rem 0.5rem;
 }
 
@@ -140,7 +140,7 @@ body {
 .card-title-area h3 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -387,7 +387,7 @@ body {
   margin: 0 0 0.5rem 0;
   font-size: 1.35rem;
   font-weight: 600;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.02em;
   line-height: 1.35;
 }
@@ -450,7 +450,7 @@ body {
 
 .no-classrooms-btn.btn-secondary:hover {
   background: #f8fafc;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   border-color: #94a3b8;
 }
 
@@ -563,7 +563,7 @@ body {
 
 .classroom-options-icon:hover,
 .classroom-pin-icon:hover {
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 .dropdown-menu {
@@ -583,7 +583,7 @@ body {
 .dropdown-item {
   padding: 12px 16px;
   font-size: 14px;
-  color: #3c4043;
+  color: rgb(65, 65, 65);
   cursor: pointer;
   display: flex;
   align-items: center;

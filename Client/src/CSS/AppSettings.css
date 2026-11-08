@@ -7,7 +7,7 @@
   padding: 32px 24px 80px;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Thai", Helvetica, Arial, sans-serif;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   flex-shrink: 0;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .settings-tab-pill:hover {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   background: #f8fafc;
 }
 
@@ -87,7 +87,7 @@
 .settings-section-header h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   margin: 0 0 6px 0;
   letter-spacing: -0.01em;
 }
@@ -166,7 +166,7 @@
 .settings-row-title {
   font-size: 15px;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   cursor: pointer;
 }
 
@@ -185,7 +185,7 @@
   padding: 9px 14px;
   font-size: 14px;
   font-weight: 500;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -359,7 +359,7 @@
 .theme-name {
   font-size: 13.5px;
   font-weight: 600;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .theme-status-tag {
@@ -402,12 +402,12 @@
 }
 
 .segment-btn:hover {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .segment-btn.active {
   background: #ffffff;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -458,7 +458,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .version-pill {
@@ -512,7 +512,7 @@
 }
 
 .about-val {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   text-align: right;
 }
 
@@ -564,7 +564,7 @@
 
 .clean-link-button:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   border-color: #cbd5e1;
 }
 

@@ -56,7 +56,7 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
 }
 
 .header-text p {
@@ -133,7 +133,7 @@ label {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     font-size: 1rem;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
     transition: all 0.2s;
     background: #fff;
     font-weight: 500;
@@ -275,7 +275,7 @@ label {
 
 .score-adj-btn:hover {
     background: #e2e8f0;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
 }
 
 .preset-score-display {
@@ -344,7 +344,7 @@ label {
 .toggle-text span {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
 }
 
 .toggle-text small {
@@ -452,7 +452,7 @@ input:checked+.slider:before {
 
 .preview-name {
     font-weight: 600;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
 }
 
 .preview-score {

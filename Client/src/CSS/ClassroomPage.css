@@ -104,7 +104,7 @@
 .classroom-header h1 {
   font-size: 2rem;
   /* ลดขนาดฟอนต์จาก 2.5rem เป็น 2rem */
-  color: #333;
+  color: rgb(65, 65, 65);
   margin: 0;
   line-height: 1.2;
   /* เพิ่ม line-height เพื่อให้ดูกระชับขึ้น */
@@ -292,7 +292,7 @@
   )
   .classroom-edit-btn:hover {
   background: rgba(255, 255, 255, 1);
-  color: #333;
+  color: rgb(65, 65, 65);
   transform: scale(1.05);
 }
 
@@ -401,7 +401,7 @@
 
 .edit-sidebar-header h3 {
   margin: 0;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 1.2rem;
 }
 
@@ -451,7 +451,7 @@
 
 .edit-tab:hover {
   background: #e9ecef;
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 .edit-tab.active {
@@ -479,7 +479,7 @@
 .role-section h4,
 .other-section h4 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 1.1rem;
   border-bottom: 2px solid #e9ecef;
   padding-bottom: 10px;
@@ -586,7 +586,7 @@
 .member-card span {
   flex: 1;
   font-weight: 500;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 14px;
 }
 
@@ -611,7 +611,7 @@
 
 .demote-btn {
   background: #ffc107;
-  color: #212529;
+  color: rgb(65, 65, 65);
 }
 
 .demote-btn:hover {
@@ -801,7 +801,7 @@
 
 .members-section h2 {
   font-size: 1.8rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   border-bottom: 2px solid #eee;
   padding-bottom: 10px;
   margin-bottom: 20px;
@@ -837,7 +837,7 @@
 
 .member-card h4 {
   font-size: 1rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin: 0;
 }
 
@@ -958,7 +958,7 @@
 
 .classroom-layout-container h2 {
   font-size: 1.2rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin-top: 0;
   margin-bottom: 5px;
 }
@@ -1313,7 +1313,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.9);
-  color: #333;
+  color: rgb(65, 65, 65);
   border: 2px solid #ececec;
   padding: 8px 12px;
   border-radius: 20px;
@@ -1709,7 +1709,7 @@
 .attendance-student-name {
   font-size: 1.1rem !important;
   font-weight: 700 !important;
-  color: #333 !important;
+  color: rgb(65, 65, 65) !important;
   margin: 0 !important;
 }
 
@@ -1736,7 +1736,7 @@
   border-radius: 10px !important;
   border: 2px solid #eef0f2 !important;
   font-size: 1rem !important;
-  color: #333 !important;
+  color: rgb(65, 65, 65) !important;
   background-color: #fff !important;
   cursor: pointer;
 }

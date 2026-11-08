@@ -173,13 +173,13 @@ html {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #202124;
+  color: rgb(65, 65, 65);
 }
 
 .notification-item p {
   margin: 0;
   font-size: 13px;
-  color: #3c4043;
+  color: rgb(65, 65, 65);
   line-height: 1.4;
 }
 
@@ -262,7 +262,7 @@ html {
   width: 250px;
   height: 100%;
   background: #f7f7f7;
-  color: black;
+  color: rgb(65, 65, 65);
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
   padding-top: 60px;
@@ -405,7 +405,7 @@ html {
 .dropdown-user-name {
   font-weight: 500;
   font-size: 16px;
-  color: #3c4043;
+  color: rgb(65, 65, 65);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -641,7 +641,7 @@ html {
   font-size: 24px;
   font-weight: 700;
   font-family: "Courier New", Courier, monospace;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   text-align: center;
   padding: 8px 0;
   letter-spacing: 2px;
@@ -708,7 +708,7 @@ html {
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

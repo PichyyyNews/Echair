@@ -45,7 +45,7 @@
   margin: 0 0 2px 0;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.5px;
 }
 
@@ -74,7 +74,7 @@
 
 .eh-refresh-btn:hover {
   background: #f8fafc;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   border-color: #cbd5e1;
   transform: translateY(-1px);
 }
@@ -169,7 +169,7 @@
   border: none;
   outline: none;
   font-size: 0.88rem;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   background: transparent;
 }
 
@@ -261,7 +261,7 @@
 .eh-event-info h4 {
   margin: 0;
   font-size: 0.92rem;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -355,7 +355,7 @@
 
 .eh-detail-item span {
   font-size: 0.84rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-weight: 600;
 }
 
@@ -503,7 +503,7 @@
 .eh-td-name {
   text-align: left !important;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   position: sticky;
   left: 0;
   background: white;
@@ -659,7 +659,7 @@
 .eh-stat-value {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   line-height: 1.2;
 }
 
@@ -683,7 +683,7 @@
 .eh-stats-section h3 {
   margin: 0 0 14px;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -734,7 +734,7 @@
   width: 40px;
   font-size: 0.82rem;
   font-weight: 800;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   text-align: right;
 }
 
@@ -757,7 +757,7 @@
 
 .eh-status-item strong {
   font-size: 1.2rem;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   background: #f8fafc;
   padding: 2px 10px;
   border-radius: 6px;

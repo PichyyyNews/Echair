@@ -152,7 +152,7 @@
 
 .empty-event-title {
   margin: 1rem 0 0;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-size: clamp(2rem, 3.2vw, 3rem);
   line-height: 0.96;
   letter-spacing: -0.04em;
@@ -517,7 +517,7 @@
 
 .add-event-prompt h3 {
   margin: 0;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 1.25rem;
   font-weight: 600;
 }
@@ -795,7 +795,7 @@
 .input-group label {
   display: block;
   margin-bottom: 10px;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-weight: 500;
 }
 
@@ -1614,7 +1614,7 @@
 .question-text {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   margin-bottom: 16px;
   line-height: 1.4;
   background: linear-gradient(to right, #f1f5f9, #f8fafc);
@@ -2017,7 +2017,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   cursor: pointer;
   width: auto !important;
 }
@@ -2195,7 +2195,7 @@
 
 .add-option-btn:hover {
   background: #e2e8f0;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   border-color: #64748b;
 }
 
@@ -2370,7 +2370,7 @@
 
 .answer-username {
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-size: 0.85rem;
 }
 
@@ -2715,7 +2715,7 @@
 }
 
 .event-card-header h3 {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   font-size: 1.4rem !important;
   font-weight: 800 !important;
   display: flex !important;
@@ -2795,7 +2795,7 @@
 .reroll-random-btn:hover,
 .buzz-reset-btn:hover {
   background: #e2e8f0 !important;
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   transform: translateY(-2px) !important;
 }
 
@@ -2830,7 +2830,7 @@
 .poll-result-label {
   font-size: 1rem !important;
   font-weight: 600 !important;
-  color: #1e293b !important;
+  color: rgb(65, 65, 65) !important;
 }
 
 .poll-progress-bar-bg {
@@ -2853,7 +2853,7 @@
   border-radius: 16px !important;
   padding: 24px !important;
   font-size: 1.4rem !important;
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   font-weight: 800 !important;
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
   margin-bottom: 24px !important;
@@ -2960,7 +2960,7 @@
 
 /* Word Cloud Event Content */
 .wordcloud-topic {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   background: #f8fafc !important;
   padding: 16px 28px !important;
   border-radius: 16px !important;
@@ -4371,7 +4371,7 @@
   gap: 12px;
   font-weight: 700;
   font-size: 1rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .ev-answers-header-main {
@@ -4493,7 +4493,7 @@
 .ev-answer-username {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .ev-answer-time {
@@ -4546,7 +4546,7 @@
 }
 
 .event-image-modal-header h3 {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
 }
 
 .event-image-modal-header p {
@@ -4560,7 +4560,7 @@
 
 .event-image-modal-header .modal-close-x:hover {
   background: #cbd5e1;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .event-image-modal-body {
@@ -4621,7 +4621,7 @@
 
 .answer-modal-question p {
   margin: 0;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   font-size: 1rem;
   line-height: 1.6;
   font-weight: 600;
@@ -4671,7 +4671,7 @@
 }
 
 .answer-modal-student-name {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   font-size: 1rem;
   line-height: 1.3;
 }
@@ -4683,7 +4683,7 @@
 
 .answer-modal-answer p {
   margin: 0;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-size: 1rem;
   line-height: 1.75;
   white-space: pre-wrap;
@@ -4748,7 +4748,7 @@
   justify-content: space-between;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .ev-poll-result-count {
@@ -4804,7 +4804,7 @@
   border: 2px solid #e5e7eb !important;
   border-radius: 12px !important;
   background: white !important;
-  color: #1e293b !important;
+  color: rgb(65, 65, 65) !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
   cursor: pointer;
@@ -4953,7 +4953,7 @@
 .ev-buzz-winner-name {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .ev-buzz-winner-time {
@@ -5044,7 +5044,7 @@
   margin: 0 !important;
   font-size: 1.25rem !important;
   font-weight: 700 !important;
-  color: #1e293b !important;
+  color: rgb(65, 65, 65) !important;
   line-height: 1.5 !important;
   word-break: break-word;
 }
@@ -5150,11 +5150,11 @@
 }
 
 .modal-header-new.event-image-modal-header {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .modal-header-new.event-image-modal-header h3 {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
 }
 
 .modal-header-new.event-image-modal-header p {
@@ -5224,7 +5224,7 @@
 .etc-name {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .etc-desc {
@@ -6466,7 +6466,7 @@
 .grouping-result-name {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
   flex: 1;
 }
 
@@ -6624,7 +6624,7 @@
   flex: 1;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
 }
 
 .grouping-btn-count {
@@ -6754,7 +6754,7 @@
   gap: 7px;
   font-weight: 700;
   font-size: 0.92rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 .cfg-scoring-star-icon {
   color: #f59e0b;
@@ -6880,7 +6880,7 @@
 .ev-student-answer-body p {
   margin: 0;
   font-size: 0.94rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
@@ -6917,7 +6917,7 @@
 }
 .ev-end-event-btn:hover {
   background: #f8fafc;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   border-color: #94a3b8;
   transform: translateY(-1px);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
@@ -6955,11 +6955,11 @@
   transition: all 0.2s ease;
 }
 .event-tab-btn:hover {
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 .event-tab-btn.active {
   background: #ffffff;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
 }
 .event-tab-count {
@@ -6972,7 +6972,7 @@
 }
 .event-tab-btn.active .event-tab-count {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 .count-archived {
   background: #fed7aa !important;
@@ -7177,7 +7177,7 @@
   background: transparent !important;
   padding: 8px 4px !important;
   font-size: 0.92rem !important;
-  color: #1e293b !important;
+  color: rgb(65, 65, 65) !important;
   box-shadow: none !important;
 }
 
@@ -7285,7 +7285,7 @@
 .pres-topic-text {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.01em;
 }
 
@@ -7330,7 +7330,7 @@
 
 .pres-icon-btn:hover {
   background: #ffffff;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   transform: scale(1.08);
 }
 

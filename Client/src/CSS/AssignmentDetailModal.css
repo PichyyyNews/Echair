@@ -32,7 +32,7 @@
 
 .assignment-description {
   font-size: 1rem;
-  color: #202124;
+  color: rgb(65, 65, 65);
   line-height: 1.5;
   margin-bottom: 30px;
 }
@@ -54,7 +54,7 @@
 }
 
 .close-btn:hover {
-  color: #202124;
+  color: rgb(65, 65, 65);
 }
 
 /* Teacher View Styling */
@@ -65,7 +65,7 @@
 
 .submissions-section h3 {
   margin: 0 0 16px 0;
-  color: #3c4043;
+  color: rgb(65, 65, 65);
 }
 
 .submissions-list {
@@ -85,7 +85,7 @@
 
 .student-info {
   font-weight: 500;
-  color: #202124;
+  color: rgb(65, 65, 65);
 }
 
 .submission-status-info {
@@ -208,7 +208,7 @@
 
 .work-panel-header h3 {
   margin: 0;
-  color: #3c4043;
+  color: rgb(65, 65, 65);
 }
 
 .status-text {
@@ -236,7 +236,7 @@
 .score-display {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #202124;
+  color: rgb(65, 65, 65);
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid #dadce0;
@@ -298,7 +298,7 @@
 }
 
 .assignment-detail-header h2 {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   font-size: 1.45rem !important;
   font-weight: 700 !important;
 }

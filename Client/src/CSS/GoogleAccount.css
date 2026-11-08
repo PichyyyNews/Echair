@@ -7,7 +7,7 @@
     padding: 32px 24px 80px;
     box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Thai", Helvetica, Arial, sans-serif;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     flex-shrink: 0;
 }
 
@@ -89,7 +89,7 @@
     margin: 0;
     font-size: 22px;
     font-weight: 700;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     letter-spacing: -0.01em;
 }
 
@@ -216,7 +216,7 @@
 }
 
 .account-tab-pill:hover {
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     background: #f8fafc;
 }
 
@@ -302,7 +302,7 @@
     margin: 0 0 3px 0;
     font-size: 16px;
     font-weight: 600;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-card-header p {
@@ -373,7 +373,7 @@
 
 .clean-field-display {
     font-size: 14.5px;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     font-weight: 500;
     word-break: break-word;
 }
@@ -415,7 +415,7 @@
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     background: #ffffff;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
     font-family: inherit;
@@ -474,7 +474,7 @@
 
 .clean-btn-cancel:hover {
     background: #f1f5f9;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-btn-edit-trigger {
@@ -577,7 +577,7 @@
 }
 
 .clean-info-text strong {
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-action-row {
@@ -596,7 +596,7 @@
 .clean-meta-title {
     font-size: 14px;
     font-weight: 600;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-meta-sub {
@@ -792,7 +792,7 @@
 .clean-session-device {
     font-size: 14px;
     font-weight: 600;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .current-device-tag {
@@ -870,7 +870,7 @@
 .clean-history-time {
     font-size: 13.5px;
     font-weight: 500;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-history-meta {
@@ -904,7 +904,7 @@
 
 .clean-btn-icon-refresh:hover {
     background: #f1f5f9;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .clean-empty-state {
@@ -971,7 +971,7 @@
     margin: 0;
     font-size: 16px;
     font-weight: 600;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .cropper-btn-close {
@@ -987,7 +987,7 @@
 }
 
 .cropper-btn-close:hover {
-    color: #0f172a;
+    color: rgb(65, 65, 65);
     background: #f1f5f9;
 }
 

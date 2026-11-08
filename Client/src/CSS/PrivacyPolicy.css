@@ -86,7 +86,7 @@
 
 .legal-lang-btn.active {
   background: #ffffff;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -226,7 +226,7 @@
 }
 
 .legal-section strong {
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 [data-theme="dark"] .legal-section strong {

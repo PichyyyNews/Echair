@@ -55,7 +55,7 @@
   margin: 0 0 2px 0;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.5px;
 }
 
@@ -88,12 +88,12 @@
 }
 
 .attendance-tabs .tab-btn:hover {
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .attendance-tabs .tab-btn.active {
   background: #ffffff;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -119,7 +119,7 @@
 .attendance-controls .btn.outline:hover:not(:disabled) {
   background: #f8fafc;
   border-color: #cbd5e1;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
@@ -248,7 +248,7 @@
 
 .attendance-table .day-col.clickable-header:hover {
   background-color: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   border-bottom-color: #cbd5e1;
 }
 
@@ -285,7 +285,7 @@
 
 .student-name {
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   font-size: 0.95rem;
   white-space: nowrap;
   overflow: hidden;
@@ -453,12 +453,12 @@
 }
 
 .tab-btn:hover:not(.active) {
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .tab-btn.active {
   background: white;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.06);
@@ -517,7 +517,7 @@
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 1.25rem;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   font-weight: 700;
 }
 

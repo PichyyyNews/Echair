@@ -48,7 +48,7 @@
 
 .edit-header h1 {
   font-size: 1.5rem;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   margin: 0 0 2px 0;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -236,7 +236,7 @@
 
 .edit-sidebar-item:hover {
   background: #f8f9fa;
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 .edit-sidebar-item.active {
@@ -308,7 +308,7 @@
   align-items: center;
   gap: 12px;
   font-size: 1.5rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin-bottom: 30px;
   padding-bottom: 15px;
   border-bottom: 2px solid #e9ecef;
@@ -388,7 +388,7 @@
 
 .role-section h3 {
   font-size: 1.2rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #e9ecef;
@@ -437,7 +437,7 @@
 .member-card span {
   flex: 1;
   font-weight: 500;
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 .action-btn {
@@ -461,7 +461,7 @@
 
 .demote-btn {
   background: #ffc107;
-  color: #212529;
+  color: rgb(65, 65, 65);
 }
 
 .demote-btn:hover {
@@ -1062,7 +1062,7 @@
 
 .role-section h3 {
   font-size: 1rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   margin-bottom: 16px;
   padding-bottom: 10px;
   border-bottom: 1px solid #e9ecef;
@@ -1158,7 +1158,7 @@
 
 .member-name {
   font-weight: 600;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
   font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
@@ -1234,7 +1234,7 @@
 
 .demote-btn {
   background: linear-gradient(135deg, #ffc107, #e0a800);
-  color: #212529;
+  color: rgb(65, 65, 65);
   box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
 }
 
@@ -1289,7 +1289,7 @@
 
 .setting-title {
   font-weight: 600;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 0.95rem;
 }
 
@@ -1371,7 +1371,7 @@
   text-align: center;
   background: transparent !important;
   border: none !important;
-  color: #333 !important;
+  color: rgb(65, 65, 65) !important;
 }
 
 .copy-btn {

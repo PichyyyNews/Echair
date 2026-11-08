@@ -72,7 +72,7 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
 }
 
 .grouping-modal-close {
@@ -185,7 +185,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 0.95rem;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
   background: #fff;
   outline: none;
   transition:
@@ -218,7 +218,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   font-size: 0.85rem;
-  color: #1f2937;
+  color: rgb(65, 65, 65);
   background: #fff;
   outline: none;
   text-align: center;

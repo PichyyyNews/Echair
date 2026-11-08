@@ -70,7 +70,7 @@
 .wpm-title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -106,7 +106,7 @@
 .wpm-btn-secondary:hover {
     background: #f1f5f9;
     border-color: #94a3b8;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 .wpm-btn-primary {
@@ -138,7 +138,7 @@
 
 .wpm-close-btn:hover {
     background: #e2e8f0;
-    color: #0f172a;
+    color: rgb(65, 65, 65);
 }
 
 /* Modal Body */
@@ -216,7 +216,7 @@
     margin: 0;
     font-size: 1.15rem;
     font-weight: 600;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
     max-width: 90%;
     word-break: break-all;
 }
@@ -250,7 +250,7 @@
 .wpm-generic-wrap h4 {
     margin: 0;
     font-size: 1.1rem;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
 }
 
 .wpm-generic-wrap p {

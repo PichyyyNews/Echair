@@ -93,7 +93,7 @@ const ClassChat = ({
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                                         <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: group.color, flexShrink: 0 }} />
-                                        <span style={{ flex: 1, fontSize: '0.88rem', fontWeight: 500, color: '#1f2937' }}>{group.name}</span>
+                                        <span style={{ flex: 1, fontSize: '0.88rem', fontWeight: 500, color: 'rgb(65, 65, 65)' }}>{group.name}</span>
                                         <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{members.length}/{maxMembers}</span>
                                         {isFull && (
                                             <span style={{ padding: '1px 5px', background: '#ef4444', color: '#fff', borderRadius: '999px', fontSize: '0.6rem', fontWeight: 700 }}>

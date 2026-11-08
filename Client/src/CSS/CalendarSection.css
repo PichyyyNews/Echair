@@ -64,7 +64,7 @@
 .cal-month-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   margin: 0;
   letter-spacing: -0.3px;
 }
@@ -336,7 +336,7 @@
 .cal-selected-date {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .cal-selected-count {
@@ -390,7 +390,7 @@
 .cal-event-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -439,7 +439,7 @@
   gap: 8px;
   font-size: 1.05rem;
   font-weight: 800;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   margin: 0;
 }
 
@@ -544,7 +544,7 @@
 .cal-agenda-name {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -847,7 +847,7 @@
 
   .cal-selected-date {
     font-weight: 700 !important;
-    color: #1e293b !important;
+    color: rgb(65, 65, 65) !important;
   }
 
   .cal-selected-count {

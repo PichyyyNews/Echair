@@ -1,4 +1,30 @@
+:root {
+  --color-text-main: rgb(65, 65, 65);
+  --color-text-primary: rgb(65, 65, 65);
+  --text-main: rgb(65, 65, 65);
+  --text-primary: rgb(65, 65, 65);
+  --stream-text: rgb(65, 65, 65);
+  --bento-text: rgb(65, 65, 65);
+  --ad-text: rgb(65, 65, 65);
+}
+
 html {
   font-family: "Noto Sans Thai", sans-serif;
   background: #f7f7f7;
+  color: rgb(65, 65, 65);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: rgb(65, 65, 65);
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  color: rgb(65, 65, 65);
 }

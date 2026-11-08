@@ -56,7 +56,7 @@
 }
 
 .modal-close-button:hover {
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 /* หัวข้อ */
@@ -64,7 +64,7 @@
   text-align: center;
   margin-bottom: 30px; /* More space */
   font-size: 1.7em; /* Slightly smaller */
-  color: #222;
+  color: rgb(65, 65, 65);
   font-weight: 600;
 }
 
@@ -143,7 +143,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.01em;
 }
 
@@ -164,7 +164,7 @@
 
 .class-action-close-btn:hover {
   background: #e2e8f0;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .class-action-grid {
@@ -239,7 +239,7 @@
 .action-tile-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   letter-spacing: -0.2px;
 }
 
@@ -477,14 +477,14 @@
 }
 
 .modal-close-button:hover {
-  color: #333;
+  color: rgb(65, 65, 65);
 }
 
 /* Heading */
 .modal-content h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 24px;
 }
 
@@ -749,7 +749,7 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   padding: 24px;
   font-family: inherit;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .modal-content.clean-ui-modal .cc-modal-header {
@@ -764,7 +764,7 @@
 .modal-content.clean-ui-modal .cc-modal-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   margin: 0;
   text-align: left;
   letter-spacing: -0.01em;
@@ -787,7 +787,7 @@
 
 .cc-modal-close-icon:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .cc-modal-form {
@@ -823,7 +823,7 @@
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #f8fafc;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   transition: all 0.2s ease;
   outline: none;
   box-sizing: border-box;
@@ -1016,7 +1016,7 @@
 
 .cc-stepper-btn:hover:not(:disabled) {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .cc-stepper-btn:disabled {
@@ -1033,7 +1033,7 @@
   text-align: center;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   outline: none;
   background: transparent;
   padding: 0;
@@ -1066,7 +1066,7 @@
 .cc-preview-trigger-btn:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .cc-preview-btn-icon {
@@ -1106,7 +1106,7 @@
 
 .cc-btn-cancel:hover {
   background: #f8fafc;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   border-color: #94a3b8;
 }
 
@@ -1159,7 +1159,7 @@
 .cc-preview-modal-title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   margin: 0;
   text-align: left;
 }

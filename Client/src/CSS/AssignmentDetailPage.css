@@ -1349,7 +1349,7 @@
 .ad-link-pill-btn:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 /* Link input row */
@@ -1500,7 +1500,7 @@
 
 .ad-cancel-btn:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 /* Teacher Submissions List inside Card */
@@ -1631,7 +1631,7 @@
 .ad-empty-title {
   font-size: 0.98rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
   margin-bottom: 0.35rem;
 }
 
@@ -1672,7 +1672,7 @@
 .ad-spec-val {
   font-size: 0.84rem;
   font-weight: 700;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
 }
 
 .ad-empty-tip {
@@ -1728,7 +1728,7 @@
 .ad-header-copy h1 {
   font-size: 1.85rem !important;
   font-weight: 800 !important;
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   margin: 0.35rem 0 !important;
 }
 

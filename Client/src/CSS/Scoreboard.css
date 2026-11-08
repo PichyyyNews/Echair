@@ -8,7 +8,7 @@
   margin: 20px auto;
   max-width: 1200px;
   font-family: "Poppins", sans-serif;
-  color: #333;
+  color: rgb(65, 65, 65);
   box-shadow: none;
 }
 
@@ -222,7 +222,7 @@
   margin-top: 10px;
   font-weight: 600;
   font-size: 1rem;
-  color: #333;
+  color: rgb(65, 65, 65);
   max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
@@ -416,7 +416,7 @@
 .scoreboard-table td {
   padding: 15px;
   border-bottom: 1px solid #f1f2f6;
-  color: #333;
+  color: rgb(65, 65, 65);
   font-size: 0.95rem;
 }
 

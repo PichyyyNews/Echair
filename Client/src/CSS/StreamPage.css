@@ -6,7 +6,7 @@
   --stream-surface-muted: #eef7f1;
   --stream-border: rgba(15, 23, 42, 0.08);
   --stream-border-strong: rgba(16, 185, 129, 0.2);
-  --stream-text: #162032;
+  --stream-text: rgb(65, 65, 65);
   --stream-text-soft: #5f6b7f;
   --stream-accent: #10b981;
   --stream-accent-deep: #059669;
@@ -7767,7 +7767,7 @@
   position: static;
   display: inline-block;
   margin: 0.18rem 0 0;
-  color: #162032;
+  color: rgb(65, 65, 65);
   font-size: clamp(1.8rem, 2vw, 2.25rem);
   font-weight: 800;
   line-height: 0.95;
@@ -7978,7 +7978,7 @@
 
 .stream-hero-card.has-animation .stream-stat-value,
 .stream-stat-value {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   font-size: 1.625rem !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
@@ -8051,7 +8051,7 @@
 }
 
 .stream-feed-state h3 {
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   font-size: 1.25rem !important;
   font-weight: 700 !important;
   margin-bottom: 8px !important;
@@ -8081,7 +8081,7 @@
 
 .cpb-quick-chip:hover {
   background: #f1f5f9 !important;
-  color: #0f172a !important;
+  color: rgb(65, 65, 65) !important;
   border-color: #cbd5e1 !important;
 }
 
@@ -8265,7 +8265,7 @@
 }
 
 .classroom-nav-pill:hover {
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .classroom-nav-pill.active {
@@ -8328,7 +8328,7 @@
 .stream-mobile-stat-val {
   font-size: 1rem;
   font-weight: 800;
-  color: #0f172a;
+  color: rgb(65, 65, 65);
   line-height: 1.1;
 }
 
@@ -8415,7 +8415,7 @@
   gap: 8px;
   font-size: 1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: rgb(65, 65, 65);
 }
 
 .stream-mobile-chat-close-btn {

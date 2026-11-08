@@ -44,7 +44,7 @@
 .admin-title {
     font-size: 26px;
     font-weight: 700;
-    color: #1f2937;
+    color: rgb(65, 65, 65);
     margin: 0;
 }
 
@@ -220,7 +220,7 @@
     margin: 0 0 6px;
     font-size: 18px;
     font-weight: 700;
-    color: #1f2937;
+    color: rgb(65, 65, 65);
 }
 
 .admin-section-header p {
@@ -296,7 +296,7 @@
 .admin-table td {
     padding: 14px 16px;
     border-bottom: 1px solid #f3f4f6;
-    color: #1f2937;
+    color: rgb(65, 65, 65);
     vertical-align: middle;
 }
 
@@ -398,7 +398,7 @@
     margin: 0 0 4px;
     font-size: 15px;
     font-weight: 600;
-    color: #1f2937;
+    color: rgb(65, 65, 65);
 }
 
 .admin-setting-label p {
@@ -479,7 +479,7 @@
 
 .admin-info-box-value {
     font-size: 14px;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
     word-break: break-all;
 }
 
@@ -676,7 +676,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #1f2937;
+    color: rgb(65, 65, 65);
 }
 
 .admin-modal-close {
@@ -693,7 +693,7 @@
 }
 
 .admin-modal-close:hover {
-    color: #1f2937;
+    color: rgb(65, 65, 65);
     background: #f3f4f6;
 }
 
@@ -785,7 +785,7 @@
 
 .class-detail-name {
     font-weight: 600;
-    color: #1e293b;
+    color: rgb(65, 65, 65);
     font-size: 14px;
 }
 
