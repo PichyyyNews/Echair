@@ -60,8 +60,7 @@
   /* Default white overlay */
   z-index: 0;
   /* Behind content but in front of header's background image */
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-radius: 8px;
   transition: background-color 0.5s;
   transition: transform 0.3s ease-in-out;
 }
