@@ -1,73 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import Lottie from 'lottie-react';
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
-import { FiPlusCircle, FiShare2, FiUserPlus } from "react-icons/fi";
+import { FiPlusCircle, FiShare2, FiUserPlus, FiLayout } from "react-icons/fi";
 import { FaThumbtack } from "react-icons/fa";
-import dashboardEmptyResearchAnimation from '../assets/dashboard-empty-research.json';
 import "../CSS/Main.css";
 import { getProfileImageSrc, isGoogleUser, handleImageError } from '../utils/profileImageHelper';
-
-const DASHBOARD_EMPTY_ANIMATION_COLORS = {
-    '0.1000,0.1000,0.1000,1.0000': [0.0862745098, 0.1254901961, 0.1960784314, 1],
-    '1.0000,1.0000,1.0000,1.0000': [1, 1, 1, 1],
-    '0.0114,0.1086,0.0762,1.0000': [0.0196078431, 0.5882352941, 0.4117647059, 1],
-    '0.4902,0.8235,0.7098,1.0000': [0.1294117647, 0.7215686275, 0.431372549, 1],
-    '0.0298,0.9902,0.6701,1.0000': [0.2039215686, 0.8274509804, 0.6, 1]
-};
-
-const normalizeAnimationColor = (color = []) =>
-    color.map((value) => Number(value).toFixed(4)).join(',');
-
-const createThemedDashboardAnimation = (animationData) => {
-    const themedAnimation = JSON.parse(JSON.stringify(animationData));
-
-    const applyThemeToShapes = (shapes = []) => {
-        shapes.forEach((shape) => {
-            if ((shape?.ty === 'fl' || shape?.ty === 'st') && Array.isArray(shape?.c?.k)) {
-                const nextColor = DASHBOARD_EMPTY_ANIMATION_COLORS[normalizeAnimationColor(shape.c.k)];
-                if (nextColor) {
-                    shape.c.k = nextColor;
-                }
-            }
-
-            if (shape?.ty === 'gr' && Array.isArray(shape?.it)) {
-                applyThemeToShapes(shape.it);
-            }
-        });
-    };
-
-    const applyThemeToLayers = (layers = []) => {
-        layers.forEach((layer) => {
-            if (Array.isArray(layer?.shapes)) {
-                applyThemeToShapes(layer.shapes);
-            }
-
-            if (Array.isArray(layer?.layers)) {
-                applyThemeToLayers(layer.layers);
-            }
-        });
-    };
-
-    applyThemeToLayers(themedAnimation.layers);
-    themedAnimation.assets?.forEach((asset) => {
-        if (Array.isArray(asset?.layers)) {
-            applyThemeToLayers(asset.layers);
-        }
-    });
-
-    return themedAnimation;
-};
 
 const Main = ({ isSidebarOpen, classrooms, user, onPinClass, handleLeaveClassroom, onClassActionClick }) => {
     const { t } = useTranslation();
     const [openDropdownId, setOpenDropdownId] = useState(null);
     const navigate = useNavigate();
-    const themedDashboardEmptyAnimation = useMemo(
-        () => createThemedDashboardAnimation(dashboardEmptyResearchAnimation),
-        []
-    );
 
     const toggleDropdown = (id, e) => {
         e.stopPropagation();
@@ -243,52 +186,37 @@ const Main = ({ isSidebarOpen, classrooms, user, onPinClass, handleLeaveClassroo
             <div className="main-content-scrollable-area">
                 {!hasAnyClassrooms ? (
                     <div className="no-classrooms-container">
-                        <div className="no-classrooms-shell" role="status" aria-live="polite">
-                            <div className="no-classrooms-panel">
-                                <div className="no-classrooms-copy">
-                                    <span className="no-classrooms-kicker">
-                                        {t('navbar.sidebar.class')}
-                                    </span>
+                        <div className="no-classrooms-card" role="status" aria-live="polite">
+                            <div className="no-classrooms-icon-circle">
+                                <FiLayout className="no-classrooms-main-icon" />
+                            </div>
 
-                                    <div className="no-classrooms-message">
-                                        <h2>{t('dashboard.empty.title')}</h2>
-                                        <p>{t('dashboard.empty.message')}</p>
-                                    </div>
+                            <h2 className="no-classrooms-title">
+                                {t('dashboard.empty.title') || 'ยังไม่มีห้องเรียน'}
+                            </h2>
 
-                                    <p className="no-classrooms-caption">
-                                        {t('dashboard.noClassroomsDesc')}
-                                    </p>
+                            <p className="no-classrooms-desc">
+                                {t('dashboard.noClassroomsDesc') || t('dashboard.empty.message')}
+                            </p>
 
-                                    <div className="welcome-buttons">
-                                        <button
-                                            className="welcome-btn create-btn"
-                                            onClick={() => onClassActionClick('create')}
-                                        >
-                                            <FiPlusCircle />
-                                            <span>{t('dashboard.empty.createBtn')}</span>
-                                        </button>
+                            <div className="no-classrooms-actions">
+                                <button
+                                    type="button"
+                                    className="no-classrooms-btn btn-primary welcome-btn create-btn"
+                                    onClick={() => onClassActionClick('create')}
+                                >
+                                    <FiPlusCircle />
+                                    <span>{t('dashboard.empty.createBtn')}</span>
+                                </button>
 
-                                        <button
-                                            className="welcome-btn join-btn"
-                                            onClick={() => onClassActionClick('join')}
-                                        >
-                                            <FiUserPlus />
-                                            <span>{t('dashboard.empty.joinBtn')}</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="no-classrooms-art" aria-hidden="true">
-                                    <div className="no-classrooms-art-frame">
-                                        <div className="no-classrooms-art-glow" />
-                                        <Lottie
-                                            animationData={themedDashboardEmptyAnimation}
-                                            loop
-                                            autoplay
-                                            className="no-classrooms-lottie"
-                                        />
-                                    </div>
-                                </div>
+                                <button
+                                    type="button"
+                                    className="no-classrooms-btn btn-secondary welcome-btn join-btn"
+                                    onClick={() => onClassActionClick('join')}
+                                >
+                                    <FiUserPlus />
+                                    <span>{t('dashboard.empty.joinBtn')}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
