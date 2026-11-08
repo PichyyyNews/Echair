@@ -17,7 +17,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgb(232, 242, 233);
+  background-color: #e8f2e9;
+  background-image: url("../image/login-bg.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
