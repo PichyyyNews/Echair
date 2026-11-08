@@ -19,13 +19,6 @@ const Chair = ({ id, initialPosition, onChairMove, containerRef, isDraggable, us
         setPosition(initialPosition);
     }, [initialPosition]);
 
-    // Add useEffect to track userScore changes for debugging
-    useEffect(() => {
-        console.log(`Chair ${id}: userScore=${userScore}, minScore=${minScore}, maxScore=${maxScore}, hasAnyScores=${hasAnyScores}`);
-        console.log(`Chair ${id}: HP percentage: ${getHPPercentage()}%, color: ${getHeatmapColor()}`);
-        console.log(`Chair ${id}: userName: ${userName}`);
-    }, [userScore, minScore, maxScore, hasAnyScores, id, userName]);
-
     // Force re-render when userScore changes
     const [renderKey, setRenderKey] = useState(0);
     useEffect(() => {
