@@ -533,11 +533,6 @@ const LoginPage = ({ onLoginSuccess, isSidebarOpen = false }) => {
               <span>{t('login.googleContinue') || "Continue with Google"}</span>
             </button>
           </div>
-          <div style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.825rem", display: "flex", justifyContent: "center", gap: "0.75rem" }}>
-            <Link to="/terms" style={{ color: "#64748b", textDecoration: "underline" }}>Terms of Service</Link>
-            <span style={{ color: "#cbd5e1" }}>•</span>
-            <Link to="/privacypolicy" style={{ color: "#64748b", textDecoration: "underline" }}>Privacy Policy</Link>
-          </div>
         </div>
       </div>
 
