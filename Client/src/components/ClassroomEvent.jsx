@@ -1044,6 +1044,7 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
     const [animationPhase, setAnimationPhase] = useState('idle'); // idle | spinning | slowing | reveal
     const [showResults, setShowResults] = useState(false);
     const [answerInput, setAnswerInput] = useState('');
+    const [localSubmittedAnswer, setLocalSubmittedAnswer] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -1053,6 +1054,22 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
     const isTimerExpired = Boolean(timerMeta?.isExpired);
     const isEventEnded = event.status === 'ended';
     const isAnswerLocked = isEventEnded || isTimerExpired;
+
+    // Resolve current user identity safely (supports id or _id, displayName or userName)
+    const currentUserId = String(currentUser?.id || currentUser?._id || '');
+    const currentUserName = currentUser?.displayName || currentUser?.userName || '';
+
+    // Find the current user's submitted answer in event.results
+    const mySubmittedResult = useMemo(() => {
+        if (!event.results || (!currentUserId && !currentUserName)) return null;
+        return event.results.find(r => 
+            (currentUserId && String(r.userId) === currentUserId) ||
+            (currentUserName && r.userName && r.userName === currentUserName)
+        ) || null;
+    }, [event.results, currentUserId, currentUserName]);
+
+    const myAnswerText = mySubmittedResult?.text || localSubmittedAnswer;
+
     const timerLabels = {
         remaining: tr('classroomEvent.timerRemaining', 'Time remaining'),
         startsWhenPosted: tr('classroomEvent.timerStartsWhenPosted', 'Starts when posted'),
@@ -1083,8 +1100,11 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
 
     // Check if user has already answered on mount/update
     useEffect(() => {
-        if (currentUser && event.results) {
-            const hasAnswered = event.results.some(r => r.userId === currentUser.id);
+        if (event.results && (currentUserId || currentUserName)) {
+            const hasAnswered = event.results.some(r => 
+                (currentUserId && String(r.userId) === currentUserId) ||
+                (currentUserName && r.userName && r.userName === currentUserName)
+            );
             setIsSubmitted(hasAnswered);
             if (hasAnswered) {
                 setIsSubmitting(false);
@@ -1097,7 +1117,7 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                 setIsSubmitting(false);
             }
         }
-    }, [currentUser, event.results, isAnswerLocked]);
+    }, [currentUserId, currentUserName, event.results, isAnswerLocked]);
 
     useEffect(() => {
         if (!selectedEventImage) {
@@ -1121,9 +1141,11 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
         }
 
         if (onSubmitAnswer && answerInput.trim()) {
-            console.log('Calling onSubmitAnswer prop...');
-            onSubmitAnswer(event, answerInput.trim());
+            const submitted = answerInput.trim();
+            setLocalSubmittedAnswer(submitted);
+            setIsSubmitted(true);
             setIsSubmitting(true);
+            onSubmitAnswer(event, submitted);
             setAnswerInput('');
         } else {
             console.warn('onSubmitAnswer not defined or input empty');
@@ -1578,7 +1600,36 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                         ) : (
                             /* Student View */
                             <div className="ev-input-section">
-                                {!isSubmitted && !isAnswerLocked ? (
+                                {(isSubmitted || myAnswerText) ? (
+                                    <div className="ev-student-answer-display">
+                                        <div className="ev-student-answer-header">
+                                            <div className="ev-student-answer-badge">
+                                                <FaCheckCircle style={{ marginRight: '6px', color: '#10b981' }} />
+                                                <span>{t('classroomEvent.yourAnswer') || 'คำตอบของคุณ'}</span>
+                                            </div>
+                                            <span className="ev-student-answer-status">
+                                                {isEventEnded 
+                                                    ? (tr('classroomEvent.eventEnded', 'กิจกรรมสิ้นสุดแล้ว')) 
+                                                    : (t('classroomEvent.submittedBadge') || 'ส่งแล้ว')}
+                                            </span>
+                                        </div>
+                                        <div className="ev-student-answer-body">
+                                            <p>{myAnswerText}</p>
+                                        </div>
+                                        <p className="ev-student-answer-footer">
+                                            {isEventEnded 
+                                                ? (tr('classroomEvent.studentEventClosedDesc', 'คุณได้ส่งคำตอบเรียบร้อยแล้ว ครูผู้สอนได้ปิดกิจกรรมนี้แล้ว'))
+                                                : (t('classroomEvent.waitingForOthers') || 'ส่งคำตอบเรียบร้อยแล้ว · รอครูสรุปกิจกรรม')}
+                                        </p>
+                                    </div>
+                                ) : isEventEnded ? (
+                                    renderStudentEndedState()
+                                ) : isAnswerLocked ? (
+                                    <div className="ev-submitted-msg ev-timeup-msg" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
+                                        <span style={{ color: '#1d4ed8' }}>{tr('classroomEvent.answerTimeUp', 'Answer time is over.')}</span>
+                                        <p style={{ color: '#1e40af' }}>{tr('classroomEvent.answerTimeUpDesc', 'You can still read the activity, but new answers are closed.')}</p>
+                                    </div>
+                                ) : (
                                     <>
                                         {isSubmitting ? (
                                             <div className="ev-submitted-msg" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
@@ -1605,18 +1656,6 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                             </>
                                         )}
                                     </>
-                                ) : isSubmitted ? (
-                                    <div className="ev-submitted-msg" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
-                                        <span style={{ color: '#1d4ed8' }}>{t('classroomEvent.answerSubmitted') || 'Answer Submitted! ✅'}</span>
-                                        <p style={{ color: '#1e40af' }}>{t('classroomEvent.waitingForOthers') || 'Waiting for other students...'}</p>
-                                    </div>
-                                ) : isEventEnded ? (
-                                    renderStudentEndedState()
-                                ) : (
-                                    <div className="ev-submitted-msg ev-timeup-msg" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
-                                        <span style={{ color: '#1d4ed8' }}>{tr('classroomEvent.answerTimeUp', 'Answer time is over.')}</span>
-                                        <p style={{ color: '#1e40af' }}>{tr('classroomEvent.answerTimeUpDesc', 'You can still read the activity, but new answers are closed.')}</p>
-                                    </div>
                                 )}
                             </div>
                         )}
@@ -1765,7 +1804,36 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                         ) : (
                             /* Student View: Voting */
                             <div className="ev-poll-voting">
-                                {!isSubmitted && !isAnswerLocked ? (
+                                {(isSubmitted || myAnswerText) ? (
+                                    <div className="ev-student-answer-display" style={{ borderColor: '#fde68a' }}>
+                                        <div className="ev-student-answer-header">
+                                            <div className="ev-student-answer-badge" style={{ color: '#b45309' }}>
+                                                <FaCheckCircle style={{ marginRight: '6px', color: '#10b981' }} />
+                                                <span>{t('classroomEvent.yourVote') || 'ตัวเลือกที่คุณโหวต'}</span>
+                                            </div>
+                                            <span className="ev-student-answer-status" style={{ background: '#fef3c7', color: '#b45309' }}>
+                                                {isEventEnded 
+                                                    ? (tr('classroomEvent.eventEnded', 'กิจกรรมสิ้นสุดแล้ว')) 
+                                                    : (t('classroomEvent.votedBadge') || 'โหวตแล้ว')}
+                                            </span>
+                                        </div>
+                                        <div className="ev-student-answer-body" style={{ borderLeftColor: '#f59e0b' }}>
+                                            <p>{myAnswerText}</p>
+                                        </div>
+                                        <p className="ev-student-answer-footer">
+                                            {isEventEnded 
+                                                ? (tr('classroomEvent.studentEventClosedDesc', 'คุณได้โหวตเรียบร้อยแล้ว ครูผู้สอนได้ปิดกิจกรรมนี้แล้ว'))
+                                                : (t('classroomEvent.waitingForResults') || 'บันทึกคะแนนโหวตแล้ว · รอครูสรุปผล')}
+                                        </p>
+                                    </div>
+                                ) : isEventEnded ? (
+                                    renderStudentEndedState({ bg: '#fffbeb', border: '#fde68a', title: '#b45309', desc: '#92400e' })
+                                ) : isAnswerLocked ? (
+                                    <div className="ev-submitted-msg ev-timeup-msg" style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
+                                        <span style={{ color: '#b45309' }}>{tr('classroomEvent.voteTimeUp', 'Voting time is over.')}</span>
+                                        <p style={{ color: '#92400e' }}>{tr('classroomEvent.voteTimeUpDesc', 'You can now wait for the teacher to review the results.')}</p>
+                                    </div>
+                                ) : (
                                     isSubmitting ? (
                                         <div className="ev-submitted-msg" style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
                                             <span style={{ color: '#b45309' }}>{tr('classroomEvent.submittingVote', 'Submitting your vote...')}</span>
@@ -1780,8 +1848,10 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                                     disabled={isSubmitting}
                                                     onClick={() => {
                                                         if (onSubmitAnswer && !isSubmitting && !isAnswerLocked) {
-                                                            onSubmitAnswer(event, opt);
+                                                            setLocalSubmittedAnswer(opt);
+                                                            setIsSubmitted(true);
                                                             setIsSubmitting(true);
+                                                            onSubmitAnswer(event, opt);
                                                         }
                                                     }}
                                                 >
@@ -1790,18 +1860,6 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                             ))}
                                         </div>
                                     )
-                                ) : isSubmitted ? (
-                                    <div className="ev-submitted-msg" style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
-                                        <span style={{ color: '#b45309' }}>{t('classroomEvent.voteSubmitted') || 'Vote Submitted! 📊'}</span>
-                                        <p style={{ color: '#92400e' }}>{t('classroomEvent.waitingForResults') || 'Waiting for results...'}</p>
-                                    </div>
-                                ) : isEventEnded ? (
-                                    renderStudentEndedState({ bg: '#fffbeb', border: '#fde68a', title: '#b45309', desc: '#92400e' })
-                                ) : (
-                                    <div className="ev-submitted-msg ev-timeup-msg" style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
-                                        <span style={{ color: '#b45309' }}>{tr('classroomEvent.voteTimeUp', 'Voting time is over.')}</span>
-                                        <p style={{ color: '#92400e' }}>{tr('classroomEvent.voteTimeUpDesc', 'You can now wait for the teacher to review the results.')}</p>
-                                    </div>
                                 )}
                             </div>
                         )}
@@ -2175,9 +2233,14 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                             <span>{t('classroomEvent.send') || 'Send'}</span>
                                         </button>
                                     </div>
-                                ) : isSubmitted ? (
+                                ) : (isSubmitted || myAnswerText) ? (
                                     <div className="wc-submitted-msg">
                                         <span>{t('classroomEvent.sentCloud') || 'Sent! ☁️'}</span>
+                                        {myAnswerText && (
+                                            <p style={{ marginTop: '4px', fontWeight: 600, color: '#047857' }}>
+                                                "{myAnswerText}"
+                                            </p>
+                                        )}
                                         <p>{t('classroomEvent.lookAtBoard') || 'Look at the board!'}</p>
                                     </div>
                                 ) : (
