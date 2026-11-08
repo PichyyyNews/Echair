@@ -540,7 +540,7 @@ exports.toggle2FA = async (req, res) => {
     try {
         const { enable } = req.body;
         const userId = req.user.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select('+twoFactorCode +twoFactorExpires');
 
         if (!user) return res.status(404).json({ msg: 'User not found' });
 
@@ -548,29 +548,53 @@ exports.toggle2FA = async (req, res) => {
             const code = Math.floor(100000 + Math.random() * 900000).toString();
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-            user.twoFactorEnabled = true;
             user.twoFactorCode = code;
             user.twoFactorExpires = expiresAt;
             await user.save();
 
             const mailOptions = {
-                from: process.env.EMAIL_USER,
+                from: process.env.EMAIL_USER || 'no-reply@echair.app',
                 to: user.email,
                 subject: 'Two-Factor Authentication Setup',
-                html: `<h1>${code}</h1>`
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                        <h2 style="color: #10b981; margin-bottom: 8px;">EChair 2FA Verification</h2>
+                        <p style="color: #475569; font-size: 14px;">Your 6-digit verification code is:</p>
+                        <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #0f172a; padding: 12px 0;">${code}</div>
+                        <p style="color: #94a3b8; font-size: 12px;">This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
+                    </div>
+                `
             };
-            await enqueueEmail(mailOptions);
-            res.json({ msg: '2FA enabled. Check email for code.' });
+
+            let emailSent = false;
+            let emailErrorMsg = '';
+            try {
+                await enqueueEmail(mailOptions);
+                emailSent = true;
+            } catch (mailErr) {
+                logger.warn('Failed to send 2FA setup email via SMTP:', mailErr.message || mailErr);
+                emailErrorMsg = mailErr.message || 'SMTP Authentication Error';
+            }
+
+            if (emailSent) {
+                return res.json({ msg: '2FA verification code sent to your email.' });
+            } else {
+                logger.info(`[2FA OTP Fallback] Code for ${user.email}: ${code}`);
+                return res.json({
+                    msg: `ระบบส่งอีเมลไม่สำเร็จ (${emailErrorMsg}) รหัสทดสอบ OTP ของคุณคือ: ${code}`,
+                    devCode: code
+                });
+            }
         } else {
             user.twoFactorEnabled = false;
             user.twoFactorCode = null;
             user.twoFactorExpires = null;
             await user.save();
-            res.json({ msg: '2FA disabled.' });
+            return res.json({ msg: '2FA disabled.' });
         }
     } catch (error) {
         logger.error('2FA toggle error:', error);
-        res.status(500).json({ msg: 'Server error' });
+        return res.status(500).json({ msg: 'Server error: ' + error.message });
     }
 };
 
@@ -578,27 +602,26 @@ exports.verify2FA = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.user.id;
-        const user = await User.findById(userId); // Need to fetch fields if not selected by default in auth middleware? User model usually selects fields.
-        // But need 2fa code which might be select: false
         const userWithCode = await User.findById(userId).select('+twoFactorCode +twoFactorExpires');
 
         if (!userWithCode) return res.status(404).json({ msg: 'User not found' });
 
         if (!userWithCode.twoFactorCode || userWithCode.twoFactorExpires < new Date()) {
-            return res.status(400).json({ msg: 'Code expired' });
+            return res.status(400).json({ msg: 'Code expired or not found. Please request a new one.' });
         }
         if (userWithCode.twoFactorCode !== code) {
             return res.status(400).json({ msg: 'Invalid code' });
         }
 
-        userWithCode.twoFactorCode = null; // Clear code
+        userWithCode.twoFactorEnabled = true;
+        userWithCode.twoFactorCode = null;
         userWithCode.twoFactorExpires = null;
         await userWithCode.save();
 
-        res.json({ msg: '2FA verified successfully' });
+        res.json({ msg: '2FA verified and enabled successfully', twoFactorEnabled: true });
     } catch (error) {
         logger.error('2FA verify error:', error);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: 'Server error: ' + error.message });
     }
 };
 

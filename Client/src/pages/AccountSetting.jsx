@@ -322,9 +322,17 @@ const AccountSetting = ({ user, updateUserProfile, onSignOut, isSidebarOpen, tog
             if (response.ok) {
                 if (enable) {
                     setShow2FAVerification(true);
-                    showToast(t('accountSettingsPage.security.twoFactor.checkEmail') || 'Check your email for verification code');
+                    if (data.devCode) {
+                        setSecurityData(prev => ({ ...prev, twoFactorCode: data.devCode }));
+                        showToast(`รหัสยืนยัน 2FA ของคุณคือ: ${data.devCode}`);
+                    } else {
+                        showToast(t('accountSettingsPage.security.twoFactor.checkEmail') || 'Check your email for verification code');
+                    }
                 } else {
                     setTwoFactorEnabled(false);
+                    if (updateUserProfile) {
+                        updateUserProfile({ ...user, twoFactorEnabled: false });
+                    }
                     showToast(t('accountSettingsPage.security.twoFactor.disabledSuccess') || 'Two-factor authentication disabled');
                 }
             } else {
@@ -355,6 +363,9 @@ const AccountSetting = ({ user, updateUserProfile, onSignOut, isSidebarOpen, tog
                 setTwoFactorEnabled(true);
                 setShow2FAVerification(false);
                 setSecurityData(prev => ({ ...prev, twoFactorCode: '' }));
+                if (updateUserProfile) {
+                    updateUserProfile({ ...user, twoFactorEnabled: true });
+                }
                 showToast(t('accountSettingsPage.security.twoFactor.enabledSuccess') || 'Two-factor authentication enabled successfully!');
             } else {
                 showToast(data.msg || (t('accountSettingsPage.security.twoFactor.invalidCode') || 'Invalid verification code'), 'error');
