@@ -14,7 +14,7 @@
 }
 
 .layout-main.shift {
-  margin-left: 250px; /* Width of sidebar when open */
+  margin-left: 260px; /* Width of sidebar when open */
 }
 
 @media (max-width: 768px) {

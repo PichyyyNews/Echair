@@ -34,7 +34,7 @@ body {
 }
 
 .main__content.shift {
-  left: 250px;
+  left: 260px;
   /* ใช้ left แทน margin-left เพื่อให้ทำงานกับ fixed position */
   right: 0;
   /* รักษา right ไว้ */

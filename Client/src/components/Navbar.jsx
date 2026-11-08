@@ -226,16 +226,19 @@ const Navbar = ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        flex: 1, // ✨ Change to flex: 1 to fill available space
+        flex: 1,
         minWidth: 0,
-        display: 'block'
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.3
     };
 
     const memberContainerStyle = {
         display: 'flex',
         alignItems: 'center',
-        flex: 1, // ✨ Change to flex: 1
-        minWidth: 0
+        flex: 1,
+        minWidth: 0,
+        gap: '4px'
     };
 
     const memberNameStyle = {
@@ -243,12 +246,16 @@ const Navbar = ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         flex: 1,
-        minWidth: 0
+        minWidth: 0,
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.3
     };
 
     const crownStyle = {
-        marginLeft: '8px',
-        color: '#f1c40f',
+        marginLeft: '4px',
+        color: '#f4b400',
+        fontSize: '13px',
         flexShrink: 0
     };
 
@@ -805,7 +812,7 @@ const Navbar = ({
                                                 className="sidebar-profile-image"
                                             />
                                             <div style={memberContainerStyle}>
-                                                <span style={memberNameStyle}>{c.displayName}</span>
+                                                <span style={memberNameStyle} title={c.displayName}>{c.displayName}</span>
                                                 {/* ✨ เพิ่ม: แสดงไอคอนมงกุฎสำหรับผู้สร้างห้องคนแรก */}
                                                 {classroomMembers.creator[0]?._id === c._id && <FaCrown style={crownStyle} title="Original Creator" />}
                                             </div>
@@ -854,7 +861,7 @@ const Navbar = ({
                                                                 className="sidebar-profile-image"
                                                                 onError={handleImageError}
                                                             />
-                                                            <span style={listItemStyle}>{participant.displayName}</span>
+                                                            <span style={listItemStyle} title={participant.displayName}>{participant.displayName}</span>
                                                             {/* ✨ แก้ไข: ตรวจสอบ user.id ก่อนแสดงปุ่ม */}
                                                             {isCreator && user.id !== participant._id && (
                                                                 <button

@@ -259,7 +259,7 @@ html {
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px;
+  width: 260px;
   height: 100%;
   background: #f7f7f7;
   color: rgb(65, 65, 65);
@@ -287,13 +287,13 @@ html {
 .sidebar-list-item {
   display: flex;
   align-items: center;
-  padding: 15px 24px;
+  padding: 9px 14px;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
-  font-size: 16px;
-  gap: 16px;
+  font-size: 14px;
+  gap: 10px;
 }
 
 .sidebar-list-item:hover {
@@ -344,7 +344,8 @@ html {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  margin-right: 12px;
+  margin-right: 0;
+  flex-shrink: 0;
 }
 
 .sidebar-classroom-name {
@@ -516,8 +517,12 @@ html {
 
 /* Nested classroom items */
 .sidebar-classroom-nested {
-  padding-left: 40px !important;
-  margin-left: 8px;
+  padding-left: 16px !important;
+  padding-right: 10px !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  gap: 8px;
+  margin-left: 4px;
   border-left: 1px solid #e8eaed;
   position: relative;
 }
@@ -558,8 +563,12 @@ html {
 
 /* Member nested items styling */
 .sidebar-member-nested {
-  padding-left: 40px !important;
-  margin-left: 8px;
+  padding-left: 16px !important;
+  padding-right: 10px !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  gap: 8px;
+  margin-left: 4px;
   border-left: 1px solid #e8eaed;
   position: relative;
 }
@@ -580,9 +589,12 @@ html {
 }
 
 /* Adjust profile image size for nested member items */
-.sidebar-member-nested .sidebar-profile-image {
-  width: 20px;
-  height: 20px;
+.sidebar-member-nested .sidebar-profile-image,
+.sidebar-classroom-nested .sidebar-profile-image {
+  width: 22px;
+  height: 22px;
+  margin-right: 0 !important;
+  flex-shrink: 0;
 }
 
 /* ── Sidebar Session Widget ── */
