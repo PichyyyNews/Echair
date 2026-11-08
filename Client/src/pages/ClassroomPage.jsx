@@ -382,7 +382,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                      const userId = data.userId; // Assuming data has userId
                      // Check if user exists in participants (by _id or id)
                      const exists = prev.participants.some(p => p._id === userId || p.id === userId);
-                     
+
                      if (!exists) {
                          // Construct minimal user object
                          const newParticipant = {
@@ -542,8 +542,8 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     // ✨ Handle User Joined with Normalization
     const handleUserJoined = useCallback((data) => {
         console.log('User joined Raw:', data);
-        let newUser = data.user || data; 
-        
+        let newUser = data.user || data;
+
         // ✨ Normalize User Data
         if (!newUser._id && newUser.userId) {
             newUser = {
@@ -560,7 +560,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
             if (!prev) return prev;
             // Avoid duplicates check with both _id and id
             if (prev.participants.some(p => (p._id && newUser._id && p._id === newUser._id) || (p.id && newUser.id && p.id === newUser.id))) return prev;
-            
+
             return {
                 ...prev,
                 participants: [...prev.participants, newUser]
@@ -680,7 +680,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 newEvent.title = 'Poll';
             }
             newEvent.type = eventConfig.type;
-            newEvent.config = eventConfig.config 
+            newEvent.config = eventConfig.config
                 ? { ...eventConfig, ...eventConfig.config }
                 : eventConfig; // Flatten nested config
         }
@@ -812,20 +812,20 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     // ✨ Handle End & Score Event — awards points to participants
     const handleEndAndScoreEvent = async (event) => {
         if (!event) return;
-        
+
         // Non-scoring events: just end them
         if (!event.config?.scoring?.enabled) {
             emitTriggerClassroomEvent(event.id, { status: 'ended' });
             return;
         }
-        
+
         const basePoints = event.config.scoring.points;
         const category = `${event.title || event.type} (Event)`;
         const hasPerOptionScoring = event.type === 'poll' && event.config?.scoreConfig?.optionScores;
-        
+
         // Determine who gets scored and how many points
         let scoredEntries = []; // { userId, userName, points }
-        
+
         if (event.type === 'buzz') {
             // Only the winner (first result)
             if (event.results?.length > 0) {
@@ -893,7 +893,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
         try {
             let updatedStudentScores = { ...studentScores };
-            
+
             scoredEntries.forEach(entry => {
                 const currentScores = updatedStudentScores[entry.userId] || {};
                 const currentCategoryScore = currentScores[category] || 0;
@@ -971,10 +971,10 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         // Find if we clicked inside the seating wrapper
         const isInsideWrapper = e.target.closest('.seating-container-wrapper');
         // Do not pan if clicking on a chair or the front board or interactive UI elements
-        const isClickingInteractiveElement = 
-            e.target.closest('.chair-item') || 
-            e.target.closest('.chair') || 
-            e.target.closest('.front-classroom-board') || 
+        const isClickingInteractiveElement =
+            e.target.closest('.chair-item') ||
+            e.target.closest('.chair') ||
+            e.target.closest('.front-classroom-board') ||
             e.target.closest('button') ||
             e.target.closest('.action-bar-container') ||
             e.target.closest('.group-overlay') ||
@@ -1377,16 +1377,16 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
     const handleCheckAttendance = async (studentIdFromDropdown = null) => {
         setDropdownOpen(false);
-        
+
         // Define default states to support Global/Everyone selection
         let isGlobalCheck = !studentIdFromDropdown;
         let selectedUserId = studentIdFromDropdown || 'ALL';
-        
+
         // Fetch matching student to display in the modal (if specific selection)
         let studentUser = null;
         let photoSrc = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
         let displayUserName = 'Everyone';
-        
+
         if (!isGlobalCheck) {
             studentUser = assignedUsers[Object.keys(assignedUsers).find(k => assignedUsers[k]?.userId === selectedUserId)] || Object.values(assignedUsers).find(u => u?.userId === selectedUserId);
             if (studentUser) {
@@ -1399,7 +1399,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
         let defaultDay = 1;
         if (!isGlobalCheck && studentUser) {
-            const pId = studentUser.userId; 
+            const pId = studentUser.userId;
             const matchedParticipant = classroom?.participants?.find(p => (p._id || p.id)?.toString() === pId?.toString());
             const studentIdToSearch = matchedParticipant ? (matchedParticipant._id || matchedParticipant.id) : pId;
             const studentAtt = attendance[studentIdToSearch];
@@ -1411,7 +1411,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
         const usersSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
 
-        const initialAvatarHtml = isGlobalCheck 
+        const initialAvatarHtml = isGlobalCheck
             ? `<div style="width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.5rem;">${usersSvg}</div>`
             : `<img referrerPolicy="no-referrer" src="${photoSrc}" class="attendance-student-photo" onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"/>`;
 
@@ -1553,7 +1553,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 const status = popup.getAttribute('data-selected-status');
                 const day = document.getElementById('swal-day').value;
                 const targetStudentId = document.getElementById('swal-student-select-hidden').value;
-                
+
                 if (!status) {
                     Swal.showValidationMessage('Please select a status');
                     return false;
@@ -1569,7 +1569,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 const selectedContent = popup.querySelector('#custom-select-selected-content');
                 const avatarContainer = popup.querySelector('#swal-student-avatar-container');
                 const optionElements = popup.querySelectorAll('.custom-select-option');
-                
+
                 // Toggle dropdown menu
                 trigger.addEventListener('click', () => {
                     const isVisible = optionsList.style.display === 'block';
@@ -1583,7 +1583,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                         optionsList.style.display = 'none';
                     }
                 });
-                
+
                 // Handle option selection
                 optionElements.forEach(option => {
                     option.addEventListener('click', () => {
@@ -1591,7 +1591,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                         hiddenInput.value = val;
                         selectedContent.innerHTML = option.innerHTML; // Copy HTML content
                         optionsList.style.display = 'none';
-                        
+
                         // Update the large left avatar just like before
                         if (val === 'ALL') {
                             avatarContainer.innerHTML = '<div style="width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.5rem;">' + usersSvg + '</div>';
@@ -1619,7 +1619,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
             try {
                 const dayKey = String(formValues.day);
                 const newAttendance = { ...attendance };
-                
+
                 let targetMessage = '';
 
                 if (formValues.targetStudentId === 'ALL') {
@@ -1638,7 +1638,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                     const studentId = formValues.targetStudentId;
                     if (!newAttendance[studentId]) newAttendance[studentId] = {};
                     newAttendance[studentId][dayKey] = formValues.status;
-                    
+
                     const matchedUser = Object.values(assignedUsers).find(u => u?.userId?.toString() === studentId);
                     targetMessage = matchedUser ? matchedUser.userName : 'Student';
                 }
@@ -1671,7 +1671,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 
     const handleFunction3 = async () => {
         setDropdownOpen(false);
-        
+
         if (!selectedStudentChair || !isCreator) {
             return;
         }
@@ -1752,7 +1752,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const isStudentInGroup = (studentUserId) => {
         const activeGroupingEvent = classroomEvents?.find(e => e.type === 'grouping' && e.status === 'active');
         if (!activeGroupingEvent) return false;
-        
+
         return activeGroupingEvent.results?.some(r => r.userId === studentUserId);
     };
 
@@ -1760,17 +1760,17 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const getGroupMembers = (studentUserId) => {
         const activeGroupingEvent = classroomEvents?.find(e => e.type === 'grouping' && e.status === 'active');
         if (!activeGroupingEvent) return [];
-        
+
         const studentResult = activeGroupingEvent.results?.find(r => r.userId === studentUserId);
         if (!studentResult) return [];
-        
+
         const groupName = studentResult.text;
         return activeGroupingEvent.results?.filter(r => r.text === groupName) || [];
     };
 
     const handleFunction4 = () => {
         setDropdownOpen(false);
-        
+
         if (!selectedStudentChair || !isCreator) {
             return;
         }
@@ -1890,7 +1890,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 </div>
                 <button id="close-modal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">×</button>
             </div>
-            
+
             ${ratePresets.length === 0 ? `
                 <div style="text-align: center; padding: 40px 20px;">
                     <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
@@ -1928,7 +1928,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                             </div>
                         </div>
                     ` : ''}
-                    
+
                     ${negativePresets.length > 0 ? `
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
@@ -2010,7 +2010,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 const currentScores = updatedStudentScores[member.userId] || {};
                 const currentCategoryScore = currentScores[category] || 0;
                 const scoreChange = preset.scoreType === 'subtract' ? -preset.scoreValue : preset.scoreValue;
-                
+
                 updatedStudentScores[member.userId] = {
                     ...currentScores,
                     [category]: currentCategoryScore + scoreChange
@@ -2047,7 +2047,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                 const memberName = assignedUsers[Object.keys(assignedUsers).find(
                     key => assignedUsers[key].userId === member.userId
                 )]?.userName || member.userName;
-                
+
                 emitScoreUpdate(member.userId, updatedStudentScores[member.userId], category, memberName);
             });
 
@@ -2287,7 +2287,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                     const startTime = new Date(latestSession.startedAt);
                     setSessionStartTime(startTime);
                     setSessionScoreChanges(latestSession.scoreChanges || []);
-                    
+
                     const elapsed = Math.floor((Date.now() - startTime.getTime()) / 1000);
                     setSessionElapsed(elapsed > 0 ? elapsed : 0);
 
@@ -2302,7 +2302,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                             return next;
                         });
                     }, 1000);
-                    
+
                     console.log('✅ Restored active session:', latestSession._id);
                 }
             }
@@ -2814,7 +2814,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                                         const minScore = hasAnyScores ? Math.min(...allScores.filter(score => score >= 0)) : 0;
                                         const maxScore = hasAnyScores ? Math.max(...allScores) : 0;
 
-                                        console.log(`Rendering Chair ${id}: userScore=${userScore}, maxScore=${maxScore}`);
+                                        //console.log(`Rendering Chair ${id}: userScore=${userScore}, maxScore=${maxScore}`);
 
                                         // ✨ Determine group color for this chair
                                         let groupColor = null;
@@ -3298,10 +3298,10 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                     {/* ✨ Chat Split Card (Side-by-Side) */}
                     <div className={`chat-split-card ${isChatSidebarOpen ? 'open' : ''}`} style={{ padding: 0 }}>
                         <div className="edit-sidebar-content" style={{ padding: '0', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                            <ClassChat 
-                                classId={classId} 
-                                user={user} 
-                                isCreator={isCreator} 
+                            <ClassChat
+                                classId={classId}
+                                user={user}
+                                isCreator={isCreator}
                                 chatMessages={chatMessages}
                                 classroomEvents={classroomEvents}
                                 emitChatMessage={emitChatMessage}
@@ -3362,5 +3362,3 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
 };
 
 export default ClassroomPage;
-
-

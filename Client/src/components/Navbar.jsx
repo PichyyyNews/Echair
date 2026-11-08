@@ -486,6 +486,18 @@ const Navbar = ({
                                 <span>{t('navbar.appSettings.general')}</span>
                             </li>
                             <li
+                                className={`sidebar-list-item ${appActiveSection === 'notifications' ? 'active' : ''}`}
+                                onClick={() => onAppSectionChange && onAppSectionChange('notifications')}
+                            >
+                                <span>{t('navbar.appSettings.notifications')}</span>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${appActiveSection === 'appearance' ? 'active' : ''}`}
+                                onClick={() => onAppSectionChange && onAppSectionChange('appearance')}
+                            >
+                                <span>{t('navbar.appSettings.appearance') || (i18n.language === 'th' ? 'การแสดงผล' : 'Appearance')}</span>
+                            </li>
+                            <li
                                 className={`sidebar-list-item ${appActiveSection === 'about' ? 'active' : ''}`}
                                 onClick={() => onAppSectionChange && onAppSectionChange('about')}
                             >

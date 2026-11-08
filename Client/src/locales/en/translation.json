@@ -103,7 +103,8 @@
             "notifications": "Notifications",
             "userManagement": "User Management",
             "integration": "Integration",
-            "helpSupport": "Help & Support"
+            "helpSupport": "Help & Support",
+            "appearance": "Appearance & Theme"
         },
         "classDetail": {
             "summary": "Summary",
@@ -172,7 +173,14 @@
             "themeLight": "Light",
             "themeDark": "Dark",
             "themeAuto": "Auto",
-            "enableSound": "Enable sound effects"
+            "enableSound": "Enable sound effects",
+            "subtitle": "Manage essential application preferences",
+            "soundEffects": "Classroom Sound Effects",
+            "soundEffectsDesc": "Play sounds for quiz buzzer, dice roll, and countdown timer",
+            "chatAutoScroll": "Auto-scroll Chat",
+            "chatAutoScrollDesc": "Automatically scroll down to newest messages and activities",
+            "confirmLeave": "Confirm Before Leaving Classroom",
+            "confirmLeaveDesc": "Prompt for confirmation when exiting an active classroom session"
         },
         "data": {
             "title": "Data Management",
@@ -195,11 +203,22 @@
             "never": "Never"
         },
         "notifications": {
-            "title": "Notification Settings",
+            "title": "Notification Preferences",
             "sysNotif": "System Notifications",
             "desktopNotif": "Enable desktop notifications",
             "emailNotif": "Email notifications",
-            "soundNotif": "Sound notifications"
+            "soundNotif": "Sound notifications",
+            "subtitle": "Control channels and alert triggers across EChair",
+            "master": "System Notifications",
+            "masterDesc": "Enable or disable all in-app notifications",
+            "sound": "Notification Sound",
+            "soundDesc": "Play a gentle sound chime on incoming alerts",
+            "assignments": "Assignments & Due Dates",
+            "assignmentsDesc": "Reminders when new coursework is assigned or due soon",
+            "events": "Live Classroom Activities",
+            "eventsDesc": "Alerts for polls, quick quizzes, buzzers, and attendance calls",
+            "announcements": "Announcements & Replies",
+            "announcementsDesc": "Alerts when instructors post updates or respond to your posts"
         },
         "users": {
             "title": "User Management",
@@ -217,19 +236,50 @@
             "req1000": "1000 requests/hour"
         },
         "help": {
-            "title": "Help & Support",
-            "subtitle": "Information about the application",
+            "title": "About & Support Center",
+            "subtitle": "Version info, developers, documentation, and support resources",
             "documentation": "Documentation",
             "userGuide": "View User Guide",
             "contactSupport": "Contact Support",
             "reportBug": "Report Bug",
             "version": "Version",
-            "developer": "Developers",
-            "institution": "Institution"
+            "developer": "Development Team",
+            "institution": "Institution",
+            "appDesc": "Real-time smart seating and interactive classroom management platform",
+            "channel": "Release Channel",
+            "stable": "Production Stable",
+            "faculty": "Faculty of Technical Education, KMUTNB",
+            "dept": "Department of Computer Education (CED)",
+            "legal": "Legal & Policies",
+            "terms": "Terms of Service",
+            "privacy": "Privacy Policy",
+            "support": "Support & Bug Report",
+            "clearCacheTitle": "Reset Local Preferences Cache",
+            "clearCacheDesc": "Reset local UI preferences on this browser to defaults (does not affect account data)",
+            "clearCacheBtn": "Reset Preferences Cache",
+            "clearCacheConfirm": "Are you sure you want to reset all local UI preferences on this browser?",
+            "clearCacheSuccess": "Local preferences have been reset successfully"
         },
         "selectCategory": "Select a setting category",
         "english": "English",
-        "thai": "ไทย"
+        "thai": "ไทย",
+        "appearance": {
+            "title": "Appearance & Seating Chart",
+            "subtitle": "Customize grid density, student name badges, and visual theme",
+            "theme": "Interface Theme",
+            "themeDesc": "Choose an interface tone that best fits your environment",
+            "themeLight": "Light Mode",
+            "themeDark": "Dark Mode",
+            "themeSystem": "System Default",
+            "seatingDensity": "Seating Grid Density",
+            "seatingDensityDesc": "Adjust spacing between student chairs to fit your screen size",
+            "densityComfortable": "Comfortable",
+            "densityCompact": "Compact",
+            "showStudentNames": "Display Names on Chairs",
+            "showStudentNamesDesc": "Show full student names on seating cards at all times",
+            "seatAnimations": "Smooth Seating Animations",
+            "seatAnimationsDesc": "Enable smooth transitions when dragging chairs or switching layouts"
+        }
     },
     "classroom": {
         "create": {
@@ -283,7 +333,19 @@
             "photoRemoveError": "Failed to remove profile picture.",
             "serverError": "Server error. Please try again later.",
             "signOut": "Sign out",
-            "cropBtn": "Crop & Upload"
+            "cropBtn": "Crop & Upload",
+            "roleStudent": "Student",
+            "roleTeacher": "Instructor / Teacher",
+            "roleAdmin": "Administrator",
+            "googleAccount": "Google Account",
+            "localAccount": "EChair Account",
+            "verified": "Verified",
+            "basicSection": "Account & Contact Info",
+            "basicSectionDesc": "Primary credentials used to identify and reach you in class",
+            "detailsSection": "Personal Details & Bio",
+            "detailsSectionDesc": "Additional biographical details shared with course instructors",
+            "googlePassNotice": "Your account is linked with Google. Password security is managed directly through your Google Account.",
+            "emailNotice": "Email is used for account sign-in and security notifications and cannot be changed directly."
         },
         "security": {
             "heading": "Security",

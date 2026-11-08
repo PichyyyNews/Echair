@@ -144,7 +144,7 @@ const CreatePostBox = ({ classId, user, onPostCreated, classroomName, accentColo
                     />
 
                     <div className="cpb-placeholder-copy">
-                        <span className="cpb-placeholder-kicker">{classroomName || tr('classroomLabel', 'Class stream')}</span>
+                        {/* <span className="cpb-placeholder-kicker">{classroomName || tr('classroomLabel', 'Class stream')}</span>*/}
                         <strong className="cpb-placeholder-title">{tr('placeholder', 'Share an announcement with your class')}</strong>
                         <span className="cpb-placeholder-subtitle">{tr('placeholderSubtext', 'Post notes, lesson images, files, or quick reminders for students.')}</span>
                     </div>
@@ -176,7 +176,7 @@ const CreatePostBox = ({ classId, user, onPostCreated, classroomName, accentColo
                         />
 
                         <div className="cpb-form-copy">
-                            <span className="cpb-form-kicker">{classroomName || tr('classroomLabel', 'Class stream')}</span>
+                            {/* <span className="cpb-form-kicker">{classroomName || tr('classroomLabel', 'Class stream')}</span>*/}
                             <h3>{tr('composerTitle', 'Create a class update')}</h3>
                             <p>{tr('composerSubtitle', 'Students will see this in the stream and can comment underneath it.')}</p>
                         </div>
