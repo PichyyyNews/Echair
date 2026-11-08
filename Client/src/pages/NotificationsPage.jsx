@@ -534,74 +534,56 @@ const NotificationsPage = ({
             <main className={`main__content notif-main ${isSidebarOpen ? 'shift' : ''}`}>
                 {/* Unified Single Workspace Enclosure */}
                 <div className="notif-shell-unified">
-                    {/* Header Strip */}
-                    <header className="notif-header-unified">
-                        <div className="notif-header-title-box">
-                            <h1 className="notif-page-title">{t('notificationsPage.pageTitle')}</h1>
-                            <span className="notif-page-subtitle">{t('notificationsPage.pageSubtitle')}</span>
-                        </div>
-
-                        <div className="notif-header-actions-row">
-                            <button
-                                className="btn-clean btn-clean-primary"
-                                onClick={() => setIsComposeOpen(true)}
-                            >
-                                <FiMail size={15} />
-                                <span>{t('notificationsPage.compose')}</span>
-                            </button>
-                            <button
-                                className="btn-clean btn-clean-secondary"
-                                onClick={() => setIsTicketModalOpen(true)}
-                            >
-                                <FaTicketAlt size={13} />
-                                <span>{t('notificationsPage.openTicket')}</span>
-                            </button>
-                            {unreadCount > 0 && (
+                    {/* Unified Single Action Bar (Clean UI) */}
+                    <header className="notif-toolbar-unified">
+                        <div className="notif-toolbar-left">
+                            <h1 className="notif-page-title">{t('notificationsPage.pageTitle', 'การแจ้งเตือน')}</h1>
+                            <div className="notif-toolbar-separator" />
+                            <div className="notif-tabs-segment" role="tablist">
                                 <button
-                                    className="btn-clean btn-clean-ghost"
-                                    onClick={handleMarkAllRead}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'all'}
+                                    className={`notif-tab-pill ${activeTab === 'all' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('all'); setSearchParams({}); }}
                                 >
-                                    <FiCheck size={15} />
-                                    <span>{t('notificationsPage.markAllRead')}</span>
+                                    <FiInbox size={14} />
+                                    <span>{t('notificationsPage.tabs.all', 'ทั้งหมด')}</span>
                                 </button>
-                            )}
-                        </div>
-                    </header>
-
-                    {/* Integrated Toolbar */}
-                    <div className="notif-toolbar-unified">
-                        <div className="notif-tabs-segment">
-                            <button
-                                className={`notif-tab-pill ${activeTab === 'all' ? 'active' : ''}`}
-                                onClick={() => { setActiveTab('all'); setSearchParams({}); }}
-                            >
-                                <FiInbox size={14} />
-                                <span>{t('notificationsPage.tabs.all')}</span>
-                            </button>
-                            <button
-                                className={`notif-tab-pill ${activeTab === 'messages' ? 'active' : ''}`}
-                                onClick={() => { setActiveTab('messages'); setSearchParams({ tab: 'messages' }); }}
-                            >
-                                <FiMail size={14} />
-                                <span>{t('notificationsPage.tabs.messages')}</span>
-                            </button>
-                            <button
-                                className={`notif-tab-pill ${activeTab === 'tickets' ? 'active' : ''}`}
-                                onClick={() => { setActiveTab('tickets'); setSearchParams({ tab: 'tickets' }); }}
-                            >
-                                <FaTicketAlt size={13} />
-                                <span>{t('notificationsPage.tabs.tickets')}</span>
-                                {ticketCount > 0 && (
-                                    <span className="pill-badge-alert">{ticketCount}</span>
-                                )}
-                            </button>
-                            <button
-                                className={`notif-tab-pill ${activeTab === 'system' ? 'active' : ''}`}
-                                onClick={() => { setActiveTab('system'); setSearchParams({ tab: 'system' }); }}
-                            >
-                                <FiBell size={14} />
-                                <span>{t('notificationsPage.tabs.system')}</span>
-                            </button>
+                                <button
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'messages'}
+                                    className={`notif-tab-pill ${activeTab === 'messages' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('messages'); setSearchParams({ tab: 'messages' }); }}
+                                >
+                                    <FiMail size={14} />
+                                    <span>{t('notificationsPage.tabs.messages', 'ข้อความ')}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'tickets'}
+                                    className={`notif-tab-pill ${activeTab === 'tickets' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('tickets'); setSearchParams({ tab: 'tickets' }); }}
+                                >
+                                    <FaTicketAlt size={13} />
+                                    <span>{t('notificationsPage.tabs.tickets', 'ตั๋วปัญหา')}</span>
+                                    {ticketCount > 0 && (
+                                        <span className="pill-badge-alert">{ticketCount}</span>
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'system'}
+                                    className={`notif-tab-pill ${activeTab === 'system' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('system'); setSearchParams({ tab: 'system' }); }}
+                                >
+                                    <FiBell size={14} />
+                                    <span>{t('notificationsPage.tabs.system', 'ระบบ')}</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="notif-toolbar-right">
@@ -609,25 +591,63 @@ const NotificationsPage = ({
                                 <FiSearch size={14} className="search-icon" />
                                 <input
                                     type="text"
-                                    placeholder={t('notificationsPage.searchPlaceholder')}
+                                    placeholder={t('notificationsPage.searchPlaceholder', 'ค้นหา...')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && fetchNotifications(activeTab)}
                                 />
                                 {searchQuery && (
-                                    <button className="clear-btn" onClick={() => { setSearchQuery(''); fetchNotifications(activeTab); }}>×</button>
+                                    <button
+                                        type="button"
+                                        className="clear-btn"
+                                        onClick={() => { setSearchQuery(''); fetchNotifications(activeTab); }}
+                                    >
+                                        ×
+                                    </button>
                                 )}
                             </div>
 
                             <button
+                                type="button"
                                 className={`notif-unread-switch ${unreadOnly ? 'active' : ''}`}
                                 onClick={() => setUnreadOnly(!unreadOnly)}
+                                title={t('notificationsPage.unreadOnly', 'ยังไม่ได้อ่านเท่านั้น')}
                             >
                                 <span className="switch-dot"></span>
-                                <span>{t('notificationsPage.unreadOnly')}</span>
+                                <span>{t('notificationsPage.unreadOnlyShort', 'ยังไม่อ่าน')}</span>
+                            </button>
+
+                            {unreadCount > 0 && (
+                                <button
+                                    type="button"
+                                    className="btn-clean btn-clean-ghost"
+                                    onClick={handleMarkAllRead}
+                                    title={t('notificationsPage.markAllRead', 'ทำเครื่องหมายอ่านแล้วทั้งหมด')}
+                                >
+                                    <FiCheck size={14} />
+                                    <span>{t('notificationsPage.markAllReadShort', 'อ่านทั้งหมด')}</span>
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                className="btn-clean btn-clean-secondary"
+                                onClick={() => setIsTicketModalOpen(true)}
+                            >
+                                <FaTicketAlt size={13} />
+                                <span>{t('notificationsPage.openTicket', 'แจ้งปัญหา')}</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn-clean btn-clean-primary"
+                                onClick={() => setIsComposeOpen(true)}
+                            >
+                                <FiMail size={14} />
+                                <span>{t('notificationsPage.compose', 'เขียนข้อความ')}</span>
                             </button>
                         </div>
-                    </div>
+                    </header>
 
                     {/* Split Workbench Body */}
                     <div className={`notif-workbench-split ${selectedNotification ? 'has-selected' : ''}`}>
