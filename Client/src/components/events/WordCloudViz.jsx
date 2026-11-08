@@ -39,15 +39,14 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
 
     // Track last rendered state to prevent duplicate renders and flickering
     const lastRenderedKeyRef = useRef('');
-    const lastWidthRef = useRef(0);
     const resizeTimeoutRef = useRef(null);
 
     // Determine dimensions
     const [dimensions, setDimensions] = useState(() => {
         if (typeof window === 'undefined') return { width: 380, height: 240 };
         return {
-            width: isFullscreen ? window.innerWidth : 380,
-            height: isFullscreen ? window.innerHeight : 240
+            width: isFullscreen ? (window.innerWidth || 1200) : 380,
+            height: isFullscreen ? (window.innerHeight || 800) : 240
         };
     });
 
@@ -76,11 +75,14 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
     // Measure dimensions (debounced, with threshold to eliminate scroll jitter)
     const updateSize = useCallback(() => {
         if (isFullscreen) {
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            if (Math.abs(w - dimensions.width) > 30 || Math.abs(h - dimensions.height) > 30) {
-                setDimensions({ width: w, height: h });
-            }
+            const w = window.innerWidth || document.documentElement.clientWidth || 1200;
+            const h = window.innerHeight || document.documentElement.clientHeight || 800;
+            setDimensions(prev => {
+                if (Math.abs(prev.width - w) > 20 || Math.abs(prev.height - h) > 20) {
+                    return { width: w, height: h };
+                }
+                return prev;
+            });
             return;
         }
 
@@ -88,11 +90,13 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
         const currentWidth = Math.floor(containerRef.current.clientWidth);
         if (!currentWidth) return;
 
-        if (Math.abs(currentWidth - lastWidthRef.current) >= 25 || lastWidthRef.current === 0) {
-            lastWidthRef.current = currentWidth;
-            setDimensions({ width: currentWidth, height: 240 });
-        }
-    }, [isFullscreen, dimensions.width, dimensions.height]);
+        setDimensions(prev => {
+            if (Math.abs(prev.width - currentWidth) >= 20 || prev.width === 0) {
+                return { width: currentWidth, height: 240 };
+            }
+            return prev;
+        });
+    }, [isFullscreen]);
 
     useEffect(() => {
         updateSize();
@@ -111,7 +115,7 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
         };
     }, [updateSize]);
 
-    // Render word cloud on canvas only when wordsKey or dimensions change significantly
+    // Render word cloud on canvas only when wordsKey or dimensions change
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas || words.length === 0 || !dimensions.width) return;
@@ -119,34 +123,47 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
         const { width, height } = dimensions;
         const renderSignature = `${wordsKey}_${width}_${height}_${variant}`;
 
-        // GUARD: If already rendered this exact data and dimension, DO NOT redraw!
+        // GUARD: If already rendered this exact data and dimension, skip
         if (lastRenderedKeyRef.current === renderSignature) {
             return;
         }
 
-        // Stop any running WordCloud operations before starting a new one
-        if (typeof WordCloud.stop === 'function') {
-            WordCloud.stop();
-        }
-
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const pixelWidth = Math.round(width * dpr);
+        const pixelHeight = Math.round(height * dpr);
 
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
         canvas.style.width = isFullscreen ? '100vw' : `${width}px`;
         canvas.style.height = isFullscreen ? '100vh' : `${height}px`;
 
         const ctx = canvas.getContext('2d');
         if (ctx) {
-            ctx.scale(dpr, dpr);
-            ctx.clearRect(0, 0, width, height);
+            // Clean slate with identity transform - DO NOT scale context!
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, pixelWidth, pixelHeight);
         }
 
         const maxCount = Math.max(...words.map(w => w.count), 1);
         const minCount = Math.min(...words.map(w => w.count), 1);
         const list = words.map(w => [w.text, w.count]);
 
-        lastRenderedKeyRef.current = renderSignature;
+        const calcFontSize = (weight) => {
+            if (typeof weight !== 'number' || isNaN(weight) || weight <= 0) return Math.round(10 * dpr);
+            const ratio = Math.max(0, Math.min(1, weight / maxCount));
+            const minFont = isFullscreen ? 20 : 13;
+            const maxFont = Math.round((isFullscreen ? 88 : 38) * Math.min(width / (isFullscreen ? 900 : 500), 1.4));
+            const calculated = minFont + Math.pow(ratio, 0.7) * (maxFont - minFont);
+            if (weight < minCount) {
+                return Math.max(Math.round(8 * dpr), Math.round(calculated * (weight / minCount) * dpr));
+            }
+            return Math.max(Math.round(10 * dpr), Math.round(calculated * dpr));
+        };
+
+        const onWordCloudStop = () => {
+            lastRenderedKeyRef.current = renderSignature;
+        };
+        canvas.addEventListener('wordcloudstop', onWordCloudStop, { once: true });
 
         try {
             WordCloud(canvas, {
@@ -160,19 +177,12 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
                 rotationSteps: 2,
                 minRotation: -Math.PI / 2, // -90 deg
                 maxRotation: 0,             // 0 deg
-                gridSize: isFullscreen ? 10 : 6,
+                gridSize: Math.round((isFullscreen ? 10 : 7) * dpr),
                 drawOutOfBound: false,
                 shrinkToFit: true,
                 ellipticity: isFullscreen ? 0.65 : 0.8,
-                weightFactor: (size) => {
-                    if (maxCount === minCount) {
-                        return (isFullscreen ? 56 : 26) * Math.min(width / (isFullscreen ? 800 : 600), 1.5);
-                    }
-                    const normalized = (size - minCount) / (maxCount - minCount);
-                    const minFont = isFullscreen ? 20 : 14;
-                    const maxFont = (isFullscreen ? 104 : 42) * Math.min(width / (isFullscreen ? 900 : 600), 1.5);
-                    return minFont + Math.pow(normalized, 0.75) * (maxFont - minFont);
-                },
+                weightFactor: (weight) => calcFontSize(weight),
+                minSize: Math.round(8 * dpr),
                 // Direct DOM Tooltip: Zero React re-renders on mousemove / scroll!
                 hover: (item, dimension, event) => {
                     const tooltipEl = tooltipRef.current;
@@ -184,7 +194,11 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
                         tooltipEl.style.left = `${event.clientX - bounds.left}px`;
                         tooltipEl.style.top = `${event.clientY - bounds.top - 12}px`;
                         if (tooltipWordRef.current) tooltipWordRef.current.textContent = item[0];
-                        if (tooltipCountRef.current) tooltipCountRef.current.textContent = `${item[1]} ${tr('classroomEvent.responsesCount', 'คำตอบ')}`;
+                        
+                        // Look up true original integer count
+                        const orig = words.find(w => w.text.toLowerCase() === String(item[0]).toLowerCase());
+                        const trueCount = orig ? orig.count : Math.round(item[1]);
+                        if (tooltipCountRef.current) tooltipCountRef.current.textContent = `${trueCount} ${tr('classroomEvent.responsesCount', 'คำตอบ')}`;
                     } else {
                         tooltipEl.style.display = 'none';
                     }
@@ -195,9 +209,7 @@ const WordCloudViz = ({ results = [], emptyMessage = "Waiting for responses...",
         }
 
         return () => {
-            if (typeof WordCloud.stop === 'function') {
-                WordCloud.stop();
-            }
+            canvas.removeEventListener('wordcloudstop', onWordCloudStop);
         };
     }, [wordsKey, dimensions, isFullscreen, variant, words, tr]);
 
