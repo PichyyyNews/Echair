@@ -6,12 +6,17 @@ import axios from 'axios';
 import Lottie from 'lottie-react';
 import {
     FaBullhorn,
+    FaCalendarCheck,
     FaCheckCircle,
+    FaClipboardList,
+    FaClock,
     FaCommentDots,
     FaChevronDown,
     FaChevronUp,
     FaCopy,
+    FaLayerGroup,
     FaRegFileAlt,
+    FaTimes,
     FaUsers
 } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -92,27 +97,23 @@ const StreamStatTopographyBg = () => (
     </svg>
 );
 
-const renderStreamStatBackground = (stat) => {
-    switch (stat.variant) {
-        case 2:
-            return <StreamStatGridBg patternId={`stream-stat-grid-${stat.key}`} />;
-        case 3:
-            return <StreamStatCirclesBg />;
-        case 4:
-            return <StreamStatTopographyBg />;
-        case 1:
-        default:
-            return <StreamStatBlobBg />;
-    }
-};
+const renderStreamStatBackground = () => null;
 
 const StreamStatIcon = ({ type }) => {
     switch (type) {
         case 'posts':
+        case 'announcements':
             return <FaBullhorn className="stream-stat-icon-svg" aria-hidden="true" />;
+        case 'assignments':
+            return <FaClipboardList className="stream-stat-icon-svg" aria-hidden="true" />;
+        case 'submitted':
+            return <FaCheckCircle className="stream-stat-icon-svg" aria-hidden="true" />;
+        case 'pending':
+            return <FaClock className="stream-stat-icon-svg" aria-hidden="true" />;
         case 'comments':
             return <FaCommentDots className="stream-stat-icon-svg" aria-hidden="true" />;
         case 'participants':
+        case 'classmates':
             return <FaUsers className="stream-stat-icon-svg" aria-hidden="true" />;
         case 'materials':
             return <FaRegFileAlt className="stream-stat-icon-svg" aria-hidden="true" />;
@@ -134,9 +135,11 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
     const [error, setError] = useState(null);
     const [activeSection, setActiveSection] = useState(location.state?.activeTab || 'stream');
     const [posts, setPosts] = useState([]);
+    const [classworkAssignments, setClassworkAssignments] = useState([]);
     const [streamLayoutMode, setStreamLayoutMode] = useState(getStreamLayoutMode);
     const [isBannerCollapsed, setIsBannerCollapsed] = useState(() => getStreamLayoutMode() === 'mobile');
     const [isCodeCopied, setIsCodeCopied] = useState(false);
+    const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
     const [chatMessages, setChatMessages] = useState([]);
     const [classroomEvents, setClassroomEvents] = useState([]);
@@ -150,9 +153,51 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
     const isCreator = creatorIds.includes(String(user?.id));
 
     const streamStats = useMemo(() => {
+        const studentParticipants = Array.isArray(classroom?.participants)
+            ? classroom.participants.filter(p => !creatorIds.includes(String(p?._id || p?.id || p)))
+            : [];
+        const studentCount = studentParticipants.length;
+
+        // For Students: only show stats that are necessary and actionable for them
+        if (!isCreator) {
+            const announcementsCount = posts.filter(p => p.type !== 'assignment').length;
+            const totalAssignments = classworkAssignments.length > 0
+                ? classworkAssignments.length
+                : posts.filter(p => p.type === 'assignment').length;
+            const submittedCount = classworkAssignments.filter(a => Boolean(a.submission)).length;
+            const pendingCount = Math.max(0, totalAssignments - submittedCount);
+
+            return [
+                {
+                    key: 'announcements',
+                    label: tr('streamPage.stats.announcements', 'Announcements'),
+                    value: announcementsCount,
+                    variant: 1
+                },
+                {
+                    key: 'assignments',
+                    label: tr('streamPage.stats.assignments', 'Assignments'),
+                    value: totalAssignments,
+                    variant: 2
+                },
+                {
+                    key: 'submitted',
+                    label: tr('streamPage.stats.submitted', 'Turned In'),
+                    value: submittedCount,
+                    variant: 3
+                },
+                {
+                    key: 'pending',
+                    label: tr('streamPage.stats.pending', 'Pending'),
+                    value: pendingCount,
+                    variant: 4
+                }
+            ];
+        }
+
+        // For Teachers: show overall classroom metrics
         const totalComments = posts.reduce((sum, post) => sum + (post.comments?.length || 0), 0);
         const totalAttachments = posts.reduce((sum, post) => sum + (post.attachments?.length || 0), 0);
-        const participantCount = Array.isArray(classroom?.participants) ? classroom.participants.length : 0;
 
         return [
             {
@@ -170,7 +215,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
             {
                 key: 'participants',
                 label: tr('streamPage.stats.participants', 'Students'),
-                value: participantCount,
+                value: studentCount,
                 variant: 3
             },
             {
@@ -180,7 +225,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                 variant: 4
             }
         ];
-    }, [classroom, posts, tr]);
+    }, [classroom, creatorIds, isCreator, posts, classworkAssignments, tr]);
 
     const handleChatMessage = useCallback((data) => {
         setChatMessages((prev) => [...prev, data]);
@@ -286,6 +331,23 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
         if (!user || !user.token || !classId) return;
         fetchClassroomDetails();
     }, [classId, user, fetchClassroomDetails]);
+
+    const fetchClassworkData = useCallback(async () => {
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/classwork/${classId}`, {
+                headers: { 'x-auth-token': user.token }
+            });
+            setClassworkAssignments(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            console.error('Error fetching classwork data for stream stats:', err);
+        }
+    }, [classId, user.token]);
+
+    useEffect(() => {
+        if (classroom) {
+            fetchClassworkData();
+        }
+    }, [classroom, fetchClassworkData]);
 
     const fetchStreamPosts = useCallback(async () => {
         setPostsLoading(true);
@@ -426,7 +488,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                     type="button"
                     className="stream-hero-compact"
                     onClick={() => setIsBannerCollapsed(false)}
-                    style={{ '--stream-hero-theme': classroom?.color || '#10b981' }}
+                    style={{ '--stream-hero-theme': classroom?.color || '#7ec282' }}
                 >
                     <div className="stream-hero-compact-copy">
                         <span className="stream-hero-kicker">
@@ -458,7 +520,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                 className="stream-hero-card has-animation"
                 style={{ '--stream-hero-theme': classroom?.color || '#10b981' }}
             >
-                <div className="stream-hero-accent" />
+                
                 <div className="stream-hero-main">
                     <div className="stream-hero-top">
                         <span className="stream-hero-kicker">
@@ -494,11 +556,7 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                 </div>
                 <div className="stream-stat-grid">
                     {streamStats.map((stat) => (
-                        <div key={stat.key} className={`stream-stat-card stream-stat-card--variant-${stat.variant}`}>
-                            <div className="stream-stat-card-accent" aria-hidden="true" />
-                            <div className="stream-stat-card-bg" aria-hidden="true">
-                                {renderStreamStatBackground(stat)}
-                            </div>
+                        <div key={stat.key} className="stream-stat-card">
                             <div className="stream-stat-card-shell">
                                 <div className="stream-stat-copy">
                                     <span className="stream-stat-label">{stat.label}</span>
@@ -555,6 +613,17 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                         {classroom?.subname || tr('streamPage.heroSubtitle', 'Announcements, discussion, and classroom updates all in one place.')}
                     </p>
                 )}
+                <div className="stream-mobile-stat-strip">
+                    {streamStats.map((stat) => (
+                        <div key={stat.key} className="stream-mobile-stat-pill">
+                            <div className="stream-mobile-stat-pill-icon">
+                                <StreamStatIcon type={stat.key} />
+                            </div>
+                            <strong className="stream-mobile-stat-val">{formatStatValue(stat.value)}</strong>
+                            <span className="stream-mobile-stat-lbl">{stat.label}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );
@@ -618,6 +687,48 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                     <>
                         {renderMobileHero()}
                         {renderFeedColumn()}
+                        <button
+                            type="button"
+                            className="stream-mobile-chat-fab"
+                            onClick={() => setIsMobileChatOpen(true)}
+                            aria-label={tr('streamPage.openChat', 'Open Class Chat')}
+                        >
+                            <FaCommentDots />
+                            <span>{tr('streamPage.chatBtn', 'Chat')}</span>
+                            {chatMessages.length > 0 && <span className="stream-chat-fab-badge">{chatMessages.length}</span>}
+                        </button>
+                        {isMobileChatOpen && (
+                            <div className="stream-mobile-chat-sheet-backdrop" onClick={() => setIsMobileChatOpen(false)}>
+                                <div className="stream-mobile-chat-sheet" onClick={(e) => e.stopPropagation()}>
+                                    <div className="stream-mobile-chat-sheet-header">
+                                        <div className="stream-mobile-chat-sheet-title">
+                                            <FaCommentDots />
+                                            <span>{tr('streamPage.classChatTitle', 'Class Chat')}</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="stream-mobile-chat-close-btn"
+                                            onClick={() => setIsMobileChatOpen(false)}
+                                            aria-label="Close Chat"
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                    <div className="stream-mobile-chat-sheet-body">
+                                        <ClassChat
+                                            user={user}
+                                            isCreator={isCreator}
+                                            chatMessages={chatMessages}
+                                            classroomEvents={classroomEvents}
+                                            emitChatMessage={emitChatMessage}
+                                            onSubmitAnswer={(eventItem, answer) => emitSubmitEventAnswer(eventItem.id, answer)}
+                                            isSidebarMode={true}
+                                            onClose={() => setIsMobileChatOpen(false)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 ) : isTabletStreamLayout ? (
                     <div className="stream-tablet-layout">
@@ -690,6 +801,35 @@ const StreamPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) => {
                 classroom={classroom}
             />
             <main className={`main__content ${isSidebarOpen ? 'shift' : ''}`}>
+                <div className="classroom-subnav-bar">
+                    <div className="classroom-subnav-inner">
+                        <button
+                            type="button"
+                            className={`classroom-nav-pill ${activeSection === 'stream' ? 'active' : ''}`}
+                            onClick={() => handleSectionChange('stream')}
+                        >
+                            <FaBullhorn className="classroom-nav-pill-icon" />
+                            <span>{tr('navbar.stream.stream', 'Stream')}</span>
+                            {posts.length > 0 && <span className="classroom-nav-pill-count">{posts.length}</span>}
+                        </button>
+                        <button
+                            type="button"
+                            className={`classroom-nav-pill ${activeSection === 'classwork' ? 'active' : ''}`}
+                            onClick={() => handleSectionChange('classwork')}
+                        >
+                            <FaLayerGroup className="classroom-nav-pill-icon" />
+                            <span>{tr('navbar.stream.classwork', 'Classwork')}</span>
+                        </button>
+                        <button
+                            type="button"
+                            className={`classroom-nav-pill ${activeSection === 'calendar' ? 'active' : ''}`}
+                            onClick={() => handleSectionChange('calendar')}
+                        >
+                            <FaCalendarCheck className="classroom-nav-pill-icon" />
+                            <span>{tr('navbar.stream.calendar', 'Calendar')}</span>
+                        </button>
+                    </div>
+                </div>
                 <div className={`class-detail-container ${activeSection === 'stream' ? 'class-detail-container--stream' : ''}`}>
                     {renderContent()}
                 </div>

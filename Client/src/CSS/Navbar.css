@@ -688,3 +688,52 @@ html {
   background-color: #f0fdf4 !important;
   color: #15803d !important;
 }
+
+/* Clean UI Notification Dropdown Footer & Sidebar Inbox */
+.notification-dropdown-footer {
+  padding: 10px 14px;
+  border-top: 1px solid #e8eaed;
+  background-color: #fafbfc;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.notification-view-all-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notification-view-all-btn:hover {
+  background-color: #e8f5e9;
+  border-color: #7ec282;
+  color: #15803d;
+}
+
+.sidebar-inbox-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-unread-pill {
+  margin-left: auto;
+  background-color: #7ec282;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  line-height: 1.3;
+}

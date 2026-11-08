@@ -63,7 +63,8 @@
       "header": "การแจ้งเตือน",
       "markAllRead": "อ่านทั้งหมด",
       "noNew": "ไม่มีการแจ้งเตือนใหม่",
-      "recentlyAdded": "เพิ่มล่าสุด:"
+      "recentlyAdded": "เพิ่มล่าสุด:",
+      "viewAll": "เปิดกล่องข้อความทั้งหมด"
     },
     "profileMenu": {
       "accountSetting": "ตั้งค่าบัญชี",
@@ -73,7 +74,7 @@
     "sidebar": {
       "back": "กลับ",
       "backToClassroom": "กลับไปหน้าห้องเรียน",
-      "backToClasswork": "กลับไปหน้างานในชั้นเรียน",
+      "backToClasswork": "กลับไปหน้างาน",
       "shareClass": "แชร์ห้องเรียน",
       "stream": "สตรีม",
       "classDetail": "รายละเอียดห้องเรียน",
@@ -86,7 +87,8 @@
       "class": "ชั้นเรียน",
       "createdByMe": "สร้างโดยฉัน",
       "joined": "เข้าร่วมแล้ว",
-      "noClassesJoined": "ยังไม่ได้เข้าร่วมชั้นเรียน"
+      "noClassesJoined": "ยังไม่ได้เข้าร่วมชั้นเรียน",
+      "notifications": "กล่องข้อความและการแจ้งเตือน"
     },
     "accountSettings": {
       "account": "ตั้งค่าบัญชี",
@@ -161,7 +163,6 @@
       "leaveError": "ออกจากห้องเรียนไม่สำเร็จ"
     }
   },
-
   "settings": {
     "general": {
       "title": "การตั้งค่าทั่วไป",
@@ -444,7 +445,18 @@
     "noPostsTitle": "ยังไม่มีโพสต์",
     "noPostsText": "ประกาศ งาน และเอกสารที่ครูของคุณโพสต์จะปรากฏที่นี่",
     "aboutClassTitle": "เกี่ยวกับชั้นเรียนนี้",
-    "aboutClassText": "ประกาศ งาน และเอกสารประกอบการเรียนที่ครูแชร์จะปรากฏในสตรีม"
+    "aboutClassText": "ประกาศ งาน และเอกสารประกอบการเรียนที่ครูแชร์จะปรากฏในสตรีม",
+    "stats": {
+      "posts": "โพสต์",
+      "comments": "ความคิดเห็น",
+      "participants": "นักเรียน",
+      "materials": "ไฟล์แนบ",
+      "announcements": "ประกาศ",
+      "assignments": "งานที่มอบหมาย",
+      "submitted": "ส่งแล้ว",
+      "pending": "รอส่ง",
+      "classmates": "เพื่อนร่วมชั้น"
+    }
   },
   "editClassroomPage": {
     "loadError": "ไม่สามารถโหลดข้อมูลชั้นเรียนได้",
@@ -1096,5 +1108,146 @@
     "error": "ข้อผิดพลาด",
     "warning": "คำเตือน",
     "info": "ข้อมูล"
+  },
+  "assignmentDetail": {
+    "backToClassroom": "กลับไปที่ห้องเรียน ({{name}})",
+    "kickerTeacher": "ตรวจและให้คะแนนงาน",
+    "kickerStudent": "ส่งงานและติดตามสถานะ",
+    "heroDescTeacher": "รวบรวมคำชี้แจง การส่งงานของนักเรียน คะแนน และข้อเสนอแนะไว้ในที่เดียว",
+    "heroDescStudent": "อ่านโจทย์ แนบไฟล์งาน และติดตามสถานะการส่งงานของคุณได้ในที่เดียว",
+    "heroNoteGraded": "ตรวจแล้ว {{graded}} คน · รอตรวจ {{pending}} คน",
+    "heroNoteScorePosted": "คะแนนที่ได้รับ: {{score}} / {{total}}",
+    "heroNoteSaved": "งานล่าสุดของคุณได้รับการบันทึกและพร้อมสำหรับการตรวจแล้ว",
+    "heroNoteReady": "เพิ่มลิงก์หรือแนบไฟล์เมื่องานของคุณพร้อมส่ง",
+    "pointsUnit": "คะแนน",
+    "noDueDate": "ไม่มีกำหนดส่ง",
+    "instructionsTitle": "คำชี้แจง / รายละเอียดงาน",
+    "teacherAttachments": "ไฟล์แนบจากครู ({{count}})",
+    "preview": "ดูตัวอย่าง",
+    "empty": {
+      "title": "ไม่มีคำชี้แจงเป็นลายลักษณ์อักษรสำหรับงานนี้",
+      "desc": "ผู้สอนอาจอธิบายหรือมอบหมายโจทย์ในชั้นเรียน คุณสามารถตรวจสอบรายละเอียดและส่งงานผ่านกล่อง \"งานของคุณ\" ทางด้านขวาได้ทันที",
+      "pointsLabel": "คะแนนเต็ม",
+      "dueLabel": "กำหนดส่ง",
+      "submissionPolicyLabel": "การส่งงาน",
+      "tip": "ตรวจสอบความถูกต้องของไฟล์หรือลิงก์ก่อนกดยืนยันการส่งงาน"
+    },
+    "lateAllowed": "ส่งช้าได้",
+    "onTimeOnly": "ตรงเวลาเท่านั้น",
+    "yourWorkTitle": "งานของคุณ (Your Work)",
+    "linkPlaceholder": "วางลิงก์งาน (https://...)",
+    "addLink": "เพิ่มลิงก์",
+    "or": "หรือ",
+    "uploading": "กำลังอัปโหลด...",
+    "attachFiles": "แนบไฟล์ (เลือกได้หลายไฟล์พร้อมกัน)",
+    "turnIn": "ส่งงาน (Turn In)",
+    "turningIn": "กำลังส่งงาน...",
+    "resubmit": "ยกเลิกการส่งเพื่อแก้ไข (Resubmit)",
+    "confirmResubmit": "ยืนยันส่งงานใหม่",
+    "cancel": "ยกเลิก",
+    "gradedNotice": "งานนี้ได้รับการตรวจและให้คะแนนแล้ว ไม่สามารถส่งซ้ำได้",
+    "submissionOverview": "Submission Overview",
+    "turnedIn": "Turned In",
+    "graded": "Graded",
+    "pending": "Pending",
+    "complete": "complete",
+    "studentSubmissionsTitle": "Student Submissions ({{count}})",
+    "noSubmissionsYet": "ยังไม่มีนักเรียนส่งงาน",
+    "status": {
+      "submitted": "ส่งแล้ว (Turned In)",
+      "late": "ส่งช้า (Late)",
+      "graded": "ตรวจแล้ว (Graded)",
+      "assigned": "ยังไม่ส่ง (Assigned)"
+    },
+    "commentsTitle": "ความคิดเห็นในชั้นเรียน ({{count}})",
+    "noComments": "ยังไม่มีความคิดเห็น เริ่มการพูดคุยเป็นคนแรกได้เลย!",
+    "addCommentPlaceholder": "เพิ่มความคิดเห็นในชั้นเรียน...",
+    "deleteAssignmentTitle": "ลบงานที่มอบหมาย",
+    "deleteAssignmentConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบงานนี้?",
+    "edit": "แก้ไข",
+    "delete": "ลบ",
+    "submissions": "รายการส่ง"
+  },
+  "notificationsPage": {
+    "pageTitle": "ศูนย์การแจ้งเตือนและกล่องข้อความ",
+    "pageSubtitle": "อ่านข้อความ ส่งจดหมายถึงผู้ใช้อื่น และติดตามการแจ้งปัญหาถึงผู้ดูแลระบบ",
+    "compose": "เขียนจดหมาย",
+    "openTicket": "แจ้งปัญหาถึงแอดมิน",
+    "markAllRead": "อ่านแล้วทั้งหมด",
+    "markRead": "ทำเครื่องหมายว่าอ่านแล้ว",
+    "delete": "ลบข้อความ",
+    "unreadOnly": "เฉพาะที่ยังไม่ได้อ่าน",
+    "all": "ทั้งหมด",
+    "searchPlaceholder": "ค้นหาหัวข้อ ข้อความ หรือชื่อผู้ส่ง...",
+    "backToList": "กลับไปยังรายการ",
+    "tabs": {
+      "all": "ทั้งหมด",
+      "messages": "จดหมาย / ข้อความ",
+      "tickets": "ตั๋วแจ้งปัญหา",
+      "system": "ระบบ"
+    },
+    "status": {
+      "open": "รอดำเนินการ",
+      "in_progress": "กำลังดำเนินการ",
+      "resolved": "แก้ไขแล้ว",
+      "closed": "ปิดคำร้อง",
+      "updateStatus": "เปลี่ยนสถานะคำร้อง",
+      "priority": {
+        "low": "ต่ำ",
+        "normal": "ปกติ",
+        "urgent": "ด่วน"
+      }
+    },
+    "categories": {
+      "general": "ทั่วไป",
+      "bug": "รายงานบั๊ก",
+      "classroom": "ห้องเรียนและคะแนน",
+      "account": "บัญชีผู้ใช้",
+      "feedback": "ข้อเสนอแนะ"
+    },
+    "empty": {
+      "title": "ไม่พบรายการ",
+      "desc": "คุณไม่มีการแจ้งเตือนหรือข้อความในหมวดหมู่นี้",
+      "selectToRead": "เลือกรายการทางซ้ายเพื่อเปิดอ่านรายละเอียด"
+    },
+    "thread": {
+      "from": "จาก",
+      "to": "ถึง",
+      "ticketId": "รหัสตั๋ว",
+      "replyPlaceholder": "พิมพ์ข้อความตอบกลับที่นี่...",
+      "reply": "ส่งข้อความตอบกลับ",
+      "replies": "การตอบกลับ",
+      "noReplies": "ยังไม่มีการตอบกลับในบทสนทนานี้"
+    },
+    "composeModal": {
+      "title": "เขียนจดหมายใหม่",
+      "recipient": "ผู้รับ",
+      "recipientPlaceholder": "พิมพ์ชื่อหรืออีเมลเพื่อค้นหาผู้รับ...",
+      "subject": "หัวข้อเรื่อง",
+      "subjectPlaceholder": "ระบุหัวข้อของจดหมาย...",
+      "priority": "ความสำคัญ",
+      "body": "เนื้อหาข้อความ",
+      "bodyPlaceholder": "เขียนข้อความที่คุณต้องการส่ง...",
+      "send": "ส่งจดหมาย",
+      "cancel": "ยกเลิก",
+      "success": "ส่งจดหมายเรียบร้อยแล้ว"
+    },
+    "ticketModal": {
+      "title": "เปิดตั๋วแจ้งปัญหาถึงผู้ดูแลระบบ",
+      "category": "หมวดหมู่ปัญหา",
+      "subject": "หัวข้อปัญหา",
+      "subjectPlaceholder": "สรุปปัญหาที่พบสั้นๆ...",
+      "priority": "ระดับความเร่งด่วน",
+      "body": "รายละเอียดปัญหา",
+      "bodyPlaceholder": "อธิบายปัญหาและขั้นตอนที่เกิดปัญหาให้ชัดเจนที่สุด เพื่อให้ทีมงานช่วยเหลือได้อย่างรวดเร็ว...",
+      "notice": "ตั๋วของคุณจะถูกส่งตรงไปยังผู้ดูแลระบบ เมื่อแอดมินตอบกลับ คุณจะได้รับการแจ้งเตือนและสามารถตอบกลับได้ที่นี่",
+      "submit": "ส่งตั๋วแจ้งปัญหา",
+      "cancel": "ยกเลิก",
+      "success": "เปิดตั๋วแจ้งปัญหาสำเร็จ ทีมงานจะรีบตรวจสอบโดยเร็ว"
+    },
+    "systemSender": "ระบบ (System Notifications)",
+    "systemDesc": "บันทึกกิจกรรมและแจ้งเตือนอัตโนมัติจากระบบ",
+    "systemItemsCount": "รายการ",
+    "markSystemAllRead": "ทำเครื่องหมายอ่านแล้วทั้งหมด"
   }
 }

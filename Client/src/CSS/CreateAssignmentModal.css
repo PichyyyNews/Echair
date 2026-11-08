@@ -719,3 +719,45 @@
     rows: 2;
   }
 }
+
+
+/* ==========================================================================
+   ✨ CLEAN UI REFINEMENTS - CreateAssignmentModal
+   ========================================================================== */
+
+.create-assignment-modal {
+  border-radius: 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14) !important;
+}
+
+.create-assignment-modal .error-message {
+  border-left: none !important;
+  border-radius: 8px !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  color: #b91c1c !important;
+}
+
+.cam-primary-btn {
+  background: #7ec282 !important;
+  border: 1px solid #7ec282 !important;
+  color: #ffffff !important;
+}
+
+.cam-primary-btn:hover {
+  background: #6bb36f !important;
+  border-color: #6bb36f !important;
+}
+
+.cam-attach-btn {
+  background: #f4fbf6 !important;
+  border: 1px solid rgba(126, 194, 130, 0.35) !important;
+  color: #2e7d32 !important;
+  border-radius: 8px !important;
+}
+
+.cam-attach-btn:hover {
+  background: #eef9f2 !important;
+  border-color: #7ec282 !important;
+}

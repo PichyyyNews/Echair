@@ -1818,3 +1818,26 @@
   appearance: textfield;
   -moz-appearance: textfield;
 }
+
+
+/* ==========================================================================
+   ✨ CLEAN UI REFINEMENTS - ClassroomPage
+   ========================================================================== */
+
+.classroom-header {
+  border-left: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+img.student-avatar,
+img.user-avatar,
+.profile-avatar-img,
+.header-avatar,
+.classroom-user-photo,
+.attendance-history-avatar,
+.student-avatar-img {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}

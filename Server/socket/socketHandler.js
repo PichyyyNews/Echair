@@ -9,6 +9,13 @@ module.exports = (io) => {
         logger.success(`Client connected: ${socket.id}`);
 
         // Join personal user room for global notifications
+                socket.on('join-user-room', (uid) => {
+            if (uid) {
+                socket.join(uid.toString());
+                logger.info('User joined room: ' + uid);
+            }
+        });
+
         if (socket.handshake.auth && socket.handshake.auth.userId) {
             socket.join(socket.handshake.auth.userId.toString());
             logger.info(`Attached user ${socket.handshake.auth.userId} to personal notification room`);

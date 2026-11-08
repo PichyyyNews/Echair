@@ -23,6 +23,16 @@ const getUploadedFile = (req) => {
     return req.files.file?.[0] || req.files.image?.[0] || null;
 };
 
+const decodeUtf8Filename = (filename) => {
+    if (!filename || typeof filename !== 'string') return '';
+    try {
+        const decoded = Buffer.from(filename, 'latin1').toString('utf8');
+        return decoded.includes('\uFFFD') ? filename : decoded;
+    } catch {
+        return filename;
+    }
+};
+
 // @route   POST /api/upload
 // @desc    Upload a file with auth check, rate limiting, and S3/MinIO/Local storage + Sharp image optimization
 // @access  Private (Authenticated users only)
@@ -46,10 +56,11 @@ router.post('/', uploadLimiter, authMiddleware, (req, res) => {
         try {
             const folder = req.body.folder || 'stream';
             const uploadType = req.body.type || 'general';
+            const originalname = decodeUtf8Filename(uploadedFile.originalname || 'file');
 
             const result = await saveUploadedFile({
                 buffer: uploadedFile.buffer,
-                originalname: uploadedFile.originalname,
+                originalname,
                 mimetype: uploadedFile.mimetype,
                 folder,
                 optimize: true,
@@ -62,7 +73,7 @@ router.post('/', uploadLimiter, authMiddleware, (req, res) => {
                 msg: 'File uploaded successfully',
                 url: result.url,
                 filename: result.filename,
-                originalname: result.originalname,
+                originalname: result.originalname || originalname,
                 mimetype: result.mimetype,
                 size: result.size
             });

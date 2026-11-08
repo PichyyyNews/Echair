@@ -7,6 +7,7 @@ import axios from 'axios';
 import {
     FaBullhorn,
     FaCalendarAlt,
+    FaChalkboardTeacher,
     FaClipboardList,
     FaCommentDots,
     FaFileAlt,
@@ -160,33 +161,36 @@ const StreamPost = ({ post, user, isCreator, creatorIds = [], classId, onDelete,
                         />
                         <div className="sp-author-copy">
                             <div className="sp-author-heading">
-                                <span className="sp-author-name">{post.author?.displayName || tr('streamPost.unknownAuthor', 'Unknown')}</span>
+                                <div className="sp-author-name-row">
+                                    <span className="sp-author-name">{post.author?.displayName || tr('streamPost.unknownAuthor', 'Unknown')}</span>
+                                    <div className="sp-author-badges">
+                                        {isTeacherAuthor && (
+                                            <span
+                                                className="sp-badge-icon sp-badge-icon--teacher"
+                                                aria-label={tr('streamPost.teacherBadge', 'Teacher')}
+                                            >
+                                                <FaChalkboardTeacher />
+                                                <span className="sp-tooltip">{tr('streamPost.teacherBadge', 'Teacher')}</span>
+                                            </span>
+                                        )}
+                                        <span
+                                            className={`sp-badge-icon sp-badge-icon--${isAssignmentPost ? 'assignment' : 'announcement'}`}
+                                            aria-label={isAssignmentPost ? tr('streamPost.assignmentChip', 'Assignment') : tr('streamPost.announcementChip', 'Announcement')}
+                                        >
+                                            {isAssignmentPost ? <FaClipboardList /> : <FaBullhorn />}
+                                            <span className="sp-tooltip">
+                                                {isAssignmentPost ? tr('streamPost.assignmentChip', 'Assignment') : tr('streamPost.announcementChip', 'Announcement')}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
                                 <div className="sp-author-meta">
                                     <span>{formatDateTime(post.createdAt)}</span>
                                 </div>
                             </div>
-                            <div className="sp-author-tags">
-                                {isTeacherAuthor && (
-                                    <span className="sp-role-chip">
-                                        {tr('streamPost.teacherBadge', 'Teacher')}
-                                    </span>
-                                )}
-                                <span className={`sp-type-chip ${isAssignmentPost ? 'assignment' : 'announcement'}`}>
-                                    {isAssignmentPost ? (
-                                        <>
-                                            <FaClipboardList />
-                                            {tr('streamPost.assignmentChip', 'Assignment')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FaBullhorn />
-                                            {tr('streamPost.announcementChip', 'Announcement')}
-                                        </>
-                                    )}
-                                </span>
-                            </div>
                         </div>
                     </div>
+
 
                     {isCreator && (
                         <button type="button" className="sp-delete-btn" onClick={handleDelete} title={tr('streamPost.deletePostTitle', 'Delete post')}>
@@ -326,7 +330,13 @@ const StreamPost = ({ post, user, isCreator, creatorIds = [], classId, onDelete,
                                             <div className="sp-comment-meta">
                                                 <span className="sp-comment-author">{comment.author?.displayName || tr('streamPost.unknownAuthor', 'Unknown')}</span>
                                                 {isCommentTeacher && (
-                                                    <span className="sp-comment-badge">{tr('streamPost.teacherBadge', 'Teacher')}</span>
+                                                    <span
+                                                        className="sp-badge-icon sp-badge-icon--teacher sp-badge-icon--sm"
+                                                        aria-label={tr('streamPost.teacherBadge', 'Teacher')}
+                                                    >
+                                                        <FaChalkboardTeacher />
+                                                        <span className="sp-tooltip">{tr('streamPost.teacherBadge', 'Teacher')}</span>
+                                                    </span>
                                                 )}
                                                 <span className="sp-comment-time">{formatTimeOnly(comment.createdAt)}</span>
                                             </div>

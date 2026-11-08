@@ -6643,3 +6643,723 @@
 }
 
 /* end of file */
+
+
+/* ==========================================================================
+   ✨ CLEAN UI REFINEMENTS - ClassroomEvent (Empty State & Cards)
+   ========================================================================== */
+
+/* 1. Remove Left Border & Clean Note in Empty State */
+.empty-event-note {
+  border-left: none !important;
+  padding-left: 0 !important;
+  color: #64748b !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+}
+
+/* 2. Primary Button - Clean Green Token #7ec282 */
+.empty-event-primary {
+  background: #7ec282 !important;
+  border: 1px solid #7ec282 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 50px !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+}
+
+.empty-event-primary:hover {
+  background: #6bb36f !important;
+  border-color: #6bb36f !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(126, 194, 130, 0.25) !important;
+}
+
+/* 3. Remove AI Slop Glows */
+.empty-event-glow,
+.empty-event-glow--one,
+.empty-event-glow--two {
+  display: none !important;
+}
+
+/* 4. Event Cards - Remove Thick Green Left Border */
+.event-card {
+  border: 1px solid #e2e8f0 !important;
+  border-left: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* 5. Circular Avatars Across Events */
+.winner-avatar,
+.winner-avatar-large,
+.animating-avatar,
+.buzz-winner-avatar,
+.answer-avatar,
+.random-avatar,
+.random-avatar-placeholder,
+.ev-answer-avatar,
+.answer-modal-avatar,
+.ev-buzz-winner-avatar,
+.grouping-avatar,
+.grouping-avatar-sm {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
+
+/* =========================================================
+   CLEAN UI DESIGN UPDATES: EVENT POLISH & ARCHIVING
+   ========================================================= */
+
+/* Random Students Stepper Centering */
+.cfg-group-random {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.cfg-number-wrapper.cfg-number-wrapper-centered {
+  margin: 12px auto !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.cfg-num-input {
+  text-align: center !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Clean Event Scoring Card & Switch */
+.cfg-scoring-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+.cfg-scoring-card-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.cfg-scoring-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #1e293b;
+}
+.cfg-scoring-star-icon {
+  color: #f59e0b;
+  font-size: 0.95rem;
+}
+.cfg-scoring-desc {
+  margin: 3px 0 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+.clean-switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.clean-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.clean-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.22s ease;
+  border-radius: 24px;
+}
+.clean-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.22s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.clean-switch input:checked + .clean-switch-slider {
+  background-color: #10b981;
+}
+.clean-switch input:checked + .clean-switch-slider:before {
+  transform: translateX(18px);
+}
+.cfg-scoring-expanded {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cfg-scoring-pts-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+.cfg-number-wrapper-sm {
+  border-radius: 8px !important;
+}
+.cfg-number-wrapper-sm .cfg-num-btn {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 0.95rem !important;
+}
+.cfg-number-wrapper-sm .cfg-num-input {
+  width: 46px !important;
+  padding: 4px 0 !important;
+  font-size: 0.9rem !important;
+}
+.cfg-scoring-pts-unit {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Student Answer Display in Question Card */
+.ev-student-answer-display {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  animation: fadeIn 0.3s ease;
+}
+.ev-student-answer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ev-student-answer-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+.ev-student-answer-status {
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.ev-student-answer-body {
+  background: #ffffff;
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.ev-student-answer-body p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: #1e293b;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ev-student-answer-footer {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+/* Clean End Event Button */
+.ev-end-score-footer-clean {
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 0 0 0 !important;
+  margin-top: 10px !important;
+  justify-content: center !important;
+}
+.ev-end-event-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.ev-end-event-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+.ev-end-event-btn:active {
+  transform: translateY(0);
+}
+
+/* Event Archiving Controls */
+.event-view-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding: 0 4px;
+}
+.event-view-tabs {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+.event-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.event-tab-btn:hover {
+  color: #1e293b;
+}
+.event-tab-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+.event-tab-count {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: #e2e8f0;
+  color: #475569;
+}
+.event-tab-btn.active .event-tab-count {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.count-archived {
+  background: #fed7aa !important;
+  color: #9a3412 !important;
+}
+.draft-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.draft-archive-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+.draft-archive-btn:hover {
+  background: rgba(255, 255, 255, 0.38);
+  transform: translateY(-1px);
+}
+.event-card-actions-header {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.archive-event-btn {
+  background: rgba(0, 0, 0, 0.14);
+  color: #ffffff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.archive-event-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+  transform: scale(1.08);
+}
+.archived-card-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  font-size: 0.78rem;
+  color: #92400e;
+  font-weight: 600;
+}
+.unarchive-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #d97706;
+  background: #ffffff;
+  color: #b45309;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.unarchive-btn:hover {
+  background: #fef3c7;
+}
+.archived-empty-state {
+  width: 100%;
+  padding: 48px 24px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px dashed #cbd5e1;
+  color: #64748b;
+  margin: 16px 0;
+}
+.archived-empty-icon {
+  font-size: 2.2rem;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+.archived-empty-state h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+  color: #334155;
+  font-weight: 700;
+}
+.archived-empty-state p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #64748b;
+}
+
+/* Word Cloud Canvas Container & Tooltip */
+.wordcloud-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  contain: layout size;
+}
+.wordcloud-shell.presentation .wordcloud-canvas-container {
+  height: 520px;
+}
+.wordcloud-canvas-element {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+  pointer-events: auto;
+}
+.wordcloud-hover-tooltip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.wordcloud-hover-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+}
+.tooltip-word {
+  font-weight: 700;
+}
+.tooltip-count {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+.wordcloud-meta-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 6px 12px;
+  border-top: 1px solid #f1f5f9;
+}
+.wordcloud-total-tag {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+
+/* --- Word Cloud Unified Modern Input Bar (Clean UI) --- */
+.wc-input-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 4px 6px 4px 14px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  gap: 8px !important;
+}
+
+.wc-input-row:focus-within {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+.wc-text-input {
+  flex: 1 !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 8px 4px !important;
+  font-size: 0.92rem !important;
+  color: #1e293b !important;
+  box-shadow: none !important;
+}
+
+.wc-text-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.wc-send-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.86rem !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.25) !important;
+  flex-shrink: 0 !important;
+}
+
+.wc-send-btn:hover:not(:disabled) {
+  background: #059669 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 6px rgba(16, 185, 129, 0.35) !important;
+}
+
+.wc-send-btn:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+
+/* =========================================================
+   PURE FULLSCREEN WORD CLOUD PRESENTATION STYLES
+   ========================================================= */
+
+.pres-pure-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+}
+
+.pres-fullscreen-loading,
+.pres-fullscreen-error {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #ffffff;
+}
+
+.pres-floating-bar {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.pres-topic-pill {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.pres-topic-icon {
+  color: #10b981;
+  font-size: 1.15rem;
+}
+
+.pres-topic-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.pres-controls-right {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pres-stats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.pres-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  color: #475569;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.pres-icon-btn:hover {
+  background: #ffffff;
+  color: #0f172a;
+  transform: scale(1.08);
+}
+
+.pres-close-btn:hover {
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+  background: #fef2f2 !important;
+}
+
+/* Pure Fullscreen WordCloud canvas */
+.wordcloud-shell.fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.wordcloud-shell.fullscreen .wordcloud-canvas-container {
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.wordcloud-shell.fullscreen .wordcloud-meta-footer {
+  display: none !important;
+}

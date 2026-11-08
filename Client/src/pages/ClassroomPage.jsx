@@ -73,6 +73,15 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
     const [classroom, setClassroom] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const hasLoadedRef = useRef(false);
+    const consecutiveErrorsRef = useRef(0);
+    const prevClassIdRef = useRef(classId);
+    useEffect(() => {
+        if (prevClassIdRef.current !== classId) {
+            prevClassIdRef.current = classId;
+            hasLoadedRef.current = false;
+        }
+    }, [classId]);
     const [seatingPositions, setSeatingPositions] = useState({});
     const [isEditing, setIsEditing] = useState(false);
     const isEditingRef = useRef(isEditing);
@@ -735,6 +744,14 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
             config: publishedConfig,
             updatedAt: now,
             _isPublishingDraft: true // Flag for backend to send notification
+        });
+    };
+
+    // ✨ Handler for archiving / unarchiving an event
+    const handleArchiveEvent = (event, isArchived = true) => {
+        emitTriggerClassroomEvent(event.id, {
+            archived: isArchived,
+            updatedAt: Date.now()
         });
     };
 
@@ -2135,51 +2152,91 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         }
     };
 
-    const fetchClassroomDetails = useCallback(async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/api/classrooms/${classId}`, {
-                headers: { 'x-auth-token': user.token }
-            });
-            setClassroom(response.data);
-            const fetchedPositions = response.data.seatingPositions || {};
-            const fetchedAssignedUsers = response.data.assignedUsers || {};
-            const fetchedScores = response.data.studentScores || {};
-            const fetchedGroups = response.data.chairGroups || []; // Load groups
+    const fetchClassroomDetails = useCallback(async (isSilent = false) => {
+        const token = user?.token || localStorage.getItem('authToken');
+        if (!token) {
+            console.warn('[fetchClassroomDetails] No auth token available, deferring fetch.');
+            return;
+        }
 
-            console.log('Fetched scores from server:', fetchedScores);
+        const isInitialLoad = !hasLoadedRef.current && !isSilent;
+        if (isInitialLoad) {
+            setLoading(true);
+        }
 
-            // ✨ Preserve working seating draft if currently in edit mode
-            if (!isEditingRef.current) {
-                setSeatingPositions(fetchedPositions);
-                setCurrentChairPositions(fetchedPositions);
-                setChairGroups(fetchedGroups);
-            } else {
-                // In edit mode, update baseline seating positions without wiping draft
-                setSeatingPositions(fetchedPositions);
-            }
-            setAssignedUsers(fetchedAssignedUsers);
-            setStudentScores(fetchedScores);
-            setAttendance(response.data.attendance || {}); // ✨ Load attendance
-            setAttendanceDays(response.data.attendanceDays || 20); // ✨ Load attendance days (default to 20)
+        const maxAttempts = isInitialLoad ? 3 : 1;
 
-            // ✨ Initialize classroom events
-            const fetchedEvents = response.data.classroomEvents || [];
-            setClassroomEvents(fetchedEvents);
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/api/classrooms/${classId}`, {
+                    headers: { 'x-auth-token': token },
+                    timeout: 10000
+                });
 
-            setLoading(false);
-        } catch (err) {
-            if (err.response?.status === 403 && err.response?.data?.requiresInvitation) {
-                // Redirect to private classroom page
-                navigate(`/classroom/${classId}/private`);
+                const data = response.data;
+                if (!data || !data._id) {
+                    throw new Error('Invalid classroom data received');
+                }
+
+                hasLoadedRef.current = true;
+                consecutiveErrorsRef.current = 0;
+                setClassroom(data);
+
+                const fetchedPositions = data.seatingPositions || {};
+                const fetchedAssignedUsers = data.assignedUsers || {};
+                const fetchedScores = data.studentScores || {};
+                const fetchedGroups = data.chairGroups || [];
+
+                // ✨ Preserve working seating draft if currently in edit mode
+                if (!isEditingRef.current) {
+                    setSeatingPositions(fetchedPositions);
+                    setCurrentChairPositions(fetchedPositions);
+                    setChairGroups(fetchedGroups);
+                } else {
+                    setSeatingPositions(fetchedPositions);
+                }
+                setAssignedUsers(fetchedAssignedUsers);
+                setStudentScores(fetchedScores);
+                setAttendance(data.attendance || {});
+                setAttendanceDays(data.attendanceDays || 20);
+
+                const fetchedEvents = data.classroomEvents || [];
+                setClassroomEvents(fetchedEvents);
+
+                setLoading(false);
                 return;
-            } else {
-                // Redirect to error page
+            } catch (err) {
+                const status = err.response?.status;
+                const requiresInvitation = err.response?.data?.requiresInvitation;
+
+                console.warn(`[fetchClassroomDetails] Attempt ${attempt + 1}/${maxAttempts} failed:`, status || err.message);
+
+                if (status === 403 && requiresInvitation) {
+                    setLoading(false);
+                    navigate(`/classroom/${classId}/private`);
+                    return;
+                }
+
+                if (isInitialLoad && attempt < maxAttempts - 1) {
+                    await new Promise(res => setTimeout(res, 600 * (attempt + 1)));
+                    continue;
+                }
+
+                // If classroom was ALREADY successfully loaded, DO NOT navigate away to /error!
+                // Transient network / server blips must NEVER kick the user out of the classroom!
+                if (hasLoadedRef.current) {
+                    consecutiveErrorsRef.current += 1;
+                    console.warn(`[fetchClassroomDetails] Background sync skipped (consecutive failures: ${consecutiveErrorsRef.current})`);
+                    return;
+                }
+
+                // Only on initial mount after all retries failed:
+                setLoading(false);
                 navigate(`/classroom/${classId}/error`);
                 return;
             }
-
         }
-    }, [classId, user, navigate]);
+    }, [classId, user?.token, navigate]);
 
     // ✨ Fetch chat history on mount
     const fetchChatHistory = useCallback(async () => {
@@ -2267,18 +2324,28 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
         }
     }, [classId, user, fetchClassroomDetails, fetchChatHistory, fetchRatePresets, isCreator, fetchActiveSession]);
 
-    // ✨ Polling Fallback: Fetch classroom details every 5 seconds to ensure member list is up-to-date
-    // (Since server join events are not reliably broadcasting)
+    // Polling Fallback: Fetch classroom details silently every 10 seconds to keep member list & state up-to-date
     useEffect(() => {
         if (!classId || !user?.token) return;
 
         const interval = setInterval(() => {
-            // Silently fetch updates (don't set loading state)
-            fetchClassroomDetails();
-        }, 5000);
+            // Only poll if tab is active/visible
+            if (typeof document !== 'undefined' && document.hidden) return;
+            fetchClassroomDetails(true);
+        }, 10000);
 
-        return () => clearInterval(interval);
-    }, [classId, user, fetchClassroomDetails]);
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchClassroomDetails(true);
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [classId, user?.token, fetchClassroomDetails]);
 
     const handleAssign = async (name) => {
         if (!selectedChairId || !user) return;
@@ -2445,7 +2512,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
             } catch (error) {
                 console.error('Error resetting chairs:', error);
                 Swal.fire(t('common.error') || 'Error', t('classroomPage.swal.resetErrorText') || 'Failed to reset chairs.', 'error');
-                fetchClassroomDetails(); // Rollback if error
+                fetchClassroomDetails(true); // Rollback if error
             }
         }
     };
@@ -3212,6 +3279,7 @@ const ClassroomPage = ({ user, isSidebarOpen, toggleSidebar, handleSignOut }) =>
                                     onSubmitAnswer={handleSubmitAnswer}
                                     onEndEvent={handleEndAndScoreEvent}
                                     onPublishDraftEvent={handlePublishDraftEvent} // ✨ Pass publish handler
+                                    onArchiveEvent={handleArchiveEvent} // ✨ Pass archive handler
                                     candidates={Object.values(assignedUsers).filter(user => user?.userName).map(user => ({
                                         id: user.userId,
                                         name: user.userName,

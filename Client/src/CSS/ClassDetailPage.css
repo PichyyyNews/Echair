@@ -154,3 +154,17 @@
         padding: 1rem;
     }
 }
+
+
+/* ==========================================================================
+   MOBILE VIEWPORT & TOUCH SCROLLING STABILITY
+   ========================================================================== */
+@media (max-width: 768px) {
+  .class-detail-container {
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+}

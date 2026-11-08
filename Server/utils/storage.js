@@ -10,6 +10,16 @@ const isImageMimetype = (mimetype) => {
     return /^image\/(jpeg|jpg|png|webp|gif|avif)$/i.test(mimetype);
 };
 
+const decodeUtf8Filename = (filename) => {
+    if (!filename || typeof filename !== 'string') return '';
+    try {
+        const decoded = Buffer.from(filename, 'latin1').toString('utf8');
+        return decoded.includes('\uFFFD') ? filename : decoded;
+    } catch {
+        return filename;
+    }
+};
+
 /**
  * Optimize image using Sharp
  * @param {Buffer} buffer 
@@ -69,7 +79,8 @@ const saveUploadedFile = async ({
 }) => {
     let finalBuffer = buffer;
     let finalMimetype = mimetype;
-    let ext = path.extname(originalname);
+    const cleanOriginalName = decodeUtf8Filename(originalname) || 'file';
+    let ext = path.extname(cleanOriginalName);
 
     // Apply Sharp optimization if image and requested
     if (optimize && isImageMimetype(mimetype) && mimetype !== 'image/gif') {
@@ -82,7 +93,9 @@ const saveUploadedFile = async ({
     }
 
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const baseName = path.basename(originalname, path.extname(originalname)).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const rawBase = path.basename(cleanOriginalName, path.extname(cleanOriginalName));
+    // Strip forbidden filesystem characters (\ / : * ? " < > |) while keeping all Unicode/Thai characters
+    const baseName = rawBase.replace(/[\\/:*?"<>|\r\n\t]/g, '_').trim() || 'file';
     const filename = `${uniqueSuffix}_${baseName}${ext}`;
     const key = folder ? `${folder}/${filename}` : filename;
 
@@ -107,7 +120,7 @@ const saveUploadedFile = async ({
             return {
                 url,
                 filename,
-                originalname,
+                originalname: cleanOriginalName,
                 mimetype: finalMimetype,
                 size: finalBuffer.length,
                 storage: 's3'
@@ -132,7 +145,7 @@ const saveUploadedFile = async ({
     return {
         url: relativeUrl,
         filename,
-        originalname,
+        originalname: cleanOriginalName,
         mimetype: finalMimetype,
         size: finalBuffer.length,
         storage: 'local'
@@ -151,7 +164,6 @@ const deleteStoredFile = async (fileUrl) => {
         try {
             const urlObj = new URL(fileUrl);
             let key = urlObj.pathname.replace(/^\//, ''); // Strip leading slash
-            // If pathname starts with bucket name (path-style MinIO), remove the bucket prefix
             if (key.startsWith(`${S3_BUCKET_NAME}/`)) {
                 key = key.substring(S3_BUCKET_NAME.length + 1);
             }

@@ -5,14 +5,14 @@ import Lottie from 'lottie-react';
 import { useParams } from 'react-router-dom';
 import '../CSS/ClassroomEvent.css';
 import WordCloudViz from './events/WordCloudViz';
-import { FaPlus, FaTrash, FaImage, FaTimes, FaHandPaper, FaExternalLinkAlt, FaDice, FaQuestionCircle, FaBullhorn, FaCloud, FaPoll, FaClipboardList, FaTrophy, FaUser, FaUndo, FaMagic, FaUsers, FaChevronRight, FaFlagCheckered, FaStar, FaCrown, FaClock } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaImage, FaTimes, FaHandPaper, FaExternalLinkAlt, FaDice, FaQuestionCircle, FaBullhorn, FaCloud, FaPoll, FaClipboardList, FaTrophy, FaUser, FaUndo, FaMagic, FaUsers, FaChevronRight, FaFlagCheckered, FaStar, FaCrown, FaClock, FaArchive, FaCheckCircle, FaPaperPlane } from 'react-icons/fa';
 import { getProfileImageSrc, isGoogleUser } from '../utils/profileImageHelper';
 import { useTranslation } from 'react-i18next';
 import classroomEventEmptyAnimation from '../assets/classroom-event-empty.json';
 import API_BASE_URL, { buildAppUrl as buildClientAppUrl, buildServerUrl } from '../config/api';
 
 const CLASSROOM_EVENT_ANIMATION_COLORS = {
-    accent: [0.1294117647, 0.7215686275, 0.431372549, 1],
+    accent: [0.4941, 0.7608, 0.5098, 1],
     dark: [0.0901960784, 0.137254902, 0.2274509804, 1],
     ink: [0.0588235294, 0.0901960784, 0.1647058824, 1],
     soft: [0.9137254902, 0.9647058824, 0.9490196078, 1]
@@ -159,7 +159,8 @@ const EventTimerBanner = ({ timerMeta, isCreator, eventStatus, labels }) => {
     );
 };
 
-const ClassroomEvent = ({ isCreator, events = [], onAddEvent, onTriggerEvent, onDeleteEvent, onSubmitAnswer, onEndEvent, onPublishDraftEvent, candidates = [], currentUser, zoomScale = 1 }) => {
+const ClassroomEvent = ({ isCreator, events = [], onAddEvent, onTriggerEvent, onDeleteEvent, onSubmitAnswer, onEndEvent, onPublishDraftEvent, onArchiveEvent, candidates = [], currentUser, zoomScale = 1 }) => {
+    const [eventTab, setEventTab] = useState('active'); // 'active' | 'archived'
     const { t } = useTranslation();
     const tr = (key, defaultValue, options = {}) => t(key, { defaultValue, ...options });
     const themedClassroomEventEmptyAnimation = useMemo(
@@ -1031,7 +1032,7 @@ const ClassroomEvent = ({ isCreator, events = [], onAddEvent, onTriggerEvent, on
 };
 
 /* Helper Component for Event Card Content */
-const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEvent, candidates = [], currentUser, onDeleteEvent }) => {
+const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEvent, onArchiveEvent, candidates = [], currentUser, onDeleteEvent }) => {
     const { t } = useTranslation();
     const { classId: routeClassId } = useParams();
     const tr = (key, defaultValue, options = {}) => t(key, { defaultValue, ...options });
@@ -2165,11 +2166,13 @@ const EventCardContent = ({ event, isCreator, onTrigger, onSubmitAnswer, onEndEv
                                             onKeyPress={(e) => { if (e.key === 'Enter') handleAnswerSubmit(); }}
                                         />
                                         <button
+                                            type="button"
                                             className="wc-send-btn"
                                             onClick={handleAnswerSubmit}
                                             disabled={!answerInput.trim() || isSubmitting}
                                         >
-                                            {t('classroomEvent.send') || 'Send'}
+                                            <FaPaperPlane style={{ fontSize: '0.82rem' }} />
+                                            <span>{t('classroomEvent.send') || 'Send'}</span>
                                         </button>
                                     </div>
                                 ) : isSubmitted ? (

@@ -285,3 +285,209 @@
   background-color: #f8f9fa;
   border-radius: 4px;
 }
+
+
+/* ==========================================================================
+   Clean UI Styling for Multi-Attachment & Monaco Preview in AssignmentDetailModal
+   ========================================================================== */
+
+.assignment-detail-modal {
+  border-radius: 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12) !important;
+}
+
+.assignment-detail-header h2 {
+  color: #0f172a !important;
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+}
+
+.adm-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.adm-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f4fbf6;
+  border: 1px solid rgba(126, 194, 130, 0.4);
+  color: #2e7d32;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.adm-pill-btn:hover {
+  background: #eef9f2;
+  border-color: #7ec282;
+}
+
+.adm-pill-btn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.adm-link-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.adm-link-input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+}
+
+.adm-link-add-btn {
+  padding: 7px 14px;
+  background: #7ec282;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.adm-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.adm-file-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.adm-file-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.adm-preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+.adm-preview-btn:hover {
+  background: #f4fbf6;
+  border-color: #7ec282;
+  color: #2e7d32;
+}
+
+.adm-file-del {
+  background: transparent;
+  border: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.adm-file-del:hover {
+  color: #dc2626;
+}
+
+.turn-in-btn {
+  background: #7ec282 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 18px !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.turn-in-btn:hover {
+  background: #6bb36f !important;
+}
+
+.turn-in-btn:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+}
+
+.adm-attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+  padding: 6px 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.adm-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.adm-attachment-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #334155;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.submission-card {
+  border-radius: 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+}
+
+.submission-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

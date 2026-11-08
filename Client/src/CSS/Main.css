@@ -575,14 +575,13 @@ body {
     max-width: auto;
   }
 
-  .main__content {
-    padding: 5px;
-  }
-
+  .main__content,
   .main__content.shift {
-    margin-left: 0;
-    width: 100%;
-    /* Ensure it takes full width on mobile */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
   }
 }
 

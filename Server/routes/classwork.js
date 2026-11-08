@@ -107,10 +107,15 @@ router.get('/:classId', auth, async (req, res) => {
 
         // If user is a creator (teacher), attach submission statistics (graded count & total students)
         if (isCreator) {
-            const totalStudents = classroom.participants ? classroom.participants.length : 0;
+            const creatorIds = (classroom.creator || []).map(c => (c._id || c).toString());
+            const studentParticipants = (classroom.participants || []).filter(
+                p => !creatorIds.includes((p._id || p).toString())
+            );
+            const totalStudents = studentParticipants.length;
             const creatorAssignments = await Promise.all(assignments.map(async (assignment) => {
                 const gradedCount = await AssignmentSubmission.countDocuments({
                     assignmentId: assignment._id,
+                    studentId: { $nin: creatorIds },
                     status: 'graded'
                 });
 
@@ -186,6 +191,14 @@ router.post('/:classId/:assignmentId/submit', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Assignment not found' });
         }
 
+        const classroom = await Class.findById(assignment.classId);
+        if (classroom) {
+            const isCreator = classroom.creator.some(c => c.toString() === req.user.id);
+            if (isCreator && req.user.role !== 'student') {
+                return res.status(400).json({ msg: 'ครูผู้สอนไม่สามารถส่งงานในห้องเรียนตนเองได้' });
+            }
+        }
+
         let isLate = false;
         if (assignment.dueDate && new Date() > assignment.dueDate) {
             if (!assignment.allowLateSubmission) {
@@ -236,14 +249,26 @@ router.get('/:classId/:assignmentId/submissions', auth, async (req, res) => {
         }
 
         const isCreator = classroom.creator.some(c => c.toString() === req.user.id);
-        if (!isCreator) {
+        if (!isCreator && req.user.role !== 'admin') {
             return res.status(403).json({ msg: 'Not authorized' });
         }
 
-        const submissions = await AssignmentSubmission.find({ assignmentId })
-            .populate('studentId', 'displayName email photoURL');
+        const creatorIds = (classroom.creator || []).map(c => c.toString());
 
-        res.json(submissions);
+        const submissions = await AssignmentSubmission.find({
+            assignmentId,
+            studentId: { $nin: creatorIds }
+        }).populate('studentId', 'displayName email photoURL role');
+
+        const validSubmissions = submissions.filter(s => {
+            if (!s.studentId) return false;
+            const sid = (s.studentId._id || s.studentId).toString();
+            if (creatorIds.includes(sid)) return false;
+            if (s.studentId.role === 'admin' || s.studentId.role === 'teacher') return false;
+            return true;
+        });
+
+        res.json(validSubmissions);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

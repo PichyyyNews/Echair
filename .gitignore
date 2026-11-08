@@ -7,3 +7,10 @@ coverage
 *.log
 .vscode
 .idea
+
+# Credentials & Service Accounts
+*serviceAccountKey*.json
+*echair-*.json
+*.pem
+*.key
+credentials/

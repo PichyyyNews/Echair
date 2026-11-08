@@ -63,7 +63,8 @@
       "header": "Notifications",
       "markAllRead": "Mark all as read",
       "noNew": "No new notifications",
-      "recentlyAdded": "Recently Added:"
+      "recentlyAdded": "Recently Added:",
+      "viewAll": "View all in Inbox"
     },
     "profileMenu": {
       "accountSetting": "Account Setting",
@@ -86,7 +87,8 @@
       "class": "Classes",
       "createdByMe": "Created by Me",
       "joined": "Joined",
-      "noClassesJoined": "No classes joined"
+      "noClassesJoined": "No classes joined",
+      "notifications": "Notifications & Inbox"
     },
     "accountSettings": {
       "account": "Account Settings",
@@ -161,7 +163,6 @@
       "leaveError": "Failed to leave the classroom."
     }
   },
-
   "settings": {
     "general": {
       "title": "General Settings",
@@ -444,7 +445,18 @@
     "noPostsTitle": "No posts yet",
     "noPostsText": "Announcements, assignments, and materials posted by your teacher will appear here.",
     "aboutClassTitle": "About This Class",
-    "aboutClassText": "Announcements, assignments, and class materials shared by your teacher appear in the stream."
+    "aboutClassText": "Announcements, assignments, and class materials shared by your teacher appear in the stream.",
+    "stats": {
+      "posts": "Posts",
+      "comments": "Comments",
+      "participants": "Students",
+      "materials": "Attachments",
+      "announcements": "Announcements",
+      "assignments": "Assignments",
+      "submitted": "Turned In",
+      "pending": "Pending",
+      "classmates": "Classmates"
+    }
   },
   "editClassroomPage": {
     "loadError": "Failed to load classroom details.",
@@ -1096,5 +1108,146 @@
     "error": "Error",
     "warning": "Warning",
     "info": "Info"
+  },
+  "assignmentDetail": {
+    "backToClassroom": "Back to {{name}}",
+    "kickerTeacher": "Review and grade work",
+    "kickerStudent": "Submit and track your work",
+    "heroDescTeacher": "Keep directions, student submissions, scores, and class feedback in one organized workspace.",
+    "heroDescStudent": "Read the brief, attach your work, and keep your submission status in one organized workspace.",
+    "heroNoteGraded": "{{graded}} graded · {{pending}} pending review",
+    "heroNoteScorePosted": "Score posted: {{score}} / {{total}}",
+    "heroNoteSaved": "Your latest submission is saved here and ready for review.",
+    "heroNoteReady": "Add a link or file when you are ready to turn in.",
+    "pointsUnit": "pts",
+    "noDueDate": "No due date",
+    "instructionsTitle": "Instructions / Details",
+    "teacherAttachments": "Teacher Attachments ({{count}})",
+    "preview": "Preview",
+    "empty": {
+      "title": "No written instructions provided for this assignment",
+      "desc": "The instructor may have explained the assignment in class. You can review details and submit your work through \"Your Work\" on the right.",
+      "pointsLabel": "Total Points",
+      "dueLabel": "Due Date",
+      "submissionPolicyLabel": "Submission Policy",
+      "tip": "Please double-check your files or links before turning in your work."
+    },
+    "lateAllowed": "Late allowed",
+    "onTimeOnly": "On time only",
+    "yourWorkTitle": "Your Work",
+    "linkPlaceholder": "Paste link (https://...)",
+    "addLink": "Add link",
+    "or": "or",
+    "uploading": "Uploading...",
+    "attachFiles": "Attach files (select multiple files)",
+    "turnIn": "Turn In",
+    "turningIn": "Turning in...",
+    "resubmit": "Resubmit work",
+    "confirmResubmit": "Confirm new submission",
+    "cancel": "Cancel",
+    "gradedNotice": "This work has been graded and cannot be resubmitted.",
+    "submissionOverview": "Submission Overview",
+    "turnedIn": "Turned In",
+    "graded": "Graded",
+    "pending": "Pending",
+    "complete": "complete",
+    "studentSubmissionsTitle": "Student Submissions ({{count}})",
+    "noSubmissionsYet": "No submissions yet.",
+    "status": {
+      "submitted": "Turned In",
+      "late": "Late",
+      "graded": "Graded",
+      "assigned": "Assigned"
+    },
+    "commentsTitle": "Class Comments ({{count}})",
+    "noComments": "No comments yet. Start the conversation!",
+    "addCommentPlaceholder": "Add a class comment...",
+    "deleteAssignmentTitle": "Delete Assignment",
+    "deleteAssignmentConfirm": "Are you sure you want to delete this assignment?",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submissions": "submissions"
+  },
+  "notificationsPage": {
+    "pageTitle": "Notifications & Inbox",
+    "pageSubtitle": "Read messages, send letters to others, and track support tickets with administrators",
+    "compose": "Compose Message",
+    "openTicket": "Open Support Ticket",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "delete": "Delete",
+    "unreadOnly": "Unread only",
+    "all": "All",
+    "searchPlaceholder": "Search by subject, message, or sender...",
+    "backToList": "Back to list",
+    "tabs": {
+      "all": "All",
+      "messages": "Messages / Letters",
+      "tickets": "Support Tickets",
+      "system": "System"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "updateStatus": "Update Status",
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "urgent": "Urgent"
+      }
+    },
+    "categories": {
+      "general": "General",
+      "bug": "Bug Report",
+      "classroom": "Classroom & Scores",
+      "account": "Account",
+      "feedback": "Feedback"
+    },
+    "empty": {
+      "title": "No notifications found",
+      "desc": "You do not have any notifications or messages in this section",
+      "selectToRead": "Select an item from the left to read its details"
+    },
+    "thread": {
+      "from": "From",
+      "to": "To",
+      "ticketId": "Ticket ID",
+      "replyPlaceholder": "Type your reply here...",
+      "reply": "Send Reply",
+      "replies": "Replies",
+      "noReplies": "No replies in this thread yet"
+    },
+    "composeModal": {
+      "title": "Compose New Message",
+      "recipient": "Recipient",
+      "recipientPlaceholder": "Type name or email to search...",
+      "subject": "Subject",
+      "subjectPlaceholder": "Enter message subject...",
+      "priority": "Priority",
+      "body": "Message Content",
+      "bodyPlaceholder": "Type your message here...",
+      "send": "Send Message",
+      "cancel": "Cancel",
+      "success": "Message sent successfully"
+    },
+    "ticketModal": {
+      "title": "Open Support Ticket to Admin",
+      "category": "Issue Category",
+      "subject": "Issue Subject",
+      "subjectPlaceholder": "Brief summary of the issue...",
+      "priority": "Priority Level",
+      "body": "Detailed Description",
+      "bodyPlaceholder": "Describe the issue and steps to reproduce so administrators can assist promptly...",
+      "notice": "Your ticket will be dispatched directly to platform administrators. You can follow up and converse here once an admin responds.",
+      "submit": "Submit Ticket",
+      "cancel": "Cancel",
+      "success": "Support ticket opened successfully. We will review it shortly."
+    },
+    "systemSender": "EChair System",
+    "systemDesc": "Automated system activities and notices",
+    "systemItemsCount": "items",
+    "markSystemAllRead": "Mark all system notifications as read"
   }
 }

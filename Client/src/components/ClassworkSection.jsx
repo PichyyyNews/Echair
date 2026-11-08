@@ -11,26 +11,44 @@ import API_BASE_URL from '../config/api';
 const formatStatValue = (value) => new Intl.NumberFormat().format(value || 0);
 
 const CLASSWORK_ANIMATION_COLORS = {
-    'Color 1': [0.1294117647, 0.7215686275, 0.431372549, 1],
-    'Color 2': [1, 1, 1, 1],
-    'Color 3': [0.0901960784, 0.137254902, 0.2274509804, 1],
-    'Color 4': [0.0588235294, 0.0901960784, 0.1647058824, 1],
-    'Color 5': [0.1960784314, 0.2549019608, 0.3294117647, 1]
+    'color1': [0.4941, 0.7608, 0.5098, 1], // Light green token #7ec282
+    'color2': [1, 1, 1, 1],
+    'color3': [0.12, 0.16, 0.22, 1],
+    'color4': [0.08, 0.11, 0.15, 1],
+    'color5': [0.45, 0.52, 0.60, 1]
 };
 
 const createThemedClassworkAnimation = (animationData) => {
+    if (!animationData) return null;
     const themedAnimation = JSON.parse(JSON.stringify(animationData));
 
     const applyThemeToLayers = (layers = []) => {
         layers.forEach((layer) => {
             if (Array.isArray(layer?.ef)) {
                 layer.ef.forEach((effect) => {
-                    const nextColor = CLASSWORK_ANIMATION_COLORS[effect?.nm];
+                    const normalizedKey = (effect?.nm || '').replace(/\s+/g, '').toLowerCase();
+                    const nextColor = CLASSWORK_ANIMATION_COLORS[normalizedKey] || CLASSWORK_ANIMATION_COLORS[effect?.nm];
                     const control = effect?.ef?.[0];
                     if (nextColor && control?.v) {
                         control.v.k = nextColor;
                     }
                 });
+            }
+
+            if (Array.isArray(layer?.shapes)) {
+                const scanShapes = (shapes = []) => {
+                    shapes.forEach(shape => {
+                        if (shape.it && Array.isArray(shape.it)) {
+                            scanShapes(shape.it);
+                        } else if (shape.ty === 'fl' && shape.c?.k) {
+                            const c = shape.c.k;
+                            if (Array.isArray(c) && c.length >= 3 && Math.abs(c[0] - 1) < 0.05 && Math.abs(c[1] - 0.505) < 0.05) {
+                                shape.c.k = [0.4941, 0.7608, 0.5098, 1];
+                            }
+                        }
+                    });
+                };
+                scanShapes(layer.shapes);
             }
 
             if (Array.isArray(layer?.layers)) {
@@ -200,23 +218,7 @@ const getAssignmentCardPatternId = (assignment, suffix) => {
     return `cw-${suffix}-${safeId || 'card'}`;
 };
 
-const renderAssignmentCardBackground = (assignment, variant) => {
-    switch (variant) {
-        case 2:
-            return <AssignmentCardGridBg patternId={getAssignmentCardPatternId(assignment, 'grid')} />;
-        case 3:
-            return <AssignmentCardCirclesBg />;
-        case 4:
-            return <AssignmentCardWavesBg />;
-        case 5:
-            return <AssignmentCardStripesBg patternId={getAssignmentCardPatternId(assignment, 'stripes')} />;
-        case 6:
-            return <AssignmentCardTopographyBg />;
-        case 1:
-        default:
-            return <AssignmentCardBlobBg />;
-    }
-};
+const renderAssignmentCardBackground = () => null;
 
 const SvgBookOpen = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -294,7 +296,7 @@ const ClassworkSection = ({ classId, user, isCreator }) => {
         try {
             setLoading(true);
             const res = await axios.get(`${API_BASE_URL}/api/classwork/${classId}`, {
-                headers: { 'x-auth-token': user.token }
+                headers: { 'x-auth-token': (user?.token || localStorage.getItem('authToken') || '') }
             });
             setAssignments(Array.isArray(res.data) ? res.data : []);
             setLoading(false);
@@ -339,7 +341,7 @@ const ClassworkSection = ({ classId, user, isCreator }) => {
 
         try {
             await axios.delete(`${API_BASE_URL}/api/classwork/${classId}/${assignmentId}`, {
-                headers: { 'x-auth-token': user.token }
+                headers: { 'x-auth-token': (user?.token || localStorage.getItem('authToken') || '') }
             });
             setAssignments((prev) => prev.filter((assignment) => assignment._id !== assignmentId));
         } catch (err) {

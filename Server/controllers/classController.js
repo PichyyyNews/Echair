@@ -122,11 +122,17 @@ exports.getClassroom = async (req, res) => {
         const userId = req.user._id;
         const cacheKey = `classroom:${req.params.id}`;
 
+        const matchesUser = (item) => {
+            if (!item) return false;
+            const id = item._id ? item._id.toString() : item.toString();
+            return id === userId.toString();
+        };
+
         // Check Redis cache first
         const cachedClassroom = await getCache(cacheKey);
         if (cachedClassroom) {
-            const isCreator = cachedClassroom.creator?.some(creator => (creator._id || creator).toString() === userId.toString());
-            const isParticipant = cachedClassroom.participants?.some(participant => (participant._id || participant).toString() === userId.toString());
+            const isCreator = Array.isArray(cachedClassroom.creator) && cachedClassroom.creator.some(matchesUser);
+            const isParticipant = Array.isArray(cachedClassroom.participants) && cachedClassroom.participants.some(matchesUser);
             if (isCreator || isParticipant) {
                 return res.json(cachedClassroom);
             }
@@ -140,8 +146,8 @@ exports.getClassroom = async (req, res) => {
             return res.status(404).json({ msg: 'Classroom not found' });
         }
 
-        const isCreator = classroom.creator.some(creator => creator._id.toString() === userId.toString());
-        const isParticipant = classroom.participants.some(participant => participant._id.toString() === userId.toString());
+        const isCreator = Array.isArray(classroom.creator) && classroom.creator.some(matchesUser);
+        const isParticipant = Array.isArray(classroom.participants) && classroom.participants.some(matchesUser);
         const isMember = isCreator || isParticipant;
 
         if (classroom.isPublic && !isMember) {
@@ -156,6 +162,13 @@ exports.getClassroom = async (req, res) => {
                 .populate('creator', 'displayName photoURL _id')
                 .populate('participants', 'displayName photoURL');
 
+            if (Array.isArray(updatedClassroom.participants)) {
+                updatedClassroom.participants = updatedClassroom.participants.filter(Boolean);
+            }
+            if (Array.isArray(updatedClassroom.creator)) {
+                updatedClassroom.creator = updatedClassroom.creator.filter(Boolean);
+            }
+
             await setCache(cacheKey, updatedClassroom, 30);
             return res.json(updatedClassroom);
         }
@@ -167,10 +180,18 @@ exports.getClassroom = async (req, res) => {
             });
         }
 
+        if (Array.isArray(classroom.participants)) {
+            classroom.participants = classroom.participants.filter(Boolean);
+        }
+        if (Array.isArray(classroom.creator)) {
+            classroom.creator = classroom.creator.filter(Boolean);
+        }
+
         // Cache for 30 seconds
         await setCache(cacheKey, classroom, 30);
         res.json(classroom);
     } catch (err) {
+        console.error('Error in getClassroom:', err);
         if (err.kind === 'ObjectId') {
             return res.status(404).json({ msg: 'Classroom not found' });
         }

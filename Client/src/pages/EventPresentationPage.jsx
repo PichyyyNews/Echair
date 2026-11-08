@@ -4,7 +4,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
 import WordCloudViz from '../components/events/WordCloudViz';
-import { FaCloud } from 'react-icons/fa';
+import { FaCloud, FaTimes, FaExpand, FaCompress } from 'react-icons/fa';
 import API_BASE_URL, { createSocketClient } from '../config/api';
 import '../CSS/ClassroomEvent.css';
 
@@ -13,8 +13,10 @@ const EventPresentationPage = () => {
     const { t } = useTranslation();
     const [eventData, setEventData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const tr = (key, defaultValue, options = {}) => t(key, { defaultValue, ...options });
+
     useEffect(() => {
         let socket = null;
 
@@ -29,7 +31,7 @@ const EventPresentationPage = () => {
                 
                 const res = await axios.get(`${API_BASE_URL}/api/classrooms/${classId}`, config);
                 if (res.data) {
-                    const foundEvent = res.data.classroomEvents.find(e => String(e.id) === String(eventId));
+                    const foundEvent = res.data.classroomEvents?.find(e => String(e.id) === String(eventId));
                     if (foundEvent) {
                         setEventData(foundEvent);
                     } else {
@@ -76,8 +78,18 @@ const EventPresentationPage = () => {
         };
     }, [classId, eventId]);
 
-    if (loading) return <div className="pres-loading">{tr('classroomEvent.loadingWordCloud', 'Loading Word Cloud...')}</div>;
-    if (!eventData) return <div className="pres-error">{tr('classroomEvent.presentationEventNotFound', 'Event not found.')}</div>;
+    const toggleNativeFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen().catch(() => {});
+            setIsFullscreen(false);
+        }
+    };
+
+    if (loading) return <div className="pres-fullscreen-loading">{tr('classroomEvent.loadingWordCloud', 'Loading Word Cloud...')}</div>;
+    if (!eventData) return <div className="pres-fullscreen-error">{tr('classroomEvent.presentationEventNotFound', 'Event not found.')}</div>;
 
     const wordCount = eventData.results?.length || 0;
     const uniqueWordCount = new Set(
@@ -87,37 +99,42 @@ const EventPresentationPage = () => {
     ).size;
 
     return (
-        <div className="presentation-page-container">
-            <div className="pres-card">
-                <div className="pres-header">
-                    <div className="pres-header-bg">
-                        <FaCloud />
-                    </div>
-                    <h1>
-                        {eventData.config?.topic || eventData.title}
-                    </h1>
-                    <p>{tr('classroomEvent.wordCloudPresentationSubtitle', 'Word Cloud - Live Presentation')}</p>
+        <div className="pres-pure-fullscreen">
+            {/* Pure Fullscreen WordCloud2 Canvas Engine */}
+            {eventData.type === 'wordcloud' && (
+                <WordCloudViz results={eventData.results || []} variant="fullscreen" />
+            )}
+
+            {/* Discreet floating overlay with topic and controls */}
+            <div className="pres-floating-bar">
+                <div className="pres-topic-pill">
+                    <FaCloud className="pres-topic-icon" />
+                    <span className="pres-topic-text">{eventData.config?.topic || eventData.title}</span>
                 </div>
 
-                <div className="pres-body">
-                    {eventData.type === 'wordcloud' && (
-                        <WordCloudViz results={eventData.results || []} variant="presentation" />
-                    )}
-                </div>
-
-                <div className="pres-footer">
-                    <div className="pres-metrics">
-                        <div className="pres-word-count">
-                            <FaCloud /> {tr('classroomEvent.wordCloudSubmittedWords', '{{count}} words submitted', { count: wordCount })}
-                        </div>
-                        <div className="pres-word-count subtle">
-                            {tr('classroomEvent.wordCloudUniqueWordsCount', '{{count}} unique words', { count: uniqueWordCount })}
-                        </div>
-                    </div>
-                    <div className="pres-live-badge">
+                <div className="pres-controls-right">
+                    <div className="pres-stats-pill">
                         <span className="pres-live-dot"></span>
-                        LIVE
+                        <span>{uniqueWordCount} {tr('classroomEvent.uniqueWords', 'words')} · {wordCount} {tr('classroomEvent.answers', 'answers')}</span>
                     </div>
+
+                    <button
+                        type="button"
+                        className="pres-icon-btn"
+                        onClick={toggleNativeFullscreen}
+                        title={tr('classroomEvent.toggleFullscreen', 'Toggle Fullscreen')}
+                    >
+                        {isFullscreen ? <FaCompress /> : <FaExpand />}
+                    </button>
+
+                    <button
+                        type="button"
+                        className="pres-icon-btn pres-close-btn"
+                        onClick={() => window.close()}
+                        title={tr('classroomEvent.closeWindow', 'Close Window')}
+                    >
+                        <FaTimes />
+                    </button>
                 </div>
             </div>
         </div>

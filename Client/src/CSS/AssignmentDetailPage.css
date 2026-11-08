@@ -1280,3 +1280,474 @@
     padding: 0 0.65rem 2.5rem;
   }
 }
+
+
+/* ==========================================================================
+   ✨ CLEAN UI REFINEMENTS - Multi-attachments, Monaco preview, Circular Avatars
+   ========================================================================== */
+
+/* 1. Avatars strictly circular */
+.ad-sub-avatar,
+.ad-comment-avatar {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 2. No green border-left anywhere */
+.ad-header-note,
+.ad-tile,
+.ad-sub-card {
+  border-left: 1px solid #e2e8f0 !important;
+}
+
+/* 3. Multi-file action bar */
+.ad-add-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ad-upload-pill-btn,
+.ad-link-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.ad-upload-pill-btn {
+  background: #f4fbf6;
+  border: 1px solid rgba(126, 194, 130, 0.4);
+  color: #2e7d32;
+}
+
+.ad-upload-pill-btn:hover {
+  background: #eef9f2;
+  border-color: #7ec282;
+}
+
+.ad-upload-pill-btn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.ad-link-pill-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+}
+
+.ad-link-pill-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* Link input row */
+.ad-link-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ad-link-input-row .ad-url-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.ad-link-input-row .ad-url-input:focus {
+  border-color: #7ec282;
+}
+
+.ad-add-link-btn {
+  padding: 8px 16px;
+  background: #7ec282;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ad-add-link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Uploaded list & items */
+.ad-uploaded-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ad-uploaded-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.ad-uploaded-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.ad-uploaded-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.ad-uploaded-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ad-preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ad-preview-btn:hover {
+  background: #f4fbf6;
+  border-color: #7ec282;
+  color: #2e7d32;
+}
+
+.ad-preview-btn--small {
+  padding: 3px 7px;
+  font-size: 0.72rem;
+}
+
+.ad-file-remove {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.ad-file-remove:hover {
+  color: #dc2626;
+}
+
+.ad-empty-upload-hint {
+  padding: 18px 12px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.ad-submit-btns-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ad-cancel-btn {
+  padding: 9px 16px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.ad-cancel-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Teacher Submissions List inside Card */
+.ad-sub-attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.ad-sub-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ad-sub-attachment-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.ad-sub-file-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+
+/* ==========================================================================
+   Definitive Bento Grid & Clean Card Surface Restoration
+   ========================================================================== */
+
+.ad-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+.ad-bento {
+  display: grid !important;
+  grid-template-columns: repeat(12, 1fr) !important;
+  gap: 1.25rem !important;
+  width: 100% !important;
+  align-items: stretch !important;
+}
+
+.ad-tile {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  padding: 1.5rem !important;
+  min-width: 0 !important;
+}
+
+/* Grid Spans */
+.ad-header-tile {
+  grid-column: 1 / -1 !important;
+  margin-top: 0 !important;
+}
+
+.ad-instructions-tile {
+  grid-column: span 8 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.ad-work-tile {
+  grid-column: span 4 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.ad-teacher-stats-tile {
+  grid-column: span 4 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.ad-submissions-tile {
+  grid-column: 1 / -1 !important;
+}
+
+.ad-comments-tile {
+  grid-column: 1 / -1 !important;
+}
+
+/* ── Enhanced Empty State for Instructions ── */
+.ad-instructions-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.25rem 1.75rem;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  flex: 1;
+  min-height: 240px;
+}
+
+.ad-empty-icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: #ecfdf3;
+  border: 1px solid rgba(126, 194, 130, 0.3);
+  color: #15803d;
+  margin-bottom: 0.85rem;
+}
+
+.ad-empty-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.35rem;
+}
+
+.ad-empty-desc {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #64748b;
+  max-width: 32rem;
+}
+
+.ad-empty-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 34rem;
+  margin-bottom: 1.1rem;
+}
+
+.ad-empty-spec-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.65rem 0.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.ad-spec-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.ad-spec-val {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ad-empty-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 0.77rem;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .ad-empty-specs-grid {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}
+
+/* Mobile & Tablet Stacking */
+@media (max-width: 900px) {
+  .ad-bento {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .ad-instructions-tile,
+  .ad-work-tile,
+  .ad-teacher-stats-tile,
+  .ad-submissions-tile,
+  .ad-comments-tile {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+}
+
+/* Clean Header Info inside ad-header-tile */
+.ad-header-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+}
+
+.ad-header-copy {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.ad-header-copy h1 {
+  font-size: 1.85rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  margin: 0.35rem 0 !important;
+}
+
+.ad-header-side {
+  flex-shrink: 0 !important;
+}
+
+.ad-header-lottie {
+  width: 220px !important;
+  height: auto !important;
+}
+
+@media (max-width: 680px) {
+  .ad-header-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .ad-header-lottie {
+    width: 140px !important;
+  }
+}

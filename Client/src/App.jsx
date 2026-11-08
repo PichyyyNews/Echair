@@ -20,12 +20,15 @@ const ClassroomPage = lazy(() => import('./pages/ClassroomPage')); // ✨ Add th
 const ClassDetailPage = lazy(() => import('./pages/ClassDetailPage')); // ✨ Add Class Detail Page
 const AppSettingsPage = lazy(() => import('./pages/AppSettingsPage')); // ✨ Add App Settings Page
 const PrivateClassroomPage = lazy(() => import('./pages/PrivateClassroomPage')); // ✨ Add Private Classroom Page
-const ClassroomErrorPage = lazy(() => import('./pages/ClassroomErrorPage')); // ✨ Add Classroom Error Page
+const ClassroomErrorPage = lazy(() => import('./pages/ClassroomErrorPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage')); // ✨ Add Classroom Error Page
 const Layout = lazy(() => import('./components/Layout')); // ✨ Add Layout component
 const EventPresentationPage = lazy(() => import('./pages/EventPresentationPage')); // ✨ Add Presentation Page
 const StreamPage = lazy(() => import('./pages/StreamPage')); // ✨ Add Stream Page
 const AssignmentDetailPage = lazy(() => import('./pages/AssignmentDetailPage')); // ✨ Add Assignment Detail Page
-const AdminPage = lazy(() => import('./pages/AdminPage')); // 🛡️ Hidden Admin Page
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage')); // 🛡️ Hidden Admin Page
 
 const backendUrl = API_AUTH_URL;
 
@@ -312,6 +315,15 @@ function AppRoutes({ user, onLoginSuccess, handleSignOut, updateUserProfile, isS
                     /> : <Navigate to="/login" />}
                 /> {/* ✨ Add Private Classroom route */}
                 <Route
+                    path="/notifications"
+                    element={user ? <NotificationsPage
+                        user={user}
+                        isSidebarOpen={isSidebarOpen}
+                        toggleSidebar={toggleSidebar}
+                        handleSignOut={handleSignOutAndNavigate}
+                    /> : <Navigate to="/login" />}
+                />
+                <Route
                     path="/classroom/:classroomId/error"
                     element={user ? <ClassroomErrorPage
                         user={user}
@@ -324,6 +336,12 @@ function AppRoutes({ user, onLoginSuccess, handleSignOut, updateUserProfile, isS
                     path="/presentation/:classId/:eventId" 
                     element={<EventPresentationPage />} 
                 /> {/* ✨ Add Presentation route */}
+                <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsOfServicePage />} />
+                <Route path="/termsofservice" element={<TermsOfServicePage />} />
+                <Route path="/terms-of-service" element={<TermsOfServicePage />} />
                 <Route path="*" element={<p style={{ textAlign: 'center', fontSize: '2em', marginTop: '100px' }}>404 Page Not Found</p>} />
             </Routes>
         </Suspense>

@@ -99,7 +99,7 @@ const CreateAssignmentModal = ({ isOpen, onClose, classId, user, onAssignmentCre
             const formData = new FormData();
             formData.append('file', file);
             const res = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': user.token }
+                headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': (user?.token || localStorage.getItem('authToken') || '') }
             });
             const type = isImageMimetype(res.data.mimetype) ? 'image' : 'file';
             setAttachments(prev => [...prev, {
@@ -139,11 +139,11 @@ const CreateAssignmentModal = ({ isOpen, onClose, classId, user, onAssignmentCre
             let res;
             if (assignment) {
                 res = await axios.put(`${API_BASE_URL}/api/classwork/${classId}/${assignment._id}`, payload, {
-                    headers: { 'x-auth-token': user.token }
+                    headers: { 'x-auth-token': (user?.token || localStorage.getItem('authToken') || '') }
                 });
             } else {
                 res = await axios.post(`${API_BASE_URL}/api/classwork/${classId}`, payload, {
-                    headers: { 'x-auth-token': user.token }
+                    headers: { 'x-auth-token': (user?.token || localStorage.getItem('authToken') || '') }
                 });
             }
             

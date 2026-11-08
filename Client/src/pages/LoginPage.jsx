@@ -7,7 +7,7 @@ import { auth } from "../firebaseConfig";
 import axios from "axios";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useTranslation } from "react-i18next"; // ✨ Add useTranslation hook
 import classroomBgImage from "../image/Gemini_Generated_Image_fnyc63fnyc63fnyc.png";
@@ -533,6 +533,11 @@ const LoginPage = ({ onLoginSuccess, isSidebarOpen = false }) => {
               <span>{t('login.googleContinue') || "Continue with Google"}</span>
             </button>
           </div>
+          <div style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.825rem", display: "flex", justifyContent: "center", gap: "0.75rem" }}>
+            <Link to="/terms" style={{ color: "#64748b", textDecoration: "underline" }}>Terms of Service</Link>
+            <span style={{ color: "#cbd5e1" }}>•</span>
+            <Link to="/privacypolicy" style={{ color: "#64748b", textDecoration: "underline" }}>Privacy Policy</Link>
+          </div>
         </div>
       </div>
 
@@ -552,7 +557,7 @@ const LoginPage = ({ onLoginSuccess, isSidebarOpen = false }) => {
               <p>You are responsible for maintaining the confidentiality of your account credentials.</p>
 
               <h4>3. Privacy Policy</h4>
-              <p>We respect your privacy and handle your data according to our Privacy Policy.</p>
+              <p>We respect your privacy and handle your data according to our Privacy Policy. <a href="/privacypolicy" target="_blank" rel="noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "underline" }}>Read Full Privacy Policy &rarr;</a></p>
 
               <h4>4. Prohibited Uses</h4>
               <p>You may not use this service for any unlawful or prohibited activities.</p>

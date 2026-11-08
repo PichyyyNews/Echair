@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../CSS/Navbar.css";
 import icon from "../image/icon.ico";
-import { FiPlus, FiLogOut, FiArrowLeft, FiShare2, FiEdit2, FiSave, FiX, FiChevronDown, FiChevronRight, FiBell, FiMenu, FiBook, FiUsers, FiActivity, FiSettings } from "react-icons/fi"; // ✨ เพิ่ม icon ใหม่
-import { FaCog, FaCrown, FaLayerGroup, FaStar, FaTrophy, FaHistory, FaInfoCircle, FaCalendarCheck, FaPlay, FaClock, FaStop } from 'react-icons/fa'; // ✨ เพิ่ม icons สำหรับ sidebar
+import { FiPlus, FiMail, FiInbox, FiLogOut, FiArrowLeft, FiShare2, FiEdit2, FiSave, FiX, FiChevronDown, FiChevronRight, FiBell, FiMenu, FiBook, FiUsers, FiActivity, FiSettings } from "react-icons/fi"; // ✨ เพิ่ม icon ใหม่
+import { FaCog, FaCrown, FaLayerGroup, FaStar, FaTrophy, FaHistory, FaInfoCircle, FaCalendarCheck, FaPlay, FaClock, FaStop, FaTicketAlt } from 'react-icons/fa'; // ✨ เพิ่ม icons สำหรับ sidebar
 import { useNavigate, Link } from 'react-router-dom';
 import { getProfileImageSrc, getCurrentUserProfileImageSrc, isGoogleUser, handleImageError } from '../utils/profileImageHelper';
 import axios from 'axios';
@@ -30,6 +30,7 @@ const Navbar = ({
     isClassDetailPage, classDetailActiveSection, onClassDetailSectionChange, // เพิ่ม props สำหรับ ClassDetail page
     isStreamPage, streamActiveSection, onStreamSectionChange, // ✨ เพิ่ม props สำหรับ Stream page
     isAssignmentDetailPage, classId, // ✨ สำหรับหน้า Assignment Detail Page
+    isNotificationsPage, notificationsActiveTab, onNotificationsTabChange, notificationsTotalCount, notificationsTicketCount, onOpenCompose, onOpenTicket,
 
     // ✨ Teaching Session Props
     isSessionActive, sessionElapsed, onStartSession, onEndSession, formatSessionTime,
@@ -58,8 +59,9 @@ const Navbar = ({
             const res = await axios.get(`${API_BASE_URL}/api/notifications`, {
                 headers: { 'x-auth-token': token }
             });
-            setNotifications(res.data);
-            const unread = res.data.filter(n => !n.isRead).length;
+            const notifList = Array.isArray(res.data) ? res.data : (res.data?.notifications || []);
+            setNotifications(notifList);
+            const unread = notifList.filter(n => !n.isRead).length;
             setUnreadCount(unread);
             setHasUnread(unread > 0);
         } catch (error) {
@@ -328,7 +330,7 @@ const Navbar = ({
 
                 <div className="navbar__right">
                     {user && notificationsEnabled && (
-                        <div className="navbar__notification" onClick={toggleNotificationDropdown}>
+                        <div className="navbar__notification" onClick={() => navigate('/notifications')} title={t('navbar.sidebar.notifications', 'การแจ้งเตือนและกล่องข้อความ')} style={{ cursor: 'pointer' }}>
                             <FiBell size={22} />
                             {hasUnread && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
                             {isNotificationOpen && (
@@ -488,6 +490,91 @@ const Navbar = ({
                                 onClick={() => onAppSectionChange && onAppSectionChange('about')}
                             >
                                 <span>{t('navbar.appSettings.helpSupport')}</span>
+                            </li>
+                        </>
+                    ) : isNotificationsPage ? (
+                        <>
+                            <li className="sidebar-list-item sidebar-back-button" onClick={onBackClick || handleBackClick}>
+                                <FiArrowLeft size={18} />
+                                <span>{t('navbar.sidebar.back') || 'กลับหน้าหลัก'}</span>
+                            </li>
+                            <hr className="divider" style={{
+                                margin: "8px 0",
+                                border: "none",
+                                height: "1px",
+                                backgroundColor: "#e2e8f0",
+                                width: "100%",
+                                display: "block"
+                            }} />
+                            <li
+                                className={`sidebar-list-item ${notificationsActiveTab === 'all' ? 'active' : ''}`}
+                                onClick={() => onNotificationsTabChange && onNotificationsTabChange('all')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+                                    <FiInbox size={16} />
+                                    <span>{t('notificationsPage.tabs.all', 'ทั้งหมด')}</span>
+                                    {notificationsTotalCount > 0 && (
+                                        <span className="sidebar-unread-pill" style={{ marginLeft: 'auto' }}>{notificationsTotalCount}</span>
+                                    )}
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${notificationsActiveTab === 'messages' ? 'active' : ''}`}
+                                onClick={() => onNotificationsTabChange && onNotificationsTabChange('messages')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FiMail size={16} />
+                                    <span>{t('notificationsPage.tabs.messages', 'จดหมาย / ข้อความ')}</span>
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${notificationsActiveTab === 'tickets' ? 'active' : ''}`}
+                                onClick={() => onNotificationsTabChange && onNotificationsTabChange('tickets')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+                                    <FaTicketAlt size={14} />
+                                    <span>{t('notificationsPage.tabs.tickets', 'ตั๋วแจ้งปัญหา')}</span>
+                                    {notificationsTicketCount > 0 && (
+                                        <span className="pill-badge-alert" style={{ marginLeft: 'auto' }}>{notificationsTicketCount}</span>
+                                    )}
+                                </div>
+                            </li>
+                            <li
+                                className={`sidebar-list-item ${notificationsActiveTab === 'system' ? 'active' : ''}`}
+                                onClick={() => onNotificationsTabChange && onNotificationsTabChange('system')}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FiActivity size={16} />
+                                    <span>{t('notificationsPage.tabs.system', 'แจ้งเตือนระบบ')}</span>
+                                </div>
+                            </li>
+                            <hr className="divider" style={{
+                                margin: "12px 0 8px 0",
+                                border: "none",
+                                height: "1px",
+                                backgroundColor: "#e2e8f0",
+                                width: "100%",
+                                display: "block"
+                            }} />
+                            <li
+                                className="sidebar-list-item"
+                                style={{ color: '#15803d', fontWeight: 600 }}
+                                onClick={onOpenCompose}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FiPlus size={16} />
+                                    <span>{t('notificationsPage.compose', 'เขียนจดหมาย')}</span>
+                                </div>
+                            </li>
+                            <li
+                                className="sidebar-list-item"
+                                style={{ color: '#0369a1', fontWeight: 600 }}
+                                onClick={onOpenTicket}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FaTicketAlt size={14} />
+                                    <span>{t('notificationsPage.openTicket', 'แจ้งปัญหาถึงแอดมิน')}</span>
+                                </div>
                             </li>
                         </>
                     ) : isAdminPage ? (
