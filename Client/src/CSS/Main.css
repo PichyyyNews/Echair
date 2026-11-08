@@ -20,8 +20,8 @@ body {
   right: 0;
   bottom: 0;
   /* ขยายไปจนถึงด้านล่างของหน้าจอ */
-  background-color: #e8f2e9;
-  background-image: url("../image/login-bg.svg");
+  background-color: #f0f5f1;
+  background-image: url("../image/dashboard-bg.svg");
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;
