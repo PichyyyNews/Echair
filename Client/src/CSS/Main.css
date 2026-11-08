@@ -21,6 +21,10 @@ body {
   bottom: 0;
   /* ขยายไปจนถึงด้านล่างของหน้าจอ */
   background-color: #e8f2e9;
+  background-image: url("../image/login-bg.svg");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
   border-top-left-radius: 15px;
   transition: left 0.3s ease;
   overflow: hidden;
